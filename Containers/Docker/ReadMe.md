@@ -142,3 +142,31 @@
 | `docker-compose build` | Build images defined in the compose file |
 | `docker-compose logs` | View logs from all services |
 | `docker-compose ps` | List containers managed by Compose |
+
+## 🐳 **Dockerfile Commands with Descriptions**
+
+| **Command** | **Description** | **Common Options / Usage** |
+|-------------|------------------|-----------------------------|
+| `FROM` | Specifies the base image to use | `FROM python:3.10-slim` |
+| `LABEL` | Adds metadata to the image | `LABEL maintainer="anurag@example.com"` |
+| `ENV` | Sets environment variables | `ENV APP_ENV=production` |
+| `ARG` | Defines build-time variables | `ARG VERSION=1.0` |
+| `WORKDIR` | Sets the working directory inside the container | `WORKDIR /app` |
+| `COPY` | Copies files from host to container | `COPY . /app` |
+| `ADD` | Like `COPY`, but supports remote URLs and auto-extracts archives | `ADD https://example.com/file.tar.gz /data/` |
+| `RUN` | Executes commands during image build | `RUN apt-get update && apt-get install -y curl` |
+| `CMD` | Default command to run when container starts | `CMD ["python", "main.py"]` |
+| `ENTRYPOINT` | Sets the main command; arguments passed via `CMD` or CLI | `ENTRYPOINT ["python"]` |
+| `EXPOSE` | Documents the port the container listens on | `EXPOSE 8080` |
+| `VOLUME` | Creates a mount point for persistent data | `VOLUME ["/data"]` |
+| `USER` | Specifies the user to run the container | `USER appuser` |
+| `HEALTHCHECK` | Defines a command to check container health | `HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1` |
+| `SHELL` | Overrides the default shell used in `RUN` commands | `SHELL ["/bin/bash", "-c"]` |
+| `ONBUILD` | Adds a trigger instruction for child images | `ONBUILD RUN pip install -r requirements.txt` |
+| `STOPSIGNAL` | Sets the system call signal to stop the container | `STOPSIGNAL SIGTERM` |
+
+### 🧠 **Tips for Using Dockerfile Commands**
+- Use `RUN` commands efficiently by chaining them to reduce image layers.
+- Prefer `COPY` over `ADD` unless you need archive extraction or remote URLs.
+- Use `ENV` and `ARG` to make your Dockerfile configurable.
+- Use `ENTRYPOINT` for fixed commands and `CMD` for default arguments.
