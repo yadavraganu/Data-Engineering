@@ -488,6 +488,9 @@ ORDER BY
 ```
 ### 1757. Recyclable and Low Fat Products
 ```sql
+SELECT PRODUCT_ID
+FROM PRODUCTS
+WHERE LOW_FATS = 'Y' AND RECYCLABLE = 'Y';
 ```
 ### 1777. Product's Price for Each Store
 ```sql
