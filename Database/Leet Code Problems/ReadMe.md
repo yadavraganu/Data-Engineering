@@ -449,6 +449,15 @@ HAVING
 ```
 ### 1633. Percentage of Users Attended a Contest
 ```sql
+SELECT
+    CONTEST_ID,
+    ROUND(COUNT(USER_ID) * 100.0 / (SELECT COUNT(*) FROM USERS), 2) AS PERCENTAGE
+FROM
+    REGISTER
+GROUP BY
+    CONTEST_ID
+ORDER BY
+    PERCENTAGE DESC, CONTEST_ID;
 ```
 ### 1661. Average Time of Process per Machine
 ```sql
