@@ -422,9 +422,25 @@ HAVING
 ```
 ### 1517. Find Users With Valid E-Mails
 ```sql
+SELECT 
+    *
+FROM
+    USERS
+WHERE
+    -- last 13 digits should be '@leetcode.com'
+    RIGHT(MAIL,13) = '@leetcode.com' COLLATE Latin1_General_CS_AS
+    -- before the '@leetcode.com', there should not be any digit which are not a-z , A-Z , 0-9 , - , . , _
+    AND LEFT(MAIL, LEN(MAIL) - 13) NOT LIKE '%[^a-zA-Z0-9_.-]%'
+    -- 1st digit should be any digit of a-z or A-Z
+    AND LEFT(MAIL,1) LIKE '[a-zA-Z]%';
 ```
 ### 1527. Patients With a Condition
 ```sql
+SELECT *
+FROM PATIENTS
+WHERE
+    CONDITIONS LIKE 'DIAB1%' OR
+    CONDITIONS LIKE '% DIAB1%';
 ```
 ### 1543. Fix Product Name Format
 ```sql
