@@ -444,6 +444,17 @@ WHERE
 ```
 ### 1543. Fix Product Name Format
 ```sql
+WITH
+    T AS (
+        SELECT
+            LOWER(TRIM(PRODUCT_NAME)) AS PRODUCT_NAME,
+            DATE_FORMAT(SALE_DATE, '%Y-%M') AS SALE_DATE
+        FROM SALES
+    )
+SELECT PRODUCT_NAME, SALE_DATE, COUNT(1) AS TOTAL
+FROM T
+GROUP BY 1, 2
+ORDER BY 1, 2;
 ```
 ### 1565. Unique Orders and Customers Per Month
 ```sql
