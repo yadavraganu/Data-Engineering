@@ -78,3 +78,46 @@ with SafeDivision(10, 0) as sd:
 | `__enter__`    | At the start of the `with` block           |
 | `divide()`     | Inside the `with` block                    |
 | `__exit__`     | At the end of the `with` block or on error |
+
+### How `@contextmanager` Works
+
+It splits the context manager logic into two parts:
+- **Before `yield`**: Setup code (like opening a file or acquiring a lock)
+- **After `yield`**: Teardown code (like closing the file or releasing the lock)
+
+### Example: Logging Context Manager
+```python
+from contextlib import contextmanager
+
+@contextmanager
+def log_context(name):
+    print(f"Entering: {name}")
+    try:
+        yield
+    except Exception as e:
+        print(f"Exception in {name}: {e}")
+        raise  # Optional: re-raise if you want the error to propagate
+    finally:
+        print(f"Exiting: {name}")
+```
+Usage:
+```python
+with log_context("Test Block"):
+    print("Doing work")
+    # raise ValueError("Oops!")  # Uncomment to test exception handling
+```
+### Execution Flow
+
+| Line | When It Runs |
+|------|--------------|
+| `print("Entering")` | Immediately when `with` starts |
+| `yield`             | Pauses to run the block inside `with` |
+| `except` block      | Runs if an exception occurs inside the block |
+| `finally` block     | Always runs when the block ends (even on error) |
+
+### Key Points
+
+- You must `yield` exactly once.
+- The value yielded is returned to the `with` block (e.g., a file object).
+- If an exception occurs, it’s re-raised inside the generator at the `yield` point.
+- You can suppress or log exceptions inside the `except` block.
