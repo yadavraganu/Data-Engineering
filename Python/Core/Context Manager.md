@@ -121,3 +121,68 @@ with log_context("Test Block"):
 - The value yielded is returned to the `with` block (e.g., a file object).
 - If an exception occurs, it’s re-raised inside the generator at the `yield` point.
 - You can suppress or log exceptions inside the `except` block.
+
+## File Handling with `@contextmanager`
+
+```python
+from contextlib import contextmanager
+
+@contextmanager
+def open_file(filename, mode):
+    print("Opening file")
+    f = open(filename, mode)
+    try:
+        yield f  # This is where the file is used inside the `with` block
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
+    finally:
+        print("Closing file")
+        f.close()
+```
+###  Usage
+```python
+with open_file("example.txt", "w") as file:
+    file.write("Hello, Anurag!")
+```
+### Execution Flow
+1. `open_file()` is called → file is opened
+2. `yield f` → control passes to the `with` block
+3. After block ends or error occurs → `finally` closes the file
+
+## Database Connection with `@contextmanager`
+```python
+from contextlib import contextmanager
+import sqlite3
+
+@contextmanager
+def db_connection(db_name):
+    print("🔌 Connecting to database")
+    conn = sqlite3.connect(db_name)
+    try:
+        yield conn  # Use the connection inside the block
+        conn.commit()
+        print("Committed changes")
+    except Exception as e:
+        conn.rollback()
+        print(f"Rolled back due to: {e}")
+        raise
+    finally:
+        print("Closing connection")
+        conn.close()
+```
+### Usage
+```python
+with db_connection("test.db") as conn:
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER, name TEXT)")
+    cursor.execute("INSERT INTO users VALUES (?, ?)", (1, "Anurag"))
+```
+### Execution Flow
+| Step | What Happens |
+|------|--------------|
+| `db_connection()` | Opens DB connection |
+| `yield conn` | Executes SQL inside `with` block |
+| `commit()` | Saves changes if no error |
+| `rollback()` | Reverts changes if error occurs |
+| `close()` | Always closes connection |
