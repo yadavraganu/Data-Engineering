@@ -772,12 +772,30 @@ HAVING
 ```
 ### 1821. Find Customers With Positive Revenue this Year
 ```sql
+SELECT
+    CUSTOMER_ID
+FROM
+    CUSTOMERS
+WHERE
+    YEAR = 2021 AND REVENUE > 0;
 ```
 ### 183. Customers Who Never Order
 ```sql
+SELECT
+    C.NAME AS CUSTOMERS
+FROM
+    CUSTOMERS C
+LEFT JOIN
+    ORDERS O ON C.ID = O.CUSTOMERID
+WHERE
+    O.ID IS NULL;
 ```
 ### 1853. Convert Date Format
 ```sql
+SELECT
+    FORMAT(DAY, 'dddd, MMMM d, yyyy') AS DAY
+FROM
+    DAYS;
 ```
 ### 1873. Calculate Special Bonus
 ```sql
