@@ -35,6 +35,46 @@ def climbStairs(n):
     return b
 ```
 ### Min Cost Climbing Stairs
+```python
+# Recursive
+def minCost(cost, i):
+    if i >= len(cost):
+        return 0
+    return cost[i] + min(minCost(cost, i + 1), minCost(cost, i + 2))
+
+def minCostClimbingStairs(cost):
+    return min(minCost(cost, 0), minCost(cost, 1))
+
+# Top Down Memoization
+def minCost(cost, i, memo):
+    if i >= len(cost):
+        return 0
+    if i not in memo:
+        memo[i] = cost[i] + min(minCost(cost, i + 1, memo), minCost(cost, i + 2, memo))
+    return memo[i]
+
+def minCostClimbingStairs(cost):
+    memo = {}
+    return min(minCost(cost, 0, memo), minCost(cost, 1, memo))
+
+# Bottom Up Tabulation
+def minCostClimbingStairs(cost):
+    n = len(cost)
+    dp = [0] * n
+    dp[0], dp[1] = cost[0], cost[1]
+    
+    for i in range(2, n):
+        dp[i] = cost[i] + min(dp[i - 1], dp[i - 2])
+    
+    return min(dp[n - 1], dp[n - 2])
+
+# Space Optimized
+def minCostClimbingStairs(cost):
+    a, b = cost[0], cost[1]
+    for i in range(2, len(cost)):
+        a, b = b, cost[i] + min(a, b)
+    return min(a, b)
+```
 ### N-th Tribonacci Number
 ### House Robber
 ### House Robber II
