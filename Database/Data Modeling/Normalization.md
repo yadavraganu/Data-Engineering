@@ -59,3 +59,205 @@ While normalization offers significant benefits, it also comes with certain draw
 * **Denormalization may be required:** In some cases, to optimize performance for specific read-heavy applications (e.g., data warehousing, reporting), a database might be intentionally "denormalized" by reintroducing some redundancy. This is a trade-off between read performance and data integrity/write performance.
 
 In conclusion, normalization is a fundamental concept in relational database design that aims to create an efficient, consistent, and accurate database. While it has its drawbacks, the benefits of reduced redundancy and improved data integrity usually outweigh the costs, especially for transactional systems. The key is to find the right balance of normalization for the specific needs and performance requirements of your application.
+Here’s a complete overview of **normalization forms from 1NF to 5NF including BCNF**, with **examples** to help you understand each step clearly.
+
+## 1NF – First Normal Form
+
+### Rule:
+- Eliminate **repeating groups**.
+- Ensure each column contains **atomic (indivisible)** values.
+
+### Example:
+
+**Unnormalized Table:**
+
+| Student | Subjects       |
+|---------|----------------|
+| Anurag  | Math, Physics  |
+| Riya    | Chemistry      |
+
+**1NF Table:**
+
+| Student | Subject   |
+|---------|-----------|
+| Anurag  | Math      |
+| Anurag  | Physics   |
+| Riya    | Chemistry |
+
+## 2NF – Second Normal Form
+
+### Rule:
+- Must be in **1NF**.
+- Remove **partial dependencies** (i.e., non-prime attributes should depend on the whole primary key).
+
+### Example:
+
+**1NF Table:**
+
+| StudentID | Subject | StudentName |
+|-----------|---------|-------------|
+| 1         | Math    | Anurag      |
+| 1         | Physics | Anurag      |
+| 2         | Chemistry | Riya      |
+
+Here, `StudentName` depends only on `StudentID`, not on the full composite key (`StudentID`, `Subject`).
+
+**2NF Tables:**
+
+**Student Table:**
+
+| StudentID | StudentName |
+|-----------|-------------|
+| 1         | Anurag      |
+| 2         | Riya        |
+
+**Enrollment Table:**
+
+| StudentID | Subject   |
+|-----------|-----------|
+| 1         | Math      |
+| 1         | Physics   |
+| 2         | Chemistry |
+
+## 3NF – Third Normal Form
+
+### Rule:
+- Must be in **2NF**.
+- Remove **transitive dependencies** (non-prime attributes should not depend on other non-prime attributes).
+
+### Example:
+
+**2NF Table:**
+
+| StudentID | StudentName | Department | DeptHead |
+|-----------|-------------|------------|----------|
+| 1         | Anurag      | Physics    | Dr. Rao  |
+| 2         | Riya        | Chemistry  | Dr. Sen  |
+
+Here, `DeptHead` depends on `Department`, not directly on `StudentID`.
+
+**3NF Tables:**
+
+**Student Table:**
+
+| StudentID | StudentName | Department |
+|-----------|-------------|------------|
+| 1         | Anurag      | Physics    |
+| 2         | Riya        | Chemistry  |
+
+**Department Table:**
+
+| Department | DeptHead |
+|------------|----------|
+| Physics    | Dr. Rao  |
+| Chemistry  | Dr. Sen  |
+
+## BCNF – Boyce-Codd Normal Form
+
+### Rule:
+- Must be in **3NF**.
+- Every determinant must be a **candidate key**.
+
+### Example:
+
+**3NF Table:**
+
+| Course | Instructor | Room |
+|--------|------------|------|
+| DBMS   | Dr. Rao    | 101  |
+| OS     | Dr. Sen    | 102  |
+
+Assume:
+- Each **Instructor** teaches only one **Course**.
+- Each **Room** is assigned to only one **Instructor**.
+
+Here, `Instructor → Course` and `Instructor → Room`, but `Instructor` is not a candidate key.
+
+**BCNF Tables:**
+
+**Instructor Table:**
+
+| Instructor | Course |
+|------------|--------|
+| Dr. Rao    | DBMS   |
+| Dr. Sen    | OS     |
+
+**Room Table:**
+
+| Instructor | Room |
+|------------|------|
+| Dr. Rao    | 101  |
+| Dr. Sen    | 102  |
+
+## 4NF – Fourth Normal Form
+
+### Rule:
+- Must be in **BCNF**.
+- No **multi-valued dependencies**.
+
+### Example:
+
+| Student | Hobby     | Language |
+|---------|-----------|----------|
+| Anurag  | Cricket   | Hindi    |
+| Anurag  | Football  | Hindi    |
+| Anurag  | Cricket   | English  |
+| Anurag  | Football  | English  |
+
+Here, `Hobby` and `Language` are **independent multi-valued facts** about `Student`.
+
+**4NF Tables:**
+
+**Student-Hobby Table:**
+
+| Student | Hobby    |
+|---------|----------|
+| Anurag  | Cricket  |
+| Anurag  | Football |
+
+**Student-Language Table:**
+
+| Student | Language |
+|---------|----------|
+| Anurag  | Hindi    |
+| Anurag  | English  |
+
+## 5NF – Fifth Normal Form (Project-Join Normal Form)
+
+### Rule:
+- Must be in **4NF**.
+- No **join dependencies** that are not implied by candidate keys.
+
+### Example:
+
+| Supplier | Product | Customer |
+|----------|---------|----------|
+| S1       | P1      | C1       |
+| S1       | P1      | C2       |
+| S1       | P2      | C1       |
+| S1       | P2      | C2       |
+
+This can be decomposed into:
+
+**Supplier-Product Table:**
+
+| Supplier | Product |
+|----------|---------|
+| S1       | P1      |
+| S1       | P2      |
+
+**Product-Customer Table:**
+
+| Product | Customer |
+|---------|----------|
+| P1      | C1       |
+| P1      | C2       |
+| P2      | C1       |
+| P2      | C2       |
+
+**Supplier-Customer Table:**
+
+| Supplier | Customer |
+|----------|----------|
+| S1       | C1       |
+| S1       | C2       |
