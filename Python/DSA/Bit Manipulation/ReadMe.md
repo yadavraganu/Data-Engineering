@@ -11,6 +11,14 @@ def single_number(nums):
     return result
 ```
 ### Number of 1 Bits
+```python
+def hamming_weight(n):
+    count = 0
+    while n:
+        count += n & 1  # Add 1 if the last bit is 1
+        n >>= 1         # Shift bits to the right
+    return count
+```
 ### Counting Bits
 ### Add Binary
 ### Reverse Bits
