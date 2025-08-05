@@ -50,6 +50,25 @@ class Solution:
         return ''.join(map(str, res))
 ```
 ### Reverse Bits
+```python
+def reverseBits(n: int) -> int:
+    # Initialize result to 0. This will store the reversed bits.
+    result = 0
+
+    # Loop through all 32 bits of the input number
+    for _ in range(32):
+        # Shift result to the left by 1 bit to make space for the next bit
+        result <<= 1
+
+        # Add the last bit of n to result using bitwise OR
+        result |= n & 1
+
+        # Shift n to the right by 1 bit to process the next bit in the next iteration
+        n >>= 1
+
+    # Return the final reversed result
+    return result
+```
 ### Missing Number
 ### Sum of Two Integers
 ### Reverse Integer
