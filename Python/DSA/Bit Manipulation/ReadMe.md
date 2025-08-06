@@ -70,6 +70,30 @@ def reverseBits(n: int) -> int:
     return result
 ```
 ### Missing Number
+```python
+```python
+from typing import List
+
+class Solution:
+    def missingNumber(self, nums: List[int]) -> int:
+        # n is the length of the array
+        n = len(nums)
+        
+        # Initialize xor sum with n.
+        # This represents the xor sum of all numbers in the full range [0, n].
+        xorr = n
+        
+        # Iterate through indices 0 to n-1
+        for i in range(n):
+            # XOR the running sum with the current index and the number at that index.
+            # This cancels out any number that exists in both the expected range [0, n-1]
+            # and the input array `nums`.
+            xorr ^= i ^ nums[i]
+            
+        # The remaining value is the missing number.
+        return xorr
+```
+```
 ### Sum of Two Integers
 ### Reverse Integer
 ### Bitwise AND of Numbers Range	
