@@ -1005,18 +1005,61 @@ ORDER BY
 ```
 ### 2480. Form a Chemical Bond
 ```sql
+SELECT
+    A.SYMBOL AS METAL,
+    B.SYMBOL AS NONMETAL
+FROM
+    ELEMENTS AS A
+CROSS JOIN
+    ELEMENTS AS B
+WHERE
+    A.TYPE = 'Metal' AND B.TYPE = 'Nonmetal';
 ```
 ### 2504. Concatenate the Name and the Profession
 ```sql
+SELECT
+    PERSON_ID,
+    CONCAT(NAME, '(', SUBSTRING(PROFESSION, 1, 1), ')') AS NAME
+FROM
+    PERSON
+ORDER BY
+    PERSON_ID DESC;
 ```
 ### 2668. Find Latest Salaries
 ```sql
+SELECT
+    EMP_ID,
+    FIRSTNAME,
+    LASTNAME,
+    MAX(SALARY) AS SALARY,
+    DEPARTMENT_ID
+FROM
+    SALARY
+GROUP BY
+    EMP_ID,
+    FIRSTNAME,
+    LASTNAME,
+    DEPARTMENT_ID
+ORDER BY
+    EMP_ID;
 ```
 ### 2669. Count Artist Occurrences On Spotify Ranking List
 ```sql
+SELECT
+    ARTIST,
+    COUNT(1) AS OCCURRENCES
+FROM SPOTIFY
+GROUP BY ARTIST
+ORDER BY OCCURRENCES DESC, ARTIST;
 ```
 ### 2687. Bikes Last Time Used
 ```sql
+SELECT
+    BIKE_NUMBER,
+    MAX(END_TIME) AS END_TIME
+FROM BIKES
+GROUP BY BIKE_NUMBER
+ORDER BY END_TIME DESC;
 ```
 ### 2837. Total Traveled Distance
 ```sql
