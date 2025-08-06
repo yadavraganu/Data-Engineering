@@ -943,18 +943,65 @@ WHERE
 ```
 ### 2230. The Users That Are Eligible for Discount
 ```sql
+CREATE PROCEDURE getUserIDs(startDate DATE, endDate DATE, minAmount INT)
+BEGIN
+  SELECT DISTINCT user_id
+  FROM Purchases
+  WHERE
+    time_stamp BETWEEN startDate AND endDate
+    AND amount >= minAmount
+  ORDER BY 1;
+END
 ```
 ### 2329. Product Sales Analysis V
 ```sql
+SELECT
+    S.USER_ID,
+    SUM(S.QUANTITY * P.PRICE) AS SPENDING
+FROM
+    SALES AS S
+JOIN
+    PRODUCT AS P ON S.PRODUCT_ID = P.PRODUCT_ID
+GROUP BY
+    S.USER_ID
+ORDER BY
+    SPENDING DESC, S.USER_ID;
 ```
 ### 2339. All the Matches of the League
 ```sql
+SELECT
+    T1.TEAM_NAME AS HOME_TEAM,
+    T2.TEAM_NAME AS AWAY_TEAM
+FROM
+    TEAMS AS T1
+CROSS JOIN
+    TEAMS AS T2
+WHERE
+    T1.TEAM_NAME != T2.TEAM_NAME;
 ```
 ### 2356. Number of Unique Subjects Taught by Each Teacher
 ```sql
+SELECT
+    TEACHER_ID,
+    COUNT(DISTINCT SUBJECT_ID) AS CNT
+FROM
+    TEACHER
+GROUP BY
+    TEACHER_ID;
 ```
 ### 2377. Sort the Olympic Table
 ```sql
+SELECT
+  COUNTRY,
+  GOLD_MEDALS,
+  SILVER_MEDALS,
+  BRONZE_MEDALS
+FROM OLYMPIC
+ORDER BY
+  GOLD_MEDALS DESC,
+  SILVER_MEDALS DESC,
+  BRONZE_MEDALS DESC,
+  COUNTRY;
 ```
 ### 2480. Form a Chemical Bond
 ```sql
