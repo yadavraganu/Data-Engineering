@@ -1,3 +1,7 @@
+### Key Insight:
+- XOR (^) of a number with itself is 0: a ^ a = 0
+- XOR of a number with 0 is the number itself: a ^ 0 = a
+- XOR is commutative and associative, so order doesn't matter.
 ### Single Number
 ```python
 def single_number(nums):
