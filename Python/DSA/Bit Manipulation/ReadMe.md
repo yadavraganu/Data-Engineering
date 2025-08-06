@@ -93,7 +93,6 @@ class Solution:
         # The remaining value is the missing number.
         return xorr
 ```
-```
 ### Sum of Two Integers
 ### Reverse Integer
 ### Bitwise AND of Numbers Range	
