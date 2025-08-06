@@ -71,7 +71,6 @@ def reverseBits(n: int) -> int:
 ```
 ### Missing Number
 ```python
-```python
 from typing import List
 
 class Solution:
