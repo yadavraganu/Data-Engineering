@@ -1094,24 +1094,86 @@ FROM ORDERS;
 ```
 ### 2987. Find Expensive Cities
 ```sql
+SELECT CITY
+FROM LISTINGS
+GROUP BY CITY
+HAVING AVG(PRICE) > (SELECT AVG(PRICE) FROM LISTINGS)
+ORDER BY 1
 ```
 ### 2990. Loan Types
 ```sql
+SELECT
+  USER_ID
+FROM
+  LOANS
+GROUP BY
+  USER_ID
+HAVING
+  SUM(CASE WHEN LOAN_TYPE = 'REFINANCE' THEN 1 ELSE 0 END) > 0
+  AND SUM(CASE WHEN LOAN_TYPE = 'MORTGAGE' THEN 1 ELSE 0 END) > 0
+ORDER BY
+  USER_ID;
 ```
 ### 3051. Find Candidates for Data Scientist Position
 ```sql
+SELECT CANDIDATE_ID
+FROM CANDIDATES
+WHERE SKILL IN ('Python', 'Tableau', 'PostgreSQL')
+GROUP BY 1
+HAVING COUNT(1) = 3
+ORDER BY 1;
 ```
 ### 3053. Classifying Triangles by Lengths
 ```sql
+SELECT
+  CASE
+    WHEN A + B <= C OR A + C <= B OR B + C <= A THEN 'Not a Triangle'
+    WHEN A = B AND B = C THEN 'Equilateral'
+    WHEN A = B OR B = C OR A = C THEN 'Isosceles'
+    ELSE 'Scalene'
+  END AS TRIANGLE_TYPE
+FROM
+  TRIANGLES;
 ```
 ### 3059. Find All Unique Email Domains
 ```sql
+SELECT
+  SUBSTRING(EMAIL, CHARINDEX('@', EMAIL) + 1, LEN(EMAIL)) AS EMAIL_DOMAIN,
+  COUNT(*) AS COUNT
+FROM
+  EMAILS
+WHERE
+  EMAIL LIKE '%.com'
+GROUP BY
+  SUBSTRING(EMAIL, CHARINDEX('@', EMAIL) + 1, LEN(EMAIL))
+ORDER BY
+  EMAIL_DOMAIN;
 ```
 ### 3150. Invalid Tweets II
 ```sql
+SELECT
+  TWEET_ID
+FROM
+  TWEETS
+WHERE
+  LEN(CONTENT) > 140
+  OR (LEN(CONTENT) - LEN(REPLACE(CONTENT, '@', ''))) > 3
+  OR (LEN(CONTENT) - LEN(REPLACE(CONTENT, '#', ''))) > 3
+ORDER BY
+  TWEET_ID;
 ```
 ### 3172. Second Day Verification
 ```sql
+SELECT
+  E.USER_ID
+FROM
+  EMAILS E
+  INNER JOIN TEXTS T ON E.EMAIL_ID = T.EMAIL_ID
+WHERE
+  T.SIGNUP_ACTION = 'Verified'
+  AND DATEDIFF(DAY, E.SIGNUP_DATE, T.ACTION_DATE) = 1
+ORDER BY
+  E.USER_ID;
 ```
 ### 3198. Find Cities in Each State
 ```sql
