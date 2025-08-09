@@ -1242,9 +1242,24 @@ ORDER BY 1;
 ```
 ### 607. Sales Person
 ```sql
+SELECT S.NAME
+FROM ORDERS O
+INNER JOIN COMPANY C
+  ON (O.COM_ID = C.COM_ID AND C.NAME = 'RED')
+RIGHT JOIN SALESPERSON S
+  ON S.SALES_ID = O.SALES_ID
+WHERE O.SALES_ID IS NULL;
 ```
 ### 610. Triangle Judgement
 ```sql
+SELECT
+    *,
+    CASE
+        WHEN X + Y > Z AND X + Z > Y AND Y + Z > X THEN 'Yes'
+        ELSE 'No'
+    END AS TRIANGLE
+FROM
+    TRIANGLE;
 ```
 ### 613. Shortest Distance in a Line
 ```sql
