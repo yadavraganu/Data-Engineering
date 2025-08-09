@@ -1227,9 +1227,14 @@ ORDER BY 1;
 ```
 ### 586. Customer Placing the Largest Number of Orders
 ```sql
+SELECT TOP 1 CUSTOMER_NUMBER
+FROM ORDERS
+GROUP BY CUSTOMER_NUMBER
+ORDER BY COUNT(*) DESC;
 ```
 ### 595. Big Countries
 ```sql
+SELECT NAME,POPULATION,AREA FROM WORLD WHERE POPULATION>=25000000 OR AREA>=3000000 
 ```
 ### 596. Classes With at Least 5 Students
 ```sql
