@@ -1215,15 +1215,18 @@ ORDER BY 1;
 ```
 ### 511. Game Play Analysis I
 ```sql
+SELECT PLAYER_ID , MIN(EVENT_DATE) AS FIRST_LOGIN FROM ACTIVITY GROUP BY PLAYER_ID
 ```
 ### 512. Game Play Analysis II
 ```sql
 ```
 ### 577. Employee Bonus
 ```sql
+SELECT NAME, BONUS FROM EMPLOYEE E LEFT JOIN BONUS B ON E.EMPID = B.EMPID WHERE B.BONUS < 1000 OR B.BONUS IS NULL
 ```
 ### 584. Find Customer Referee
 ```sql
+SELECT NAME FROM CUSTOMER WHERE REFEREE_ID <> '2' OR REFEREE_ID IS NULL
 ```
 ### 586. Customer Placing the Largest Number of Orders
 ```sql
