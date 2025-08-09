@@ -1,8 +1,9 @@
-## Easy
+# Easy
 ### 1050. Actors and Directors Who Cooperated At Least Three Times
 ```sql
 SELECT ACTOR_ID, DIRECTOR_ID FROM ACTORDIRECTOR GROUP BY ACTOR_ID, DIRECTOR_ID HAVING COUNT(*) >= 3
 ```
+---
 ### 1068. Product Sales Analysis I
 ```sql
 SELECT
@@ -16,6 +17,7 @@ INNER JOIN
 ON
     S.PRODUCT_ID = P.PRODUCT_ID;
 ```
+---
 ### 1069. Product Sales Analysis II
 ```sql
 SELECT
@@ -26,6 +28,7 @@ FROM
 GROUP BY
     PRODUCT_ID;
 ```
+---
 ### 1075. Project Employees I
 ```sql
 SELECT
@@ -40,6 +43,7 @@ ON
 GROUP BY
     P.PROJECT_ID;
 ```
+---
 ### 1076. Project Employees II
 ```sql
 SELECT
@@ -51,6 +55,7 @@ GROUP BY
 HAVING
     COUNT(EMPLOYEE_ID) = (SELECT MAX(EMPLOYEE_COUNT) FROM (SELECT COUNT(EMPLOYEE_ID) AS EMPLOYEE_COUNT FROM PROJECT GROUP BY PROJECT_ID) AS COUNTS);
 ```
+---
 ### 1082. Sales Analysis I
 ```sql
 SELECT SELLER_ID
@@ -76,6 +81,7 @@ WHERE PRICE = (
     FROM SELLERTOPRICE
   );
 ```
+---
 ### 1083. Sales Analysis II
 ```sql
 SELECT SALES.BUYER_ID
@@ -87,6 +93,7 @@ HAVING
   SUM(PRODUCT.PRODUCT_NAME = 's8') > 0
   AND SUM(PRODUCT.PRODUCT_NAME = 'iphone') = 0;
 ```
+---
 ### 1084. Sales Analysis III
 ```sql
 SELECT
@@ -101,6 +108,7 @@ GROUP BY
 HAVING
     MIN(S.SALE_DATE) >= '2019-01-01' AND MAX(S.SALE_DATE) <= '2019-03-31';
 ```
+---
 ### 1113. Reported Posts
 ```sql
 SELECT
@@ -112,6 +120,7 @@ WHERE
   AND DATEDIFF('2019-07-05', ACTION_DATE) = 1
 GROUP BY 1;
 ```
+---
 ### 1141. User Activity for the Past 30 Days I
 ```sql
 SELECT
@@ -126,6 +135,7 @@ GROUP BY
 ORDER BY
     DAY;
 ```
+---
 ### 1142. User Activity for the Past 30 Days II
 ```sql
 SELECT
@@ -139,6 +149,7 @@ SELECT
 FROM ACTIVITY
 WHERE ACTIVITY_DATE BETWEEN '2019-06-28' AND  '2019-07-27';
 ```
+---
 ### 1148. Article Views I
 ```sql
 SELECT DISTINCT AUTHOR_ID AS ID
@@ -146,6 +157,7 @@ FROM VIEWS
 WHERE AUTHOR_ID = VIEWER_ID
 ORDER BY ID ASC;
 ```
+---
 ### 1173. Immediate Food Delivery I
 ```sql
 SELECT 
@@ -157,6 +169,7 @@ SELECT
 FROM 
   DELIVERY;
 ```
+---
 ### 1179. Reformat Department Table
 ```sql
 SELECT
@@ -199,6 +212,7 @@ PIVOT (
         [Jul],[Aug],[Sep],[Oct],[Nov],[Dec] )
 ) P;
 ```
+---
 ### 1211. Queries Quality and Percentage
 ```sql
 SELECT QUERY_NAME,
@@ -207,6 +221,7 @@ SELECT QUERY_NAME,
 FROM QUERIES
 GROUP BY QUERY_NAME
 ```
+---
 ### 1241. Number of Comments per Post
 ```sql
 WITH POSTS AS (
@@ -228,6 +243,7 @@ FROM
 GROUP BY 
   1;
 ```
+---
 ### 1251. Average Selling Price
 ```sql
 SELECT 
@@ -243,6 +259,7 @@ FROM
 GROUP BY 
   P.PRODUCT_ID;
 ```
+---
 ### 1280. Students and Examinations
 ```sql
 SELECT 
@@ -262,6 +279,7 @@ GROUP BY
 ORDER BY 
   1, 2, 3
 ```
+---
 ### 1294. Weather Type in Each Country
 ```sql
 SELECT
@@ -279,6 +297,7 @@ INNER JOIN WEATHER
 WHERE DAY BETWEEN '2019-11-01' AND '2019-11-30'
 GROUP BY 1;
 ```
+---
 ### 1303. Find the Team Size
 ```sql
 SELECT
@@ -286,6 +305,7 @@ SELECT
   COUNT(*) OVER(PARTITION BY TEAM_ID) AS TEAM_SIZE
 FROM EMPLOYEE;
 ```
+---
 ### 1322. Ads Performance
 ```sql
 SELECT
@@ -295,6 +315,7 @@ FROM ADS
 GROUP BY 1
 ORDER BY 2 DESC, 1;
 ```
+---
 ### 1327. List the Products Ordered in a Period
 ```sql
 SELECT
@@ -307,6 +328,7 @@ WHERE FORMAT(O.ORDER_DATE, 'yyyy-MM') = '2020-02'
 GROUP BY P.PRODUCT_NAME
 HAVING SUM(O.UNIT) >= 100;
 ```
+---
 ### 1350. Students With Invalid Departments
 ```sql
 SELECT
@@ -317,6 +339,7 @@ LEFT JOIN DEPARTMENTS
   ON STUDENTS.DEPARTMENT_ID = DEPARTMENTS.ID
 WHERE DEPARTMENTS.ID IS NULL;
 ```
+---
 ### 1378. Replace Employee ID With The Unique Identifier
 ```sql
 SELECT
@@ -326,6 +349,7 @@ FROM EMPLOYEES E
 LEFT JOIN EMPLOYEEUNI EU
 ON E.ID = EU.ID;
 ```
+---
 ### 1407. Top Travellers
 ```sql
 SELECT 
@@ -342,6 +366,7 @@ FROM
   ) D 
 ORDER BY 2 DESC, 1;
 ```
+---
 ### 1421. NPV Queries
 ```sql
 SELECT
@@ -352,6 +377,7 @@ FROM QUERIES Q
 LEFT JOIN NPV N
 ON Q.ID = N.ID AND Q.YEAR = N.YEAR;
 ```
+---
 ### 1435. Create a Session Bar Chart
 ```sql
 SELECT 
@@ -374,6 +400,7 @@ SELECT
   COUNT(1) AS TOTAL 
 FROM SESSIONS WHERE 900 <= DURATION;
 ```
+---
 ### 1484. Group Sold Products By The Date
 ```sql
 WITH T AS (
@@ -387,6 +414,7 @@ FROM T
 GROUP BY SELL_DATE
 ORDER BY SELL_DATE
 ```
+---
 ### 1495. Friendly Movies Streamed Last Month
 ```sql
 SELECT DISTINCT CONTENT.TITLE
@@ -397,6 +425,7 @@ WHERE
     AND CONTENT.CONTENT_TYPE = 'Movies'
     AND DATE_FORMAT(TVPROGRAM.PROGRAM_DATE, '%Y-%M') = '2020-06';
 ```
+---
 ### 1511. Customer Order Frequency
 ```sql
 SELECT 
@@ -420,6 +449,7 @@ HAVING
   ) >= 100;
 
 ```
+---
 ### 1517. Find Users With Valid E-Mails
 ```sql
 SELECT 
@@ -434,6 +464,7 @@ WHERE
     -- 1st digit should be any digit of a-z or A-Z
     AND LEFT(MAIL,1) LIKE '[a-zA-Z]%';
 ```
+---
 ### 1527. Patients With a Condition
 ```sql
 SELECT *
@@ -442,6 +473,7 @@ WHERE
     CONDITIONS LIKE 'DIAB1%' OR
     CONDITIONS LIKE '% DIAB1%';
 ```
+---
 ### 1543. Fix Product Name Format
 ```sql
 WITH
@@ -456,6 +488,7 @@ FROM T
 GROUP BY 1, 2
 ORDER BY 1, 2;
 ```
+---
 ### 1565. Unique Orders and Customers Per Month
 ```sql
 SELECT
@@ -471,6 +504,7 @@ GROUP BY
 ORDER BY
     MONTH;
 ```
+---
 ### 1571. Warehouse Manager
 ```sql
 SELECT
@@ -483,6 +517,7 @@ JOIN
 GROUP BY
     W.NAME;
 ```
+---
 ### 1581. Customer Who Visited but Did Not Make Any Transactions
 ```sql
 SELECT
@@ -497,6 +532,7 @@ WHERE
 GROUP BY
     V.CUSTOMER_ID;
 ```
+---
 ### 1587. Bank Account Summary II
 ```sql
 SELECT
@@ -511,6 +547,7 @@ GROUP BY
 HAVING
     SUM(T.AMOUNT) > 10000;
 ```
+---
 ### 1607. Sellers With No Sales
 ```sql
 SELECT
@@ -522,6 +559,7 @@ LEFT JOIN
 WHERE
     O.ORDER_ID IS NULL;
 ```
+---
 ### 1623. All Valid Triplets That Can Represent a Country
 ```sql
 SELECT
@@ -555,6 +593,7 @@ JOIN
 ORDER BY
     STUDENT_ID1, STUDENT_ID2, STUDENT_ID3;
 ```
+---
 ### 1633. Percentage of Users Attended a Contest
 ```sql
 SELECT
@@ -567,6 +606,7 @@ GROUP BY
 ORDER BY
     PERCENTAGE DESC, CONTEST_ID;
 ```
+---
 ### 1661. Average Time of Process per Machine
 ```sql
 SELECT
@@ -582,6 +622,7 @@ JOIN
 GROUP BY
     A1.MACHINE_ID;
 ```
+---
 ### 1667. Fix Names in a Table
 ```sql
 SELECT
@@ -592,6 +633,7 @@ FROM
 ORDER BY
     USER_ID;
 ```
+---
 ### 1677. Product's Worth Over Invoices
 ```sql
 SELECT
@@ -606,6 +648,7 @@ ON I.PRODUCT_ID = P.PRODUCT_ID
 GROUP BY 1
 ORDER BY 1;
 ```
+---
 ### 1683. Invalid Tweets
 ```sql
 SELECT
@@ -615,6 +658,7 @@ FROM
 WHERE
     LEN(CONTENT) > 15;
 ```
+---
 ### 1693. Daily Leads and Partners
 ```sql
 SELECT
@@ -628,6 +672,7 @@ GROUP BY
     DATE_ID,
     MAKE_NAME;
 ```
+---
 ### 1729. Find Followers Count
 ```sql
 SELECT
@@ -640,6 +685,7 @@ GROUP BY
 ORDER BY
     USER_ID;
 ```
+---
 ### 1731. The Number of Employees Which Report to Each Employee
 ```sql
 SELECT
@@ -657,6 +703,7 @@ GROUP BY
 ORDER BY
     M.EMPLOYEE_ID;
 ```
+---
 ### 1741. Find Total Time Spent by Each Employee
 ```sql
 SELECT
@@ -669,6 +716,7 @@ GROUP BY
     EVENT_DAY,
     EMP_ID;
 ```
+---
 ### 175. Combine Two Tables
 ```sql
 SELECT
@@ -681,12 +729,14 @@ FROM
 LEFT JOIN
     ADDRESS A ON P.PERSONID = A.PERSONID;
 ```
+---
 ### 1757. Recyclable and Low Fat Products
 ```sql
 SELECT PRODUCT_ID
 FROM PRODUCTS
 WHERE LOW_FATS = 'Y' AND RECYCLABLE = 'Y';
 ```
+---
 ### 1777. Product's Price for Each Store
 ```sql
 SELECT
@@ -699,6 +749,7 @@ FROM
 GROUP BY
     PRODUCT_ID;
 ```
+---
 ### 1789. Primary Department for Each Employee
 ```sql
 SELECT EMPLOYEE_ID, DEPARTMENT_ID
@@ -722,6 +773,7 @@ HAVING
 COUNT(CASE WHEN E.PRIMARY_FLAG = 'Y' THEN E.DEPARTMENT_ID ELSE NULL END) = 1 
 OR COUNT(CASE WHEN E.PRIMARY_FLAG = 'N' THEN E.DEPARTMENT_ID ELSE NULL END) = 1
 ```
+---
 ### 1795. Rearrange Products Table
 ```sql
 SELECT PRODUCT_ID, 'store1' AS STORE, STORE1 AS PRICE
@@ -736,6 +788,7 @@ SELECT PRODUCT_ID, 'store3' AS STORE, STORE3 AS PRICE
 FROM PRODUCTS
 WHERE STORE3 IS NOT NULL;
 ```
+---
 ### 1809. Ad-Free Sessions
 ```sql
 SELECT DISTINCT
@@ -748,6 +801,7 @@ LEFT JOIN
 WHERE
     A.AD_ID IS NULL;
 ```
+---
 ### 181. Employees Earning More Than Their Managers
 ```sql
 SELECT
@@ -759,6 +813,7 @@ JOIN
 WHERE
     E1.SALARY > E2.SALARY;
 ```
+---
 ### 182. Duplicate Emails
 ```sql
 SELECT
@@ -770,6 +825,7 @@ GROUP BY
 HAVING
     COUNT(EMAIL) > 1;
 ```
+---
 ### 1821. Find Customers With Positive Revenue this Year
 ```sql
 SELECT
@@ -779,6 +835,7 @@ FROM
 WHERE
     YEAR = 2021 AND REVENUE > 0;
 ```
+---
 ### 183. Customers Who Never Order
 ```sql
 SELECT
@@ -790,6 +847,7 @@ LEFT JOIN
 WHERE
     O.ID IS NULL;
 ```
+---
 ### 1853. Convert Date Format
 ```sql
 SELECT
@@ -797,6 +855,7 @@ SELECT
 FROM
     DAYS;
 ```
+---
 ### 1873. Calculate Special Bonus
 ```sql
 SELECT 
@@ -808,6 +867,7 @@ SELECT
 FROM EMPLOYEES
 ORDER BY EMPLOYEE_ID;
 ```
+---
 ### 1890. The Latest Login in
 ```sql
 SELECT USER_ID, MAX(TIME_STAMP) LAST_STAMP
@@ -815,6 +875,7 @@ FROM LOGINS
 WHERE YEAR(TIME_STAMP)=2020
 GROUP BY USER_ID
 ```
+---
 ### 1939. Users That Actively Request Confirmation Messages
 ```sql
 SELECT DISTINCT C1.USER_ID
@@ -841,6 +902,7 @@ SELECT DISTINCT USER_ID
 FROM USERTOTIMESTAMPDIFF
 WHERE TIMESTAMP_DIFF <= 24 * 60 * 60;
 ```
+---
 ### 196. Delete Duplicate Emails
 ```sql
 DELETE P1 
@@ -855,6 +917,7 @@ WHERE ID NOT IN (
   GROUP BY EMAIL 
 );
 ```
+---
 ### 1965. Employees With Missing Information
 ```sql
 SELECT EMPLOYEE_ID 
@@ -872,6 +935,7 @@ ON E.EMPLOYEE_ID  =S.EMPLOYEE_ID
 WHERE S.EMPLOYEE_ID IS NULL OR E.EMPLOYEE_ID IS NULL 
 ORDER BY  EMPLOYEE_ID ASC 
 ```
+---
 ### 197. Rising Temperature
 ```sql
 WITH CTE AS (
@@ -890,6 +954,7 @@ WHERE
   TEMPERATURE > PREV_TEMP 
   AND DATEDIFF(DAY, PREV_DATE, RECORDDATE)= 1
 ```
+---
 ### 1978. Employees Whose Manager Left the Company
 ```sql
 SELECT E.EMPLOYEE_ID
@@ -899,6 +964,7 @@ ON M.EMPLOYEE_ID =E.MANAGER_ID
 WHERE E.SALARY < 30000 AND M.EMPLOYEE_ID IS NULL AND E.MANAGER_ID IS NOT NULL
 ORDER BY EMPLOYEE_ID
 ```
+---
 ### 2026. Low-Quality Problems
 ```sql
 SELECT PROBLEM_ID
@@ -906,6 +972,7 @@ FROM PROBLEMS
 WHERE LIKES / (LIKES + DISLIKES) < 0.6
 ORDER BY PROBLEM_ID;
 ```
+---
 ### 2072. The Winner University
 ```sql
 WITH NYU_CTE AS (
@@ -921,6 +988,7 @@ SELECT
      END) AS WINNER
 FROM NYU_CTE N, CU_CTE C;
 ```
+---
 ### 2082. The Number of Rich Customers
 ```sql
 SELECT
@@ -930,6 +998,7 @@ FROM
 WHERE
     AMOUNT > 500;
 ```
+---
 ### 2205. The Number of Users That Are Eligible for Discount
 ```sql
 SELECT 
@@ -941,6 +1010,7 @@ WHERE
   AND ENDDATE 
   AND AMOUNT >= MINAMOUNT
 ```
+---
 ### 2230. The Users That Are Eligible for Discount
 ```sql
 CREATE PROCEDURE getUserIDs(startDate DATE, endDate DATE, minAmount INT)
@@ -953,6 +1023,7 @@ BEGIN
   ORDER BY 1;
 END
 ```
+---
 ### 2329. Product Sales Analysis V
 ```sql
 SELECT
@@ -967,6 +1038,7 @@ GROUP BY
 ORDER BY
     SPENDING DESC, S.USER_ID;
 ```
+---
 ### 2339. All the Matches of the League
 ```sql
 SELECT
@@ -979,6 +1051,7 @@ CROSS JOIN
 WHERE
     T1.TEAM_NAME != T2.TEAM_NAME;
 ```
+---
 ### 2356. Number of Unique Subjects Taught by Each Teacher
 ```sql
 SELECT
@@ -989,6 +1062,7 @@ FROM
 GROUP BY
     TEACHER_ID;
 ```
+---
 ### 2377. Sort the Olympic Table
 ```sql
 SELECT
@@ -1003,6 +1077,7 @@ ORDER BY
   BRONZE_MEDALS DESC,
   COUNTRY;
 ```
+---
 ### 2480. Form a Chemical Bond
 ```sql
 SELECT
@@ -1015,6 +1090,7 @@ CROSS JOIN
 WHERE
     A.TYPE = 'Metal' AND B.TYPE = 'Nonmetal';
 ```
+---
 ### 2504. Concatenate the Name and the Profession
 ```sql
 SELECT
@@ -1025,6 +1101,7 @@ FROM
 ORDER BY
     PERSON_ID DESC;
 ```
+---
 ### 2668. Find Latest Salaries
 ```sql
 SELECT
@@ -1043,6 +1120,7 @@ GROUP BY
 ORDER BY
     EMP_ID;
 ```
+---
 ### 2669. Count Artist Occurrences On Spotify Ranking List
 ```sql
 SELECT
@@ -1052,6 +1130,7 @@ FROM SPOTIFY
 GROUP BY ARTIST
 ORDER BY OCCURRENCES DESC, ARTIST;
 ```
+---
 ### 2687. Bikes Last Time Used
 ```sql
 SELECT
@@ -1061,6 +1140,7 @@ FROM BIKES
 GROUP BY BIKE_NUMBER
 ORDER BY END_TIME DESC;
 ```
+---
 ### 2837. Total Traveled Distance
 ```sql
 SELECT
@@ -1076,6 +1156,7 @@ GROUP BY
 ORDER BY
   U.USER_ID;
 ```
+---
 ### 2853. Highest Salaries Difference
 ```sql
 SELECT
@@ -1083,6 +1164,7 @@ SELECT
 FROM
   SALARIES;
 ```
+---
 ### 2985. Calculate Compressed Mean
 ```sql
 SELECT
@@ -1092,6 +1174,7 @@ SELECT
     ) AS AVERAGE_ITEMS_PER_ORDER
 FROM ORDERS;
 ```
+---
 ### 2987. Find Expensive Cities
 ```sql
 SELECT CITY
@@ -1100,6 +1183,7 @@ GROUP BY CITY
 HAVING AVG(PRICE) > (SELECT AVG(PRICE) FROM LISTINGS)
 ORDER BY 1
 ```
+---
 ### 2990. Loan Types
 ```sql
 SELECT
@@ -1114,6 +1198,7 @@ HAVING
 ORDER BY
   USER_ID;
 ```
+---
 ### 3051. Find Candidates for Data Scientist Position
 ```sql
 SELECT CANDIDATE_ID
@@ -1123,6 +1208,7 @@ GROUP BY 1
 HAVING COUNT(1) = 3
 ORDER BY 1;
 ```
+---
 ### 3053. Classifying Triangles by Lengths
 ```sql
 SELECT
@@ -1135,6 +1221,7 @@ SELECT
 FROM
   TRIANGLES;
 ```
+---
 ### 3059. Find All Unique Email Domains
 ```sql
 SELECT
@@ -1149,6 +1236,7 @@ GROUP BY
 ORDER BY
   EMAIL_DOMAIN;
 ```
+---
 ### 3150. Invalid Tweets II
 ```sql
 SELECT
@@ -1162,6 +1250,7 @@ WHERE
 ORDER BY
   TWEET_ID;
 ```
+---
 ### 3172. Second Day Verification
 ```sql
 SELECT
@@ -1175,6 +1264,7 @@ WHERE
 ORDER BY
   E.USER_ID;
 ```
+---
 ### 3198. Find Cities in Each State
 ```sql
 SELECT
@@ -1184,6 +1274,7 @@ FROM CITIES
 GROUP BY STATE
 ORDER BY STATE;
 ```
+---
 ### 3246. Premier League Table Ranking
 ```sql
 SELECT
@@ -1194,6 +1285,7 @@ SELECT
 FROM TEAMSTATS
 ORDER BY POINTS DESC, TEAM_NAME;
 ```
+---
 ### 3358. Books with NULL Ratings
 ```sql
 SELECT BOOK_ID, TITLE, AUTHOR, PUBLISHED_YEAR
@@ -1201,33 +1293,42 @@ FROM BOOKS
 WHERE RATING IS NULL
 ORDER BY 1;
 ```
+---
 ### 3415. Find Products with Three Consecutive Digits
 ```sql
 ```
+---
 ### 3436. Find Valid Emails
 ```sql
 ```
+---
 ### 3465. Find Products with Valid Serial Numbers
 ```sql
 ```
+---
 ### 3570. Find Books with No Available Copies
 ```sql
 ```
+---
 ### 511. Game Play Analysis I
 ```sql
 SELECT PLAYER_ID , MIN(EVENT_DATE) AS FIRST_LOGIN FROM ACTIVITY GROUP BY PLAYER_ID
 ```
+---
 ### 512. Game Play Analysis II
 ```sql
 ```
+---
 ### 577. Employee Bonus
 ```sql
 SELECT NAME, BONUS FROM EMPLOYEE E LEFT JOIN BONUS B ON E.EMPID = B.EMPID WHERE B.BONUS < 1000 OR B.BONUS IS NULL
 ```
+---
 ### 584. Find Customer Referee
 ```sql
 SELECT NAME FROM CUSTOMER WHERE REFEREE_ID <> '2' OR REFEREE_ID IS NULL
 ```
+---
 ### 586. Customer Placing the Largest Number of Orders
 ```sql
 SELECT TOP 1 CUSTOMER_NUMBER
@@ -1235,10 +1336,12 @@ FROM ORDERS
 GROUP BY CUSTOMER_NUMBER
 ORDER BY COUNT(*) DESC;
 ```
+---
 ### 595. Big Countries
 ```sql
 SELECT NAME,POPULATION,AREA FROM WORLD WHERE POPULATION>=25000000 OR AREA>=3000000 
 ```
+---
 ### 596. Classes With at Least 5 Students
 ```sql
 SELECT CLASS
@@ -1246,9 +1349,11 @@ FROM COURSES
 GROUP BY CLASS
 HAVING COUNT(STUDENT) >= 5;
 ```
+---
 ### 597. Friend Requests I: Overall Acceptance Rate
 ```sql
 ```
+---
 ### 603. Consecutive Available Seats
 ```sql
 WITH CINEMANEIGHBORS AS (
@@ -1283,6 +1388,7 @@ FROM FREESEATCOUNTS
 WHERE GROUP_COUNT >= 2
 ORDER BY SEAT_ID;
 ```
+---
 ### 607. Sales Person
 ```sql
 SELECT S.NAME
@@ -1293,6 +1399,7 @@ RIGHT JOIN SALESPERSON S
   ON S.SALES_ID = O.SALES_ID
 WHERE O.SALES_ID IS NULL;
 ```
+---
 ### 610. Triangle Judgement
 ```sql
 SELECT
@@ -1304,6 +1411,7 @@ SELECT
 FROM
     TRIANGLE;
 ```
+---
 ### 613. Shortest Distance in a Line
 ```sql
 SELECT MIN(P2.X - P1.X) AS SHORTEST
@@ -1314,6 +1422,7 @@ FROM
     POINT AS P1
     JOIN POINT AS P2 ON P1.X < P2.X;
 ```
+---
 ### 619. Biggest Single Number
 ```sql
 WITH CTE AS (
@@ -1331,619 +1440,824 @@ SELECT
 FROM 
   CTE
 ```
+---
 ### 620. Not Boring Movies
 ```sql
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 ```
+---
 ## Medium
 ### 1045. Customers Who Bought All Products
 ```sql
 ```
+---
 ### 1070. Product Sales Analysis III
 ```sql
 ```
+---
 ### 1077. Project Employees III
 ```sql
 ```
+---
 ### 1098. Unpopular Books
 ```sql
 ```
+---
 ### 1107. New Users Daily Count
 ```sql
 ```
+---
 ### 1112. Highest Grade For Each Student
 ```sql
 ```
+---
 ### 1126. Active Businesses
 ```sql
 ```
+---
 ### 1132. Reported Posts II
 ```sql
 ```
+---
 ### 1149. Article Views II
 ```sql
 ```
+---
 ### 1158. Market Analysis I
 ```sql
 ```
+---
 ### 1164. Product Price at a Given Date
 ```sql
 ```
+---
 ### 1174. Immediate Food Delivery II
 ```sql
 ```
+---
 ### 1193. Monthly Transactions I
 ```sql
 ```
+---
 ### 1204. Last Person to Fit in the Bus
 ```sql
 ```
+---
 ### 1205. Monthly Transactions II
 ```sql
 ```
+---
 ### 1212. Team Scores in Football Tournament
 ```sql
 ```
+---
 ### 1264. Page Recommendations
 ```sql
 ```
+---
 ### 1270. All People Report to the Given Manager
 ```sql
 ```
+---
 ### 1285. Find the Start and End Number of Continuous Ranges
 ```sql
 ```
+---
 ### 1308. Running Total for Different Genders
 ```sql
 ```
+---
 ### 1321. Restaurant Growth
 ```sql
 ```
+---
 ### 1341. Movie Rating
 ```sql
 ```
+---
 ### 1355. Activity Participants
 ```sql
 ```
+---
 ### 1364. Number of Trusted Contacts of a Customer
 ```sql
 ```
+---
 ### 1393. Capital Gain/Loss
 ```sql
 ```
+---
 ### 1398. Customers Who Bought Products A and B but Not C
 ```sql
 ```
+---
 ### 1440. Evaluate Boolean Expression
 ```sql
 ```
+---
 ### 1445. Apples & Oranges
 ```sql
 ```
+---
 ### 1454. Active Users
 ```sql
 ```
+---
 ### 1459. Rectangles Area
 ```sql
 ```
+---
 ### 1468. Calculate Salaries
 ```sql
 ```
+---
 ### 1501. Countries You Can Safely Invest In
 ```sql
 ```
+---
 ### 1532. The Most Recent Three Orders
 ```sql
 ```
+---
 ### 1549. The Most Recent Orders for Each Product
 ```sql
 ```
+---
 ### 1555. Bank Account Summary
 ```sql
 ```
+---
 ### 1596. The Most Frequently Ordered Products for Each Customer
 ```sql
 ```
+---
 ### 1613. Find the Missing IDs
 ```sql
 ```
+---
 ### 1699. Number of Calls Between Two Persons
 ```sql
 ```
+---
 ### 1709. Biggest Window Between Visits
 ```sql
 ```
+---
 ### 1715. Count Apples and Oranges
 ```sql
 ```
+---
 ### 1747. Leetflex Banned Accounts
 ```sql
 ```
+---
 ### 176. Second Highest Salary
 ```sql
 ```
+---
 ### 177. Nth Highest Salary
 ```sql
 ```
+---
 ### 178. Rank Scores
 ```sql
 ```
+---
 ### 1783. Grand Slam Titles
 ```sql
 ```
+---
 ### 180. Consecutive Numbers
 ```sql
 ```
+---
 ### 1811. Find Interview Candidates
 ```sql
 ```
+---
 ### 1831. Maximum Transaction Each Day
 ```sql
 ```
+---
 ### 184. Department Highest Salary
 ```sql
 ```
+---
 ### 1841. League Statistics
 ```sql
 ```
+---
 ### 1843. Suspicious Bank Accounts
 ```sql
 ```
+---
 ### 1867. Orders With Maximum Quantity Above Average
 ```sql
 ```
+---
 ### 1875. Group Employees of the Same Salary
 ```sql
 ```
+---
 ### 1907. Count Salary Categories
 ```sql
 ```
+---
 ### 1934. Confirmation Rate
 ```sql
 ```
+---
 ### 1949. Strong Friendship
 ```sql
 ```
+---
 ### 1951. All the Pairs With the Maximum Number of Common Followers
 ```sql
 ```
+---
 ### 1988. Find Cutoff Score for Each School
 ```sql
 ```
+---
 ### 1990. Count the Number of Experiments
 ```sql
 ```
+---
 ### 2020. Number of Accounts That Did Not Stream
 ```sql
 ```
+---
 ### 2041. Accepted Candidates From the Interviews
 ```sql
 ```
+---
 ### 2051. The Category of Each Member in the Store
 ```sql
 ```
+---
 ### 2066. Account Balance
 ```sql
 ```
+---
 ### 2084. Drop Type 1 Orders for Customers With Type 0 Orders
 ```sql
 ```
+---
 ### 2112. The Airport With the Most Traffic
 ```sql
 ```
+---
 ### 2142. The Number of Passengers in Each Bus I
 ```sql
 ```
+---
 ### 2159. Order Two Columns Independently
 ```sql
 ```
+---
 ### 2175. The Change in Global Rankings
 ```sql
 ```
+---
 ### 2228. Users With Two Purchases Within Seven Days
 ```sql
 ```
+---
 ### 2238. Number of Times a Driver Was a Passenger
 ```sql
 ```
+---
 ### 2292. Products With Three or More Orders in Two Consecutive Years
 ```sql
 ```
+---
 ### 2298. Tasks Count in the Weekend
 ```sql
 ```
+---
 ### 2308. Arrange Table by Gender
 ```sql
 ```
+---
 ### 2314. The First Day of the Maximum Recorded Degree in Each City
 ```sql
 ```
+---
 ### 2324. Product Sales Analysis IV
 ```sql
 ```
+---
 ### 2346. Compute the Rank as a Percentage
 ```sql
 ```
+---
 ### 2372. Calculate the Influence of Each Salesperson
 ```sql
 ```
+---
 ### 2388. Change Null Values in a Table to the Previous Value
 ```sql
 ```
+---
 ### 2394. Employees With Deductions
 ```sql
 ```
+---
 ### 2686. Immediate Food Delivery III
 ```sql
 ```
+---
 ### 2688. Find Active Users
 ```sql
 ```
+---
 ### 2738. Count Occurrences in Text
 ```sql
 ```
+---
 ### 2783. Flight Occupancy and Waitlist Analysis
 ```sql
 ```
+---
 ### 2820. Election Results
 ```sql
 ```
+---
 ### 2854. Rolling Average Steps
 ```sql
 ```
+---
 ### 2893. Calculate Orders Within Each Interval
 ```sql
 ```
+---
 ### 2922. Market Analysis III
 ```sql
 ```
+---
 ### 2978. Symmetric Coordinates
 ```sql
 ```
+---
 ### 2984. Find Peak Calling Hours for Each City
 ```sql
 ```
+---
 ### 2986. Find Third Transaction
 ```sql
 ```
+---
 ### 2988. Manager of the Largest Department
 ```sql
 ```
+---
 ### 2989. Class Performance
 ```sql
 ```
+---
 ### 2993. Friday Purchases I
 ```sql
 ```
+---
 ### 3050. Pizza Toppings Cost Analysis
 ```sql
 ```
+---
 ### 3054. Binary Tree Nodes
 ```sql
 ```
+---
 ### 3055. Top Percentile Fraud
 ```sql
 ```
+---
 ### 3056. Snaps Analysis
 ```sql
 ```
+---
 ### 3058. Friends With No Mutual Friends
 ```sql
 ```
+---
 ### 3087. Find Trending Hashtags
 ```sql
 ```
+---
 ### 3089. Find Bursty Behavior
 ```sql
 ```
+---
 ### 3118. Friday Purchase III
 ```sql
 ```
+---
 ### 3124. Find Longest Calls
 ```sql
 ```
+---
 ### 3126. Server Utilization Time
 ```sql
 ```
+---
 ### 3140. Consecutive Available Seats II
 ```sql
 ```
+---
 ### 3166. Calculate Parking Fees and Duration
 ```sql
 ```
+---
 ### 3182. Find Top Scoring Students
 ```sql
 ```
+---
 ### 3204. Bitwise User Permissions Analysis
 ```sql
 ```
+---
 ### 3220. Odd and Even Transactions
 ```sql
 ```
+---
 ### 3230. Customer Purchasing Behavior Analysis
 ```sql
 ```
+---
 ### 3252. Premier League Table Ranking II
 ```sql
 ```
+---
 ### 3262. Find Overlapping Shifts
 ```sql
 ```
+---
 ### 3278. Find Candidates for Data Scientist Position II
 ```sql
 ```
+---
 ### 3293. Calculate Product Final Price
 ```sql
 ```
+---
 ### 3308. Find Top Performing Driver
 ```sql
 ```
+---
 ### 3322. Premier League Table Ranking III
 ```sql
 ```
+---
 ### 3328. Find Cities in Each State II
 ```sql
 ```
+---
 ### 3338. Second Highest Salary II
 ```sql
 ```
+---
 ### 3421. Find Students Who Improved
 ```sql
 ```
+---
 ### 3475. DNA Pattern Recognition
 ```sql
 ```
+---
 ### 3497. Analyze Subscription Conversion
 ```sql
 ```
+---
 ### 3521. Find Product Recommendation Pairs
 ```sql
 ```
+---
 ### 3564. Seasonal Sales Analysis
 ```sql
 ```
+---
 ### 3580. Find Consistently Improving Employees
 ```sql
 ```
+---
 ### 3586. Find COVID Recovery Patients
 ```sql
 ```
+---
 ### 3601. Find Drivers with Improved Fuel Efficiency
 ```sql
 ```
+---
 ### 3611. Find Overbooked Employees
 ```sql
 ```
+---
 ### 3626. Find Stores with Inventory Imbalance
 ```sql
 ```
+---
 ### 534. Game Play Analysis III
 ```sql
 ```
+---
 ### 550. Game Play Analysis IV
 ```sql
 ```
+---
 ### 570. Managers with at Least 5 Direct Reports
 ```sql
 ```
+---
 ### 574. Winning Candidate
 ```sql
 ```
+---
 ### 578. Get Highest Answer Rate Question
 ```sql
 ```
+---
 ### 580. Count Student Number in Departments
 ```sql
 ```
+---
 ### 585. Investments in
 ```sql
 ```
+---
 ### 602. Friend Requests II: Who Has the Most Friends
 ```sql
 ```
+---
 ### 608. Tree Node
 ```sql
 ```
+---
 ### 612. Shortest Distance in a Plane
 ```sql
 ```
+---
 ### 614. Second Degree Follower
 ```sql
 ```
+---
 ### 626. Exchange Seats
 ```sql
 ```
+---
 ### 627. Swap Salary
 ```sql
 UPDATE SALARY SET SEX = CASE WHEN SEX = 'm' THEN 'f' ELSE 'm' END;
 ```
+---
 ## Hard
 ### 1097. Game Play Analysis V
 ```sql
 ```
+---
 ### 1127. User Purchase Platform
 ```sql
 ```
+---
 ### 1159. Market Analysis II
 ```sql
 ```
+---
 ### 1194. Tournament Winners
 ```sql
 ```
+---
 ### 1225. Report Contiguous Dates
 ```sql
 ```
+---
 ### 1336. Number of Transactions per Visit
 ```sql
 ```
+---
 ### 1369. Get the Second Most Recent Activity
 ```sql
 ```
+---
 ### 1384. Total Sales Amount by Year
 ```sql
 ```
+---
 ### 1412. Find the Quiet Students in All Exams
 ```sql
 ```
+---
 ### 1479. Sales by Day of the Week
 ```sql
 ```
+---
 ### 1635. Hopper Company Queries I
 ```sql
 ```
+---
 ### 1645. Hopper Company Queries II
 ```sql
 ```
+---
 ### 1651. Hopper Company Queries III
 ```sql
 ```
+---
 ### 1767. Find the Subtasks That Did Not Execute
 ```sql
 ```
+---
 ### 185. Department Top Three Salaries
 ```sql
 ```
+---
 ### 1892. Page Recommendations II
 ```sql
 ```
+---
 ### 1917. Leetcodify Friends Recommendations
 ```sql
 ```
+---
 ### 1919. Leetcodify Similar Friends
 ```sql
 ```
+---
 ### 1972. First and Last Call On the Same Day
 ```sql
 ```
+---
 ### 2004. The Number of Seniors and Juniors to Join the Company
 ```sql
 ```
+---
 ### 2010. The Number of Seniors and Juniors to Join the Company II
 ```sql
 ```
+---
 ### 2118. Build the Equation
 ```sql
 ```
+---
 ### 2153. The Number of Passengers in Each Bus II
 ```sql
 ```
+---
 ### 2173. Longest Winning Streak
 ```sql
 ```
+---
 ### 2199. Finding the Topic of Each Post
 ```sql
 ```
+---
 ### 2252. Dynamic Pivoting of a Table
 ```sql
 ```
+---
 ### 2253. Dynamic Unpivoting of a Table
 ```sql
 ```
+---
 ### 2362. Generate the Invoice
 ```sql
 ```
+---
 ### 2474. Customers With Strictly Increasing Purchases
 ```sql
 ```
+---
 ### 2494. Merge Overlapping Events in the Same Hall
 ```sql
 ```
+---
 ### 262. Trips and Users
 ```sql
 ```
+---
 ### 2701. Consecutive Transactions with Increasing Amounts
 ```sql
 ```
+---
 ### 2720. Popularity Percentage
 ```sql
 ```
+---
 ### 2752. Customers with Maximum Number of Transactions on Consecutive Days
 ```sql
 ```
+---
 ### 2793. Status of Flight Tickets
 ```sql
 ```
+---
 ### 2991. Top Three Wineries
 ```sql
 ```
+---
 ### 2994. Friday Purchases II
 ```sql
 ```
+---
 ### 2995. Viewers Turned Streamers
 ```sql
 ```
+---
 ### 3052. Maximize Items
 ```sql
 ```
+---
 ### 3057. Employees Project Allocation
 ```sql
 ```
+---
 ### 3060. User Activities within Time Bounds
 ```sql
 ```
+---
 ### 3061. Calculate Trapping Rain Water
 ```sql
 ```
+---
 ### 3103. Find Trending Hashtags II
 ```sql
 ```
+---
 ### 3156. Employee Task Duration and Concurrent Tasks
 ```sql
 ```
+---
 ### 3188. Find Top Scoring Students II
 ```sql
 ```
+---
 ### 3214. Year on Year Growth Rate
 ```sql
 ```
+---
 ### 3236. CEO Subordinate Hierarchy
 ```sql
 ```
+---
 ### 3268. Find Overlapping Shifts II
 ```sql
 ```
+---
 ### 3368. First Letter Capitalization
 ```sql
 ```
+---
 ### 3374. First Letter Capitalization II
 ```sql
 ```
+---
 ### 3384. Team Dominance by Pass Success
 ```sql
 ```
+---
 ### 3390. Longest Team Pass Streak
 ```sql
 ```
+---
 ### 3401. Find Circular Gift Exchange Chains
 ```sql
 ```
+---
 ### 3451. Find Invalid IP Addresses
 ```sql
 ```
+---
 ### 3482. Analyze Organization Hierarchy
 ```sql
 ```
+---
 ### 3554. Find Category Recommendation Pairs
 ```sql
 ```
+---
 ### 3617. Find Students with Study Spiral Pattern
 ```sql
 ```
+---
 ### 569. Median Employee Salary
 ```sql
 ```
+---
 ### 571. Find Median Given Frequency of Numbers
 ```sql
 ```
+---
 ### 579. Find Cumulative Salary of an Employee
 ```sql
 ```
+---
 ### 601. Human Traffic of Stadium
 ```sql
 ```
+---
 ### 615. Average Salary: Departments VS Company
 ```sql
 ```
+---
 ### 618. Students Report By Geography
 ```sql
 ```
+---
