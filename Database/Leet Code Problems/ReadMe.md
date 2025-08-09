@@ -1317,6 +1317,32 @@ SELECT PLAYER_ID , MIN(EVENT_DATE) AS FIRST_LOGIN FROM ACTIVITY GROUP BY PLAYER_
 ---
 ### 512. Game Play Analysis II
 ```sql
+SELECT
+    PLAYER_ID,
+    DEVICE_ID
+FROM ACTIVITY
+WHERE
+    (PLAYER_ID, EVENT_DATE) IN (
+        SELECT
+            PLAYER_ID,
+            MIN(EVENT_DATE) AS EVENT_DATE
+        FROM ACTIVITY
+        GROUP BY 1
+    );
+--------
+WITH
+    T AS (
+        SELECT
+            *,
+            RANK() OVER (
+                PARTITION BY PLAYER_ID
+                ORDER BY EVENT_DATE
+            ) AS RK
+        FROM ACTIVITY
+    )
+SELECT PLAYER_ID, DEVICE_ID
+FROM T
+WHERE RK = 1;
 ```
 ---
 ### 577. Employee Bonus
