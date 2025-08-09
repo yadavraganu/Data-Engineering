@@ -1177,12 +1177,29 @@ ORDER BY
 ```
 ### 3198. Find Cities in Each State
 ```sql
+SELECT
+    STATE,
+    STRING_AGG(CITY, ', ') WITHIN GROUP (ORDER BY CITY) AS CITIES
+FROM CITIES
+GROUP BY STATE
+ORDER BY STATE;
 ```
 ### 3246. Premier League Table Ranking
 ```sql
+SELECT
+    TEAM_ID,
+    TEAM_NAME,
+    WINS * 3 + DRAWS AS POINTS,
+    RANK() OVER (ORDER BY (WINS * 3 + DRAWS) DESC) AS POSITION
+FROM TEAMSTATS
+ORDER BY POINTS DESC, TEAM_NAME;
 ```
 ### 3358. Books with NULL Ratings
 ```sql
+SELECT BOOK_ID, TITLE, AUTHOR, PUBLISHED_YEAR
+FROM BOOKS
+WHERE RATING IS NULL
+ORDER BY 1;
 ```
 ### 3415. Find Products with Three Consecutive Digits
 ```sql
@@ -1231,12 +1248,34 @@ ORDER BY
 ```
 ### 613. Shortest Distance in a Line
 ```sql
+SELECT MIN(P2.X - P1.X) AS SHORTEST
+FROM
+    POINT AS P1
+    JOIN POINT AS P2 ON P1.X < P2.X;SELECT MIN(P2.X - P1.X) AS SHORTEST
+FROM
+    POINT AS P1
+    JOIN POINT AS P2 ON P1.X < P2.X;
 ```
 ### 619. Biggest Single Number
 ```sql
+WITH CTE AS (
+  SELECT 
+    NUM,COUNT(NUM) COUNTED 
+  FROM 
+    MYNUMBERS 
+  GROUP BY 
+    NUM 
+  HAVING 
+    COUNT(NUM) = 1
+) 
+SELECT 
+  ISNULL(MAX(NUM), NULL) NUM 
+FROM 
+  CTE
 ```
 ### 620. Not Boring Movies
 ```sql
+SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 ```
 ## Medium
 ### 1045. Customers Who Bought All Products
