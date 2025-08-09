@@ -1446,7 +1446,7 @@ FROM
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 ```
 ---
-## Medium
+# Medium
 ### 1045. Customers Who Bought All Products
 ```sql
 ```
@@ -2008,7 +2008,7 @@ SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' 
 UPDATE SALARY SET SEX = CASE WHEN SEX = 'm' THEN 'f' ELSE 'm' END;
 ```
 ---
-## Hard
+# Hard
 ### 1097. Game Play Analysis V
 ```sql
 ```
