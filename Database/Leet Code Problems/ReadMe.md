@@ -1238,6 +1238,10 @@ SELECT NAME,POPULATION,AREA FROM WORLD WHERE POPULATION>=25000000 OR AREA>=30000
 ```
 ### 596. Classes With at Least 5 Students
 ```sql
+SELECT CLASS
+FROM COURSES
+GROUP BY CLASS
+HAVING COUNT(STUDENT) >= 5;
 ```
 ### 597. Friend Requests I: Overall Acceptance Rate
 ```sql
