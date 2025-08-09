@@ -1658,6 +1658,7 @@ ORDER BY
 ```
 ### 627. Swap Salary
 ```sql
+UPDATE SALARY SET SEX = CASE WHEN SEX = 'm' THEN 'f' ELSE 'm' END;
 ```
 ## Hard
 ### 1097. Game Play Analysis V
