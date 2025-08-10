@@ -1378,6 +1378,15 @@ HAVING COUNT(STUDENT) >= 5;
 ---
 ### 597. Friend Requests I: Overall Acceptance Rate
 ```sql
+SELECT
+    ROUND(
+        ISNULL(
+            (SELECT COUNT(*) FROM (SELECT DISTINCT ACCEPTER_ID, REQUESTER_ID FROM REQUESTACCEPTED) AS T1)
+            * 1.0 / NULLIF((SELECT COUNT(*) FROM (SELECT DISTINCT SEND_TO_ID, SENDER_ID FROM FRIENDREQUEST) AS T2), 0),
+            0
+        ),
+        2
+    ) AS ACCEPT_RATE;
 ```
 ---
 ### 603. Consecutive Available Seats
