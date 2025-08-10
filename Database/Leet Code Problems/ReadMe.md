@@ -1296,18 +1296,64 @@ ORDER BY 1;
 ---
 ### 3415. Find Products with Three Consecutive Digits
 ```sql
+SELECT PRODUCT_ID, NAME
+FROM PRODUCTS
+WHERE
+    (NAME LIKE '%[0-9][0-9][0-9]%'  -- CONTAINS AT LEAST THREE CONSECUTIVE DIGITS
+    AND NAME NOT LIKE '%[0-9][0-9][0-9][0-9]%') -- BUT NOT FOUR OR MORE CONSECUTIVE DIGITS
+    OR NAME LIKE '[0-9][0-9][0-9]%' -- STARTS WITH EXACTLY THREE DIGITS
+    OR NAME LIKE '%[0-9][0-9][0-9]' -- ENDS WITH EXACTLY THREE DIGITS
+ORDER BY PRODUCT_ID;
 ```
 ---
 ### 3436. Find Valid Emails
 ```sql
+SELECT * FROM USERS
+WHERE UPPER(EMAIL) LIKE '%@%.COM' AND UPPER(EMAIL) NOT LIKE '%[^0-9A-Z_]%@%.COM' AND UPPER(EMAIL) NOT LIKE '%@%[^A-Z]%.COM'
+ORDER BY USER_ID
 ```
 ---
 ### 3465. Find Products with Valid Serial Numbers
 ```sql
+SELECT *
+FROM PRODUCTS
+WHERE
+    -- Condition 1: Matches serial numbers at the beginning of the string, followed by a space.
+    -- Example: 'SN1234-5678 Some other text'
+    DESCRIPTION LIKE 'SN[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9] %' COLLATE Latin1_General_BIN
+    OR 
+    -- Condition 2: Matches serial numbers that are in the middle of the string, with a space on either side.
+    -- Example: 'Some other text SN1234-5678 Some other text'
+    DESCRIPTION LIKE '% SN[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9] %' COLLATE Latin1_General_BIN
+    OR 
+    -- Condition 3: Matches serial numbers at the very end of the string, preceded by a space.
+    -- Example: 'Some other text SN1234-5678'
+    DESCRIPTION LIKE '% SN[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]' COLLATE Latin1_General_BIN
+ORDER BY 1 ASC;
 ```
 ---
 ### 3570. Find Books with No Available Copies
 ```sql
+WITH BORROWED_BOOK AS (
+  SELECT 
+    BOOK_ID, COUNT(*) AS CURRENT_BORROWERS 
+  FROM 
+    BORROWING_RECORDS 
+  WHERE 
+    RETURN_DATE IS NULL 
+  GROUP BY 
+    BOOK_ID
+) 
+SELECT 
+  LB.BOOK_ID, TITLE, AUTHOR, GENRE, PUBLICATION_YEAR, CURRENT_BORROWERS 
+FROM 
+  LIBRARY_BOOKS LB 
+  INNER JOIN BORROWED_BOOK BR ON LB.BOOK_ID = BR.BOOK_ID 
+  AND (
+    BR.CURRENT_BORROWERS - LB.TOTAL_COPIES
+  ) = 0 
+ORDER BY 
+  6 DESC, 2 ASC
 ```
 ---
 ### 511. Game Play Analysis I
