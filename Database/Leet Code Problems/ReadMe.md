@@ -2158,6 +2158,31 @@ FROM
 ---
 ### 1709. Biggest Window Between Visits
 ```sql
+SELECT 
+  USER_ID, 
+  MAX(DIFF) AS BIGGEST_WINDOW 
+FROM 
+  (
+    SELECT 
+      USER_ID, 
+      DATEDIFF(
+        COALESCE(
+          LEAD(VISIT_DATE) OVER (
+            PARTITION BY USER_ID 
+            ORDER BY 
+              VISIT_DATE
+          ), 
+          '2021-01-01'
+        ), 
+        VISIT_DATE
+      ) AS DIFF 
+    FROM 
+      USERVISITS
+  ) A 
+GROUP BY 
+  USER_ID 
+ORDER BY 
+  USER_ID;
 ```
 ---
 ### 1715. Count Apples and Oranges
