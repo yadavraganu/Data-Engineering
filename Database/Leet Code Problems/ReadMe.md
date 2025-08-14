@@ -2089,7 +2089,6 @@ FROM FINALIDS F
 JOIN ACCOUNTS A 
 ON F.ID = A.ID
 ORDER BY F.ID;
-------------------
 ```
 ---
 ### 1459. Rectangles Area
@@ -2107,6 +2106,26 @@ ORDER BY AREA DESC, P1, P2;
 ---
 ### 1468. Calculate Salaries
 ```sql
+SELECT
+    S.COMPANY_ID,
+    EMPLOYEE_ID,
+    EMPLOYEE_NAME,
+    ROUND(
+        CASE
+            WHEN TOP < 1000 THEN SALARY
+            WHEN TOP >= 1000
+            AND TOP <= 10000 THEN SALARY * 0.76
+            ELSE SALARY * 0.51
+        END
+    ) AS SALARY
+FROM
+    SALARIES AS S
+    JOIN (
+        SELECT COMPANY_ID, MAX(SALARY) AS TOP
+        FROM SALARIES
+        GROUP BY COMPANY_ID
+    ) AS T
+        ON S.COMPANY_ID = T.COMPANY_ID;
 ```
 ---
 ### 1501. Countries You Can Safely Invest In
