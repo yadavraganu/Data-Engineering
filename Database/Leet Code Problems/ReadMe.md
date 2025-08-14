@@ -2154,6 +2154,13 @@ FROM
 ---
 ### 1699. Number of Calls Between Two Persons
 ```sql
+SELECT
+  LEAST(FROM_ID, TO_ID) AS PERSON1,
+  GREATEST(FROM_ID, TO_ID) AS PERSON2,
+  COUNT(*) AS CALL_COUNT,
+  SUM(DURATION) AS TOTAL_DURATION
+FROM CALLS
+GROUP BY 1, 2;
 ```
 ---
 ### 1709. Biggest Window Between Visits
