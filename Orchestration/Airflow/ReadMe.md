@@ -1,3 +1,85 @@
+# Defining DAGS
+Airflow 3 offers three first-class patterns for declaring DAGs. Each style has its own ergonomics and use cases:
+
+### 1. Context Manager (`with DAG(...) as dag:`)
+
+You wrap your task definitions inside a `with` block. Anything instantiated inside inherits that DAG automatically.
+
+```python
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.empty import EmptyOperator
+import datetime
+
+with DAG(
+    dag_id="my_context_dag",
+    start_date=datetime.datetime(2025, 1, 1),
+    schedule="@daily",
+) as dag:
+    
+    t1 = EmptyOperator(task_id="task_1")
+    t2 = EmptyOperator(task_id="task_2")
+    t1 >> t2
+```
+
+- Pros:  
+  - Extremely concise  
+  - No need to pass `dag=` everywhere  
+- Cons:  
+  - Harder to reference the DAG object outside the block  
+
+### 2. Explicit Constructor + Passing `dag` to Tasks
+
+You create a DAG instance, assign it to a variable, then pass that to each operator.
+
+```python
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.empty import EmptyOperator
+import datetime
+
+my_dag = DAG(
+    dag_id="my_explicit_dag",
+    start_date=datetime.datetime(2025, 1, 1),
+    schedule="@daily",
+)
+
+t1 = EmptyOperator(task_id="task_1", dag=my_dag)
+t2 = EmptyOperator(task_id="task_2", dag=my_dag)
+t1 >> t2
+```
+
+- Pros:  
+  - DAG object is readily available for imports or external tooling  
+  - Clear separation of definition and wiring  
+- Cons:  
+  - Slightly more verbose  
+
+### 3. `@dag` Decorator (TaskFlow API)
+
+You decorate a function that instantiates tasks; calling the function at the bottom registers the DAG.
+
+```python
+from airflow.sdk import dag, task
+from airflow.providers.standard.operators.empty import EmptyOperator
+import datetime
+
+@dag(
+    dag_id="my_decorated_dag",
+    start_date=datetime.datetime(2025, 1, 1),
+    schedule="@daily",
+)
+def generate_workflow():
+    t1 = EmptyOperator(task_id="task_1")
+    t2 = EmptyOperator(task_id="task_2")
+    t1 >> t2
+
+generate_workflow()
+```
+- Pros:  
+  - Enforces Pythonic structure  
+  - Makes it easy to factor out common subgraphs as functions  
+- Cons:  
+  - Decorator syntax can hide the DAG object if you need to introspect it
+
 # xCom
 XComs, which stands for "cross-communication," are a mechanism in Airflow that allows tasks to exchange small amounts of data. They're primarily used to pass information from one task to another within the same DAG run.
 
