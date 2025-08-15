@@ -30,7 +30,7 @@ The **Kappa Architecture**, proposed by Jay Kreps of LinkedIn, is a simplificati
 * **Reprocessing Overhead:** Replaying the entire data log can be a slow and resource-intensive process, especially for very large datasets.
 * **Reprocessing Code:** The stream processing code must be designed to be stateless or have state that can be recreated during reprocessing.
 
-### Summary of Differences
+## Summary of Differences
 
 | Feature | Lambda Architecture | Kappa Architecture |
 | :--- | :--- | :--- |
