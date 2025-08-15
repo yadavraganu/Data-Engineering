@@ -64,3 +64,32 @@ The Kappa architecture is a modern, stream-first approach that simplifies the da
 * **Reprocessing for Updates:** If Uber's engineering team needs to update the pricing algorithm or fix a bug in the matching logic, they don't have to write a separate batch job. Instead, they can simply deploy the new code to the stream processing engine and tell it to **re-read the entire historical log** from the beginning. The engine will then recompute all the results and correct any historical inconsistencies, effectively acting as both a real-time and a batch processor using a single codebase.
 
 This approach provides Uber with a simpler, more agile architecture that offers consistently low latency and a single source of truth, making it easier to maintain and evolve its real-time services.
+
+## Stateless Processing
+
+**Stateless processing** treats each data event as a completely independent unit. It processes the event in isolation, without any knowledge of previous events or a running context. The output of a stateless operation depends *only* on the current input.
+
+* **How it works:** A stateless system is simple and highly parallelizable. Because each event is processed independently, you can easily scale by adding more workers, as there is no shared state to manage. If a worker fails, the other workers are unaffected, and the failed task can be restarted with just the current event.
+* **Examples:**
+    * **Filtering:** Dropping events that don't meet a certain condition, like removing all transactions below a certain dollar amount.
+    * **Mapping:** Transforming a data point, such as converting a temperature from Celsius to Fahrenheit.
+    * **Simple Alerts:** Sending an alert every time a sensor reading exceeds a predefined threshold. 
+## Stateful Processing
+
+**Stateful processing** remembers and uses information from previous events to process the current one. This memory, or "state," allows the system to perform more complex and context-aware operations. The output of a stateful operation depends on both the current input and the historical state.
+
+* **How it works:** Stateful systems are more complex because they must store and manage state, which can grow very large and needs to be fault-tolerant. When a system fails, the state must be restored from a reliable source (like a checkpoint) to ensure correct processing. Operations like windowing, joins, and aggregations are inherently stateful.
+* **Examples:**
+    * **Windowing:** Calculating the average temperature over the **last five minutes**. The system needs to remember all the readings within that window to compute the average.
+    * **Fraud Detection:** Flagging a credit card transaction as suspicious if it's the 10th purchase in the last minute. The system must maintain a running count of transactions for that user. 
+    * **Sessionization:** Grouping a series of user clicks on a website into a single "session" to analyze their browsing behavior. The system needs to remember all clicks from a single user until a period of inactivity passes.
+
+## Comparison Table
+
+| Feature | Stateless Processing | Stateful Processing |
+| :--- | :--- | :--- |
+| **Dependency** | Independent events | Depends on past events |
+| **Operations** | Filtering, mapping, simple transformations | Aggregations, joins, windowing, deduplication |
+| **State Management** | No state to manage | Requires state persistence for fault tolerance |
+| **Complexity** | Simple and easy to scale | Complex due to state management and recovery |
+| **Fault Tolerance** | Easy; restart with current event | Complex; must restore state from a checkpoint |
