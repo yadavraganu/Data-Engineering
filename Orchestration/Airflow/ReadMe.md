@@ -1,3 +1,68 @@
+# xCom
+XComs, which stands for "cross-communication," are a mechanism in Airflow that allows tasks to exchange small amounts of data. They're primarily used to pass information from one task to another within the same DAG run.
+
+## How XComs Work
+
+An XCom is essentially a key-value store. When a task "pushes" an XCom, it stores a value associated with a key, a task ID, and a DAG ID in Airflow's metadata database. When another task "pulls" an XCom, it retrieves this stored value using the key and task ID.
+
+  * **Pushing an XCom:** By default, the return value of a `PythonOperator`'s `python_callable` is automatically pushed to XCom. You can also explicitly push an XCom using the `xcom_push()` method in a task's context.
+  * **Pulling an XCom:** You can retrieve an XCom's value using the `xcom_pull()` method. This is typically done within the `op_kwargs` of a downstream task.
+
+The XCom data is stored in the Airflow database, so it's only suitable for small payloads (e.g., file paths, IDs, or short JSON strings). It's not designed for passing large datasets.
+
+## Key Parameters and Methods
+
+| Parameter/Method | Description |
+| :--- | :--- |
+| `xcom_push(key, value)` | Pushes a value to XCom with the specified key. The `value` can be any JSON-serializable object. |
+| `xcom_pull(task_ids, key)` | Pulls a value from XCom. `task_ids` can be a single string or a list of task IDs. `key` is the key of the XCom to retrieve. |
+| `do_xcom_push` | A boolean parameter for operators. If `False`, it prevents the task's return value from being pushed to XCom. The default is `True`. |
+
+## Example
+
+Let's illustrate with a simple example where one task generates a report filename and another task uses that filename.
+
+```python
+from airflow.models.dag import DAG
+from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
+from datetime import datetime
+
+with DAG(
+    dag_id='xcom_example',
+    start_date=datetime(2023, 1, 1),
+    schedule_interval=None,
+    catchup=False
+) as dag:
+    
+    def generate_report_filename():
+        # This function returns a string, which is automatically pushed to XCom
+        return f"/tmp/report_{datetime.now().strftime('%Y%m%d')}.csv"
+
+    def print_filename(**kwargs):
+        # The 'ti' (task instance) object is used to pull the XCom value
+        ti = kwargs['ti']
+        filename = ti.xcom_pull(task_ids='generate_filename_task')
+        print(f"The report filename is: {filename}")
+
+    generate_filename_task = PythonOperator(
+        task_id='generate_filename_task',
+        python_callable=generate_report_filename
+    )
+
+    print_filename_task = PythonOperator(
+        task_id='print_filename_task',
+        python_callable=print_filename
+    )
+
+    # The tasks are executed sequentially
+    generate_filename_task >> print_filename_task
+```
+### Best Practices
+
+  * **Small Payloads Only:** XComs are not a substitute for a shared file system or a database. Only use them for small, lightweight data.
+  * **Default `return_value` Key:** When an operator returns a value, it's pushed with the key `return_value`. You can specify a different key with `xcom_push(key='my_custom_key', ...)`.
+  * **Avoid Over-Reliance:** If your tasks need to share large amounts of data, consider writing the data to an external location (like a shared S3 bucket or a database table) and only using XCom to pass the pointer (e.g., the file path or database ID) to the downstream tasks.
 # Common Airlow Params
 Airflow has a rich set of parameters that you can use to configure every aspect of your workflows, from high-level DAG properties to the specific behavior of individual tasks. These parameters can be set in different places, with a clear order of precedence.
 
