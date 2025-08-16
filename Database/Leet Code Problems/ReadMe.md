@@ -2467,6 +2467,40 @@ ORDER BY
 ---
 ### 1990. Count the Number of Experiments
 ```sql
+WITH P AS (
+    SELECT 'Android' AS PLATFORM
+    UNION
+    SELECT 'IOS'
+    UNION
+    SELECT 'Web'
+),
+EXP AS (
+    SELECT 'Reading' AS EXPERIMENT_NAME
+    UNION
+    SELECT 'Sports'
+    UNION
+    SELECT 'Programming'
+),
+T AS (
+    SELECT *
+    FROM
+        P
+        CROSS JOIN EXP
+)
+SELECT
+    T.PLATFORM,
+    T.EXPERIMENT_NAME,
+    COUNT(E.EXPERIMENT_ID) AS NUM_EXPERIMENTS
+FROM
+    T AS T
+    LEFT JOIN EXPERIMENTS AS E
+        ON T.PLATFORM = E.PLATFORM
+        AND T.EXPERIMENT_NAME = E.EXPERIMENT_NAME
+GROUP BY
+    T.PLATFORM,
+    T.EXPERIMENT_NAME
+ORDER BY
+    T.PLATFORM, T.EXPERIMENT_NAME;
 ```
 ---
 ### 2020. Number of Accounts That Did Not Stream
