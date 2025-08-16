@@ -2463,6 +2463,10 @@ ORDER BY
 ---
 ### 1988. Find Cutoff Score for Each School
 ```sql
+SELECT SCHOOL_ID, IFNULL(MIN(SCORE), -1) AS SCORE
+    FROM SCHOOLS LEFT JOIN EXAM
+    ON CAPACITY >= STUDENT_COUNT
+    GROUP BY SCHOOL_ID;
 ```
 ---
 ### 1990. Count the Number of Experiments
