@@ -2793,6 +2793,12 @@ WHERE
 ---
 ### 2238. Number of Times a Driver Was a Passenger
 ```sql
+WITH T AS (SELECT DISTINCT DRIVER_ID FROM RIDES)
+SELECT T.DRIVER_ID, COUNT(PASSENGER_ID) AS CNT
+FROM
+    T AS T
+    LEFT JOIN RIDES AS R ON T.DRIVER_ID = R.PASSENGER_ID
+GROUP BY 1;
 ```
 ---
 ### 2292. Products With Three or More Orders in Two Consecutive Years
