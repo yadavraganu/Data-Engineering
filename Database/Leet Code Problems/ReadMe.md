@@ -2575,6 +2575,27 @@ WHERE
 ---
 ### 1867. Orders With Maximum Quantity Above Average
 ```sql
+SELECT 
+  ORDER_ID 
+FROM 
+  ORDERSDETAILS 
+GROUP BY 
+  ORDER_ID 
+HAVING 
+  MAX(QUANTITY) > (
+    SELECT 
+      MAX(AVG_QUANTITY) 
+    FROM 
+      (
+        SELECT 
+          ORDER_ID, 
+          SUM(QUANTITY) / COUNT(PRODUCT_ID) AS AVG_QUANTITY 
+        FROM 
+          ORDERSDETAILS 
+        GROUP BY 
+          ORDER_ID
+      ) T
+  );
 ```
 ---
 ### 1875. Group Employees of the Same Salary
