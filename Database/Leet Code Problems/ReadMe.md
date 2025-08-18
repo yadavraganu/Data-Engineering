@@ -2862,6 +2862,29 @@ WHERE RNK = 1
 ---
 ### 2228. Users With Two Purchases Within Seven Days
 ```sql
+WITH
+    T AS (
+        SELECT
+            USER_ID,
+            DATEDIFF(
+                DAY,
+                LAG(PURCHASE_DATE, 1) OVER (
+                    PARTITION BY USER_ID
+                    ORDER BY PURCHASE_DATE
+                ),
+                PURCHASE_DATE
+            ) AS D
+        FROM
+            PURCHASES
+    )
+SELECT DISTINCT
+    USER_ID
+FROM
+    T
+WHERE
+    D <= 7
+ORDER BY
+    USER_ID;
 ```
 ---
 ### 2238. Number of Times a Driver Was a Passenger
