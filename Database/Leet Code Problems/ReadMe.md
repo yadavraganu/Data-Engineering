@@ -2812,6 +2812,36 @@ ORDER BY
 ---
 ### 2084. Drop Type 1 Orders for Customers With Type 0 Orders
 ```sql
+SELECT
+    ORDER_ID,
+    CUSTOMER_ID,
+    ORDER_TYPE
+FROM
+    ORDERS
+WHERE
+    ORDER_TYPE = 0
+    OR CUSTOMER_ID NOT IN (
+        SELECT
+            CUSTOMER_ID
+        FROM
+            ORDERS
+        WHERE
+            ORDER_TYPE = 0
+    );
+-------------
+WITH
+  RANKEDORDERS AS (
+    SELECT
+      *,
+      RANK() OVER(PARTITION BY CUSTOMER_ID ORDER BY ORDER_TYPE) AS RNK
+    FROM ORDERS
+  )
+SELECT
+  ORDER_ID,
+  CUSTOMER_ID,
+  ORDER_TYPE
+FROM RANKEDORDERS
+WHERE RNK = 1
 ```
 ---
 ### 2112. The Airport With the Most Traffic
