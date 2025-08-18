@@ -2773,10 +2773,41 @@ HAVING
 ---
 ### 2051. The Category of Each Member in the Store
 ```sql
+SELECT
+    M.MEMBER_ID,
+    NAME,
+    CASE
+        WHEN COUNT(V.VISIT_ID) = 0 THEN 'BRONZE'
+        WHEN 100 * COUNT(CHARGED_AMOUNT) / COUNT(
+            V.VISIT_ID
+        ) >= 80 THEN 'DIAMOND'
+        WHEN 100 * COUNT(CHARGED_AMOUNT) / COUNT(V.VISIT_ID) >= 50 THEN 'GOLD'
+        ELSE 'SILVER'
+    END AS CATEGORY
+FROM
+    MEMBERS AS M
+    LEFT JOIN VISITS AS V ON M.MEMBER_ID = V.MEMBER_ID
+    LEFT JOIN PURCHASES AS P ON V.VISIT_ID = P.VISIT_ID
+GROUP BY MEMBER_ID;
 ```
 ---
 ### 2066. Account Balance
 ```sql
+SELECT
+    ACCOUNT_ID,
+    DAY,
+    SUM(CASE
+        WHEN TYPE = 'Deposit' THEN AMOUNT
+        ELSE -AMOUNT
+    END) OVER (
+        PARTITION BY ACCOUNT_ID
+        ORDER BY DAY
+    ) AS BALANCE
+FROM
+    TRANSACTIONS
+ORDER BY
+    ACCOUNT_ID,
+    DAY;
 ```
 ---
 ### 2084. Drop Type 1 Orders for Customers With Type 0 Orders
