@@ -3011,6 +3011,16 @@ GROUP BY 1;
 ---
 ### 2372. Calculate the Influence of Each Salesperson
 ```sql
+SELECT
+    SP.SALESPERSON_ID,
+    NAME,
+    COALESCE(SUM(PRICE), 0) AS TOTAL
+FROM
+    SALESPERSON AS SP
+    LEFT JOIN CUSTOMER AS C ON SP.SALESPERSON_ID = C.SALESPERSON_ID
+    LEFT JOIN SALES AS S ON S.CUSTOMER_ID = C.CUSTOMER_ID
+GROUP BY
+    SP.SALESPERSON_ID, NAME;
 ```
 ---
 ### 2388. Change Null Values in a Table to the Previous Value
