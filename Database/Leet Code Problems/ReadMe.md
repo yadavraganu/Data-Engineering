@@ -2854,10 +2854,50 @@ WHERE RNK = 1
 ---
 ### 2159. Order Two Columns Independently
 ```sql
+WITH
+    S AS (
+        SELECT
+            FIRST_COL,
+            ROW_NUMBER() OVER (ORDER BY FIRST_COL) AS RK
+        FROM
+            DATA
+    ),
+    T AS (
+        SELECT
+            SECOND_COL,
+            ROW_NUMBER() OVER (ORDER BY SECOND_COL DESC) AS RK
+        FROM
+            DATA
+    )
+SELECT
+    S.FIRST_COL,
+    T.SECOND_COL
+FROM
+    S
+JOIN
+    T ON S.RK = T.RK;
 ```
 ---
 ### 2175. The Change in Global Rankings
 ```sql
+SELECT
+    TEAMPOINTS.TEAM_ID,
+    TEAMPOINTS.NAME,
+    CAST(
+        RANK() OVER (
+            ORDER BY TEAMPOINTS.POINTS DESC,
+            TEAMPOINTS.NAME
+        ) AS INT
+    ) - CAST(
+        RANK() OVER (
+            ORDER BY TEAMPOINTS.POINTS + POINTSCHANGE.POINTS_CHANGE DESC,
+            TEAMPOINTS.NAME
+        ) AS INT
+    ) AS RANK_DIFF
+FROM
+    TEAMPOINTS
+INNER JOIN
+    POINTSCHANGE ON TEAMPOINTS.TEAM_ID = POINTSCHANGE.TEAM_ID;
 ```
 ---
 ### 2228. Users With Two Purchases Within Seven Days
