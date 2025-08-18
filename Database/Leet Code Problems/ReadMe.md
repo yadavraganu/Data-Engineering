@@ -2846,6 +2846,35 @@ WHERE RNK = 1
 ---
 ### 2112. The Airport With the Most Traffic
 ```sql
+WITH
+    AIRPORTTOCOUNT AS (
+        SELECT
+            DEPARTURE_AIRPORT AS AIRPORT_ID,
+            FLIGHTS_COUNT
+        FROM
+            FLIGHTS
+        UNION ALL
+        SELECT
+            ARRIVAL_AIRPORT AS AIRPORT_ID,
+            FLIGHTS_COUNT
+        FROM
+            FLIGHTS
+    ),
+    RANKEDAIRPORTS AS (
+        SELECT
+            AIRPORT_ID,
+            RANK() OVER (ORDER BY SUM(FLIGHTS_COUNT) DESC) AS RANK
+        FROM
+            AIRPORTTOCOUNT
+        GROUP BY
+            AIRPORT_ID
+    )
+SELECT
+    AIRPORT_ID
+FROM
+    RANKEDAIRPORTS
+WHERE
+    RANK = 1;
 ```
 ---
 ### 2142. The Number of Passengers in Each Bus I
