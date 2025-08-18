@@ -3019,6 +3019,27 @@ GROUP BY 1;
 ---
 ### 2394. Employees With Deductions
 ```sql
+WITH T AS (
+    SELECT
+        EMPLOYEE_ID,
+        SUM(
+            CEILING(
+                DATEDIFF(SECOND, IN_TIME, OUT_TIME) / 60.0
+            )
+        ) / 60.0 AS TOT
+    FROM
+        LOGS
+    GROUP BY
+        EMPLOYEE_ID
+)
+SELECT
+    E.EMPLOYEE_ID
+FROM
+    EMPLOYEES AS E
+LEFT JOIN
+    T ON E.EMPLOYEE_ID = T.EMPLOYEE_ID
+WHERE
+    ISNULL(T.TOT, 0) < E.NEEDED_HOURS;
 ```
 ---
 ### 2686. Immediate Food Delivery III
