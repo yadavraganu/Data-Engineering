@@ -3023,6 +3023,20 @@ GROUP BY 1;
 ---
 ### 2686. Immediate Food Delivery III
 ```sql
+SELECT
+    ORDER_DATE,
+    ROUND(100.0 * SUM(
+        CASE
+            WHEN CUSTOMER_PREF_DELIVERY_DATE = ORDER_DATE THEN 1
+            ELSE 0
+        END
+    ) / COUNT(*), 2) AS IMMEDIATE_PERCENTAGE
+FROM
+    DELIVERY
+GROUP BY
+    ORDER_DATE
+ORDER BY
+    ORDER_DATE;
 ```
 ---
 ### 2688. Find Active Users
