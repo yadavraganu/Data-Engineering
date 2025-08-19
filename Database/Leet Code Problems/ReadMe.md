@@ -2987,26 +2987,140 @@ GROUP BY 1;
 ---
 ### 2292. Products With Three or More Orders in Two Consecutive Years
 ```sql
+WITH P AS (
+    SELECT 
+        PRODUCT_ID, 
+        YEAR(PURCHASE_DATE) AS Y, 
+        CASE 
+            WHEN COUNT(*) >= 3 THEN 1 
+            ELSE 0 
+        END AS MARK
+    FROM ORDERS
+    GROUP BY PRODUCT_ID, YEAR(PURCHASE_DATE)
+)
+SELECT DISTINCT P1.PRODUCT_ID
+FROM P AS P1
+JOIN P AS P2 
+    ON P1.PRODUCT_ID = P2.PRODUCT_ID 
+    AND P1.Y = P2.Y - 1
+WHERE P1.MARK = 1 AND P2.MARK = 1
+ORDER BY P1.PRODUCT_ID;
+-----------------
+WITH PRODUCTYEARSTATS AS (
+    SELECT 
+        PRODUCT_ID,
+        YEAR(PURCHASE_DATE) AS Y,
+        COUNT(*) AS PURCHASE_COUNT
+    FROM ORDERS
+    GROUP BY PRODUCT_ID, YEAR(PURCHASE_DATE)
+),
+WITHLAG AS (
+    SELECT 
+        PRODUCT_ID,
+        Y,
+        PURCHASE_COUNT,
+        LAG(PURCHASE_COUNT) OVER (
+            PARTITION BY PRODUCT_ID 
+            ORDER BY Y
+        ) AS PREV_YEAR_COUNT
+    FROM PRODUCTYEARSTATS
+)
+SELECT DISTINCT PRODUCT_ID
+FROM WITHLAG
+WHERE PURCHASE_COUNT >= 3 AND PREV_YEAR_COUNT >= 3
+ORDER BY PRODUCT_ID;
 ```
 ---
 ### 2298. Tasks Count in the Weekend
 ```sql
+SELECT
+    SUM(CASE WHEN DATEPART(WEEKDAY, SUBMIT_DATE) IN (1, 7) THEN 1 ELSE 0 END) AS WEEKEND_CNT,
+    SUM(CASE WHEN DATEPART(WEEKDAY, SUBMIT_DATE) NOT IN (1, 7) THEN 1 ELSE 0 END) AS WORKING_CNT
+FROM TASKS;
 ```
 ---
 ### 2308. Arrange Table by Gender
 ```sql
+WITH T AS (
+    SELECT
+        *,
+        RANK() OVER (
+            PARTITION BY GENDER
+            ORDER BY USER_ID
+        ) AS RK1,
+        CASE
+            WHEN GENDER = 'female' THEN 0
+            WHEN GENDER = 'other' THEN 1
+            ELSE 2
+        END AS RK2
+    FROM GENDERS
+)
+SELECT USER_ID, GENDER
+FROM T
+ORDER BY RK1, RK2;
 ```
 ---
 ### 2314. The First Day of the Maximum Recorded Degree in Each City
 ```sql
+WITH T AS (
+    SELECT
+        *,
+        RANK() OVER (
+            PARTITION BY CITY_ID
+            ORDER BY DEGREE DESC, DAY
+        ) AS RK
+    FROM WEATHER
+)
+SELECT CITY_ID, DAY, DEGREE
+FROM T
+WHERE RK = 1
+ORDER BY CITY_ID;
 ```
 ---
 ### 2324. Product Sales Analysis IV
 ```sql
+WITH SALESTOTAL AS (
+    SELECT 
+        S.USER_ID,
+        S.PRODUCT_ID,
+        SUM(S.QUANTITY * P.PRICE) AS TOTAL_SPENT
+    FROM SALES S
+    JOIN PRODUCT P ON S.PRODUCT_ID = P.PRODUCT_ID
+    GROUP BY S.USER_ID, S.PRODUCT_ID
+),
+RANKED AS (
+    SELECT 
+        USER_ID,
+        PRODUCT_ID,
+        RANK() OVER (
+            PARTITION BY USER_ID
+            ORDER BY TOTAL_SPENT DESC
+        ) AS RK
+    FROM SALESTOTAL
+)
+SELECT USER_ID, PRODUCT_ID
+FROM RANKED
+WHERE RK = 1;
 ```
 ---
 ### 2346. Compute the Rank as a Percentage
 ```sql
+SELECT
+    STUDENT_ID,
+    DEPARTMENT_ID,
+    ISNULL(
+        ROUND(
+            CAST((RANK() OVER (
+                PARTITION BY DEPARTMENT_ID
+                ORDER BY MARK DESC
+            ) - 1) * 100.0 / 
+            NULLIF(COUNT(*) OVER (PARTITION BY DEPARTMENT_ID) - 1, 0)
+            AS FLOAT),
+            2
+        ),
+        0
+    ) AS PERCENTAGE
+FROM STUDENTS;
 ```
 ---
 ### 2372. Calculate the Influence of Each Salesperson
