@@ -3107,14 +3107,73 @@ ORDER BY
 ---
 ### 2922. Market Analysis III
 ```sql
+WITH T AS (
+    SELECT
+        U.SELLER_ID,
+        COUNT(DISTINCT O.ITEM_ID) AS NUM_ITEMS
+    FROM ORDERS AS O
+    JOIN USERS AS U
+        ON O.SELLER_ID = U.SELLER_ID
+    JOIN ITEMS AS I
+        ON O.ITEM_ID = I.ITEM_ID
+    WHERE
+        I.ITEM_BRAND <> U.FAVORITE_BRAND
+    GROUP BY
+        U.SELLER_ID
+)
+SELECT
+    SELLER_ID,
+    NUM_ITEMS
+FROM T
+WHERE
+    NUM_ITEMS = (SELECT MAX(NUM_ITEMS) FROM T)
+ORDER BY
+    SELLER_ID;
 ```
 ---
 ### 2978. Symmetric Coordinates
 ```sql
+WITH SYMMETRICCOORDINATES AS (
+    SELECT DISTINCT C1.X, C1.Y
+    FROM COORDINATES AS C1
+    INNER JOIN COORDINATES AS C2
+        ON C1.X = C2.Y AND C1.Y = C2.X
+    WHERE C1.X < C1.Y
+    UNION ALL
+    SELECT X, Y
+    FROM COORDINATES
+    WHERE X = Y
+    GROUP BY X, Y
+    HAVING COUNT(*) > 1
+)
+SELECT X, Y
+FROM SYMMETRICCOORDINATES
+ORDER BY 1, 2;
 ```
 ---
 ### 2984. Find Peak Calling Hours for Each City
 ```sql
+WITH T AS (
+    SELECT
+        *,
+        RANK() OVER (PARTITION BY CITYORDER BY CNT DESC) AS RK
+    FROM
+        (
+         SELECT
+			CITY,
+            DATEPART(HOUR, CALL_TIME) AS H,
+            COUNT(1) AS CNT
+            FROM CALLS
+            GROUP BY CITY, DATEPART(HOUR, CALL_TIME)
+        ) AS T
+)
+SELECT
+    CITY,
+    H AS PEAK_CALLING_HOUR,
+    CNT AS NUMBER_OF_CALLS
+FROM T
+WHERE RK = 1
+ORDER BY PEAK_CALLING_HOUR DESC, CITY DESC;
 ```
 ---
 ### 2986. Find Third Transaction
