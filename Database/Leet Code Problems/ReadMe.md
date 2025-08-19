@@ -3083,22 +3083,111 @@ ORDER BY
 ---
 ### 2688. Find Active Users
 ```sql
+SELECT DISTINCT USER_ID
+FROM USERS
+WHERE USER_ID IN (
+    SELECT USER_ID
+    FROM (
+        SELECT
+            USER_ID,
+            CREATED_AT,
+            LAG(CREATED_AT, 1) OVER (
+                PARTITION BY USER_ID
+                ORDER BY CREATED_AT
+            ) AS PREV_CREATED_AT
+        FROM USERS
+    ) AS T
+    WHERE DATEDIFF(DAY, PREV_CREATED_AT, CREATED_AT) <= 7
+);
 ```
 ---
 ### 2738. Count Occurrences in Text
 ```sql
+SELECT 'bull' AS WORD, COUNT(*) AS COUNT
+FROM FILES
+WHERE CONTENT LIKE '% bull %'
+UNION
+SELECT 'bear' AS WORD, COUNT(*) AS COUNT
+FROM FILES
+WHERE CONTENT LIKE '% bear %';
 ```
 ---
 ### 2783. Flight Occupancy and Waitlist Analysis
 ```sql
+SELECT
+    F.FLIGHT_ID,
+    CASE 
+        WHEN COUNT(P.PASSENGER_ID) < F.CAPACITY THEN COUNT(P.PASSENGER_ID)
+        ELSE F.CAPACITY
+    END AS BOOKED_CNT,
+    CASE 
+        WHEN COUNT(P.PASSENGER_ID) > F.CAPACITY THEN COUNT(P.PASSENGER_ID) - F.CAPACITY
+        ELSE 0
+    END AS WAITLIST_CNT
+FROM FLIGHTS F
+LEFT JOIN PASSENGERS P ON F.FLIGHT_ID = P.FLIGHT_ID
+GROUP BY F.FLIGHT_ID, F.CAPACITY
+ORDER BY F.FLIGHT_ID;
 ```
 ---
 ### 2820. Election Results
 ```sql
+WITH T AS (
+    SELECT 
+        CANDIDATE, 
+        SUM(VOTE) AS TOT
+    FROM (
+        SELECT 
+            CANDIDATE,
+            1.0 / COUNT(*) OVER (PARTITION BY VOTER) AS VOTE
+        FROM VOTES
+        WHERE CANDIDATE IS NOT NULL
+    ) AS Sub
+    GROUP BY CANDIDATE
+),
+P AS (
+    SELECT 
+        CANDIDATE,
+        RANK() OVER (ORDER BY TOT DESC) AS RK
+    FROM T
+)
+SELECT CANDIDATE
+FROM P
+WHERE RK = 1
+ORDER BY CANDIDATE;
 ```
 ---
 ### 2854. Rolling Average Steps
 ```sql
+WITH T AS (
+    SELECT
+        USER_ID,
+        STEPS_DATE,
+        ROUND(
+            AVG(STEPS_COUNT) OVER (
+                PARTITION BY USER_ID
+                ORDER BY STEPS_DATE
+                ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+            ),
+            2
+        ) AS ROLLING_AVERAGE,
+        DATEDIFF(
+            DAY,
+            LAG(STEPS_DATE, 2) OVER (
+                PARTITION BY USER_ID
+                ORDER BY STEPS_DATE
+            ),
+            STEPS_DATE
+        ) AS DATE_DIFF
+    FROM STEPS
+)
+SELECT
+    USER_ID,
+    STEPS_DATE,
+    ROLLING_AVERAGE
+FROM T
+WHERE DATE_DIFF = 2
+ORDER BY USER_ID, STEPS_DATE;
 ```
 ---
 ### 2893. Calculate Orders Within Each Interval
