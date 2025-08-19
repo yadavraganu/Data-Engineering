@@ -1,4 +1,4 @@
-🐢 **Why PySpark UDFs Are Considered Slow**
+## **Why PySpark UDFs Are Considered Slow**
 
 User-Defined Functions (UDFs) in PySpark offer flexibility, but they come with significant performance drawbacks. Here's a breakdown of the key reasons:
 
