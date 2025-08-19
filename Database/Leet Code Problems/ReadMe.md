@@ -3103,6 +3103,15 @@ ORDER BY
 ---
 ### 2893. Calculate Orders Within Each Interval
 ```sql
+SELECT
+    CEILING(CAST([MINUTE] AS FLOAT) / 6) AS INTERVAL_NO,
+    SUM(ORDER_COUNT) AS TOTAL_ORDERS
+FROM
+    ORDERS
+GROUP BY
+    CEILING(CAST([MINUTE] AS FLOAT) / 6)
+ORDER BY
+    INTERVAL_NO;
 ```
 ---
 ### 2922. Market Analysis III
