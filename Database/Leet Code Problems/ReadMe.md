@@ -3442,6 +3442,48 @@ ORDER BY 1;
 ---
 ### 3058. Friends With No Mutual Friends
 ```sql
+WITH TWOWAYFRIENDS AS (
+    -- Creates a list of all friendships in both directions (e.g., A -> B and B -> A)
+    SELECT
+        USER_ID1 AS USER_ID,
+        USER_ID2 AS FRIEND_ID
+    FROM
+        FRIENDS
+    UNION ALL
+    SELECT
+        USER_ID2,
+        USER_ID1
+    FROM
+        FRIENDS
+),
+USERTOMUTUALFRIEND AS (
+    -- Finds all pairs of users who have at least one mutual friend by self-joining the TWOWAYFRIENDS CTE
+    SELECT
+        USER1.USER_ID,
+        USER2.USER_ID AS FRIEND_ID
+    FROM
+        TWOWAYFRIENDS AS USER1
+    JOIN
+        TWOWAYFRIENDS AS USER2
+        ON USER1.FRIEND_ID = USER2.FRIEND_ID
+    WHERE
+        USER1.USER_ID != USER2.USER_ID
+)
+SELECT
+    -- Selects the original friendship pairs
+    FRIENDS.*
+FROM
+    FRIENDS
+    -- Performs a LEFT JOIN to find friendships that do not exist in the mutual friends list
+    LEFT JOIN USERTOMUTUALFRIEND
+        ON (
+            FRIENDS.USER_ID1 = USERTOMUTUALFRIEND.USER_ID
+            AND FRIENDS.USER_ID2 = USERTOMUTUALFRIEND.FRIEND_ID
+        )
+-- Filters for rows where there was no match, meaning the friends have no mutual friends
+WHERE
+    USERTOMUTUALFRIEND.FRIEND_ID IS NULL
+ORDER BY 1,2;
 ```
 ---
 ### 3087. Find Trending Hashtags
