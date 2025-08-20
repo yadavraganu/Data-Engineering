@@ -3414,30 +3414,151 @@ ORDER BY 1;
 ---
 ### 2988. Manager of the Largest Department
 ```sql
+WITH RANKEDDEPARTMENTS AS (
+    -- THIS CTE RANKS DEPARTMENTS BASED ON THE NUMBER OF EMPLOYEES THEY HAVE.
+    SELECT
+        DEP_ID,
+        DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS RNK
+    FROM
+        EMPLOYEES
+    GROUP BY
+        DEP_ID
+)
+SELECT
+    -- SELECTS THE EMPLOYEE'S NAME (ALIASED AS MANAGER_NAME) AND THEIR DEPARTMENT ID.
+    E.EMP_NAME AS MANAGER_NAME,
+    E.DEP_ID
+FROM
+    EMPLOYEES AS E
+-- JOINS THE EMPLOYEES TABLE WITH THE RANKEDDEPARTMENTS CTE ON THE DEPARTMENT ID.
+INNER JOIN
+    RANKEDDEPARTMENTS AS RD
+    ON E.DEP_ID = RD.DEP_ID
+WHERE
+    -- FILTERS FOR EMPLOYEES WHO ARE MANAGERS AND BELONG TO A DEPARTMENT WITH A RANK OF 1 (THE LARGEST DEPARTMENT).
+    E.POSITION = 'Manager'
+    AND RD.RNK = 1
+-- ORDERS THE RESULTS BY DEPARTMENT ID.
+ORDER BY
+    E.DEP_ID;
 ```
 ---
 ### 2989. Class Performance
 ```sql
+SELECT 
+  MAX(
+    ASSIGNMENT1 + ASSIGNMENT2 + ASSIGNMENT3
+  ) - MIN(
+    ASSIGNMENT1 + ASSIGNMENT2 + ASSIGNMENT3
+  ) AS DIFFERENCE_IN_SCORE 
+FROM 
+  SCORES;
 ```
 ---
 ### 2993. Friday Purchases I
 ```sql
+SELECT
+  -- CALCULATES THE WEEK NUMBER FOR THE PURCHASE DATE RELATIVE TO NOVEMBER 1, 2023.
+  DATEDIFF(WEEK, '2023-11-01', PURCHASE_DATE) + 1 AS WEEK_OF_MONTH,
+  PURCHASE_DATE,
+  -- SUMS THE TOTAL SPENDING FOR EACH SPECIFIC PURCHASE DATE.
+  SUM(AMOUNT_SPEND) AS TOTAL_AMOUNT
+FROM
+  PURCHASES
+WHERE
+  -- FILTERS FOR RECORDS IN NOVEMBER 2023.
+  MONTH(PURCHASE_DATE) = 11
+  AND YEAR(PURCHASE_DATE) = 2023
+  -- FILTERS FOR FRIDAYS.
+  AND DATENAME(WEEKDAY, PURCHASE_DATE) = 'Friday'
+GROUP BY
+  -- GROUPS BY DATE TO AGGREGATE SPENDING FOR EACH FRIDAY.
+  PURCHASE_DATE
+ORDER BY
+  -- ORDERS THE RESULTS CHRONOLOGICALLY BY THE CALCULATED WEEK NUMBER.
+  WEEK_OF_MONTH;
 ```
 ---
 ### 3050. Pizza Toppings Cost Analysis
 ```sql
+WITH T AS (
+    -- Ranks each topping alphabetically. The rank is used to ensure unique combinations.
+    SELECT
+        *,
+        RANK() OVER (ORDER BY TOPPING_NAME) AS RK
+    FROM
+        TOPPINGS
+)
+SELECT
+    -- Concatenates the names of the three toppings to form a pizza name.
+    CONCAT(T1.TOPPING_NAME, ',', T2.TOPPING_NAME, ',', T3.TOPPING_NAME) AS PIZZA,
+    -- Sums the costs of the three toppings.
+    T1.COST + T2.COST + T3.COST AS TOTAL_COST
+FROM
+    T AS T1
+    JOIN T AS T2
+        ON T1.RK < T2.RK -- Ensures T2's topping comes after T1's to avoid duplicates
+    JOIN T AS T3
+        ON T2.RK < T3.RK -- Ensures T3's topping comes after T2's
+ORDER BY
+    -- Orders by total cost descending (most expensive first) and then by pizza name ascending for ties.
+    TOTAL_COST DESC,
+    PIZZA ASC;
 ```
 ---
 ### 3054. Binary Tree Nodes
 ```sql
+SELECT DISTINCT
+    T1.N AS N,
+    CASE
+        -- A node is a 'ROOT' if it has no parent (its parent column 'P' is NULL).
+        WHEN T1.P IS NULL THEN 'Root'
+        -- A node is a 'LEAF' if it has a parent but no children (no matching 'N' in the T2 parent column).
+        WHEN T2.P IS NULL THEN 'Leaf'
+        -- A node is an 'INNER' node if it has both a parent and at least one child.
+        ELSE 'Inner'
+    END AS TYPE
+FROM
+    TREE AS T1
+    -- Performs a LEFT JOIN to check if each node (T1.N) exists as a parent (T2.P) to another node.
+    -- This allows us to identify nodes that have children.
+    LEFT JOIN TREE AS T2 ON T1.N = T2.P
+ORDER BY
+    N;
 ```
 ---
 ### 3055. Top Percentile Fraud
 ```sql
+WITH
+  FRAUDPERCENTILE AS (
+    SELECT
+      POLICY_ID,
+      STATE,
+      FRAUD_SCORE,
+      PERCENT_RANK() OVER(
+        PARTITION BY STATE
+        ORDER BY FRAUD_SCORE DESC
+      ) AS PCT_RNK
+    FROM FRAUD
+  )
+SELECT POLICY_ID, STATE, FRAUD_SCORE
+FROM FRAUDPERCENTILE
+WHERE PCT_RNK < 0.05
+ORDER BY STATE, FRAUD_SCORE DESC, POLICY_ID;
 ```
 ---
 ### 3056. Snaps Analysis
 ```sql
+SELECT
+    AGE_BUCKET,
+    ROUND(100.0 * SUM(CASE WHEN ACTIVITY_TYPE = 'send' THEN TIME_SPENT ELSE 0 END) / SUM(TIME_SPENT), 2) AS SEND_PERC,
+    ROUND(100.0 * SUM(CASE WHEN ACTIVITY_TYPE = 'open' THEN TIME_SPENT ELSE 0 END) / SUM(TIME_SPENT), 2) AS OPEN_PERC
+FROM
+    ACTIVITIES
+JOIN
+    AGE ON ACTIVITIES.USER_ID = AGE.USER_ID
+GROUP BY
+    AGE_BUCKET;
 ```
 ---
 ### 3058. Friends With No Mutual Friends
@@ -3483,7 +3604,7 @@ FROM
 -- Filters for rows where there was no match, meaning the friends have no mutual friends
 WHERE
     USERTOMUTUALFRIEND.FRIEND_ID IS NULL
-ORDER BY 1,2;
+ORDER BY 1, 2;
 ```
 ---
 ### 3087. Find Trending Hashtags
