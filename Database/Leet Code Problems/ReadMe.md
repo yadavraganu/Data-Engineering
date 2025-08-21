@@ -3790,6 +3790,27 @@ WHERE SERVERNEIGHBORS.SESSION_STATUS = 'start';
 ---
 ### 3140. Consecutive Available Seats II
 ```sql
+WITH
+    T AS (
+        SELECT
+            *,
+            SEAT_ID - (RANK() OVER (ORDER BY SEAT_ID)) AS GID
+        FROM CINEMA
+        WHERE FREE = 1
+    ),
+    P AS (
+        SELECT
+            MIN(SEAT_ID) AS FIRST_SEAT_ID,
+            MAX(SEAT_ID) AS LAST_SEAT_ID,
+            COUNT(1) AS CONSECUTIVE_SEATS_LEN,
+            RANK() OVER (ORDER BY COUNT(1) DESC) AS RK
+        FROM T
+        GROUP BY GID
+    )
+SELECT FIRST_SEAT_ID, LAST_SEAT_ID, CONSECUTIVE_SEATS_LEN
+FROM P
+WHERE RK = 1
+ORDER BY 1;
 ```
 ---
 ### 3166. Calculate Parking Fees and Duration
