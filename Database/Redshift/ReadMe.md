@@ -22,7 +22,7 @@
 - Allows querying data directly from **Amazon S3** using Redshift SQL.
 - Useful for **data lake integration** and **cost-effective storage**.
 
-## Choosing the Right Model
+### Choosing the Right Model
 
 | Deployment Type     | Best For                            | Scaling        | Cost Model         |
 |---------------------|-------------------------------------|----------------|--------------------|
