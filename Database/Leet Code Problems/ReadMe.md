@@ -3815,6 +3815,39 @@ ORDER BY 1;
 ---
 ### 3166. Calculate Parking Fees and Duration
 ```sql
+WITH
+    T AS (
+        SELECT
+            CAR_ID,
+            LOT_ID,
+            SUM(DATEDIFF(SECOND, ENTRY_TIME, EXIT_TIME)) AS DURATION
+        FROM PARKINGTRANSACTIONS
+        GROUP BY CAR_ID, LOT_ID
+    ),
+    P AS (
+        SELECT
+            *,
+            RANK() OVER (
+                PARTITION BY CAR_ID
+                ORDER BY DURATION DESC
+            ) AS RK
+        FROM T
+    )
+SELECT
+    T1.CAR_ID,
+    SUM(T1.FEE_PAID) AS TOTAL_FEE_PAID,
+    ROUND(
+        SUM(CAST(T1.FEE_PAID AS FLOAT)) / (SUM(DATEDIFF(SECOND, T1.ENTRY_TIME, T1.EXIT_TIME)) / 3600.0),
+        2
+    ) AS AVG_HOURLY_FEE,
+    T2.LOT_ID AS MOST_TIME_LOT
+FROM
+    PARKINGTRANSACTIONS AS T1
+    LEFT JOIN P AS T2 ON T1.CAR_ID = T2.CAR_ID AND T2.RK = 1
+GROUP BY
+    T1.CAR_ID,
+    T2.LOT_ID
+ORDER BY T1.CAR_ID;
 ```
 ---
 ### 3182. Find Top Scoring Students
