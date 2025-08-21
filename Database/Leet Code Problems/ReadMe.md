@@ -3729,18 +3729,89 @@ ORDER BY
 ---
 ### 3204. Bitwise User Permissions Analysis
 ```sql
+-- Function directly not available in SQL Sever
+SELECT
+    BIT_AND(PERMISSIONS) AS COMMON_PERMS,
+    BIT_OR(PERMISSIONS) AS ANY_PERMS
+FROM USER_PERMISSIONS;
 ```
 ---
 ### 3220. Odd and Even Transactions
 ```sql
+SELECT
+    TRANSACTION_DATE,
+    SUM(CASE WHEN AMOUNT % 2 = 1 THEN AMOUNT ELSE 0 END) AS ODD_SUM,
+    SUM(CASE WHEN AMOUNT % 2 = 0 THEN AMOUNT ELSE 0 END) AS EVEN_SUM
+FROM TRANSACTIONS
+GROUP BY TRANSACTION_DATE
+ORDER BY TRANSACTION_DATE;
 ```
 ---
 ### 3230. Customer Purchasing Behavior Analysis
 ```sql
+WITH
+    T AS (
+        SELECT *
+        FROM
+            TRANSACTIONS
+            JOIN PRODUCTS USING (PRODUCT_ID)
+    ),
+    P AS (
+        SELECT
+            CUSTOMER_ID,
+            CATEGORY,
+            COUNT(1) CNT,
+            MAX(TRANSACTION_DATE) MAX_DATE
+        FROM T
+        GROUP BY 1, 2
+    ),
+    R AS (
+        SELECT
+            CUSTOMER_ID,
+            CATEGORY,
+            RANK() OVER (
+                PARTITION BY CUSTOMER_ID
+                ORDER BY CNT DESC, MAX_DATE DESC
+            ) RK
+        FROM P
+    )
+SELECT
+    T.CUSTOMER_ID,
+    ROUND(SUM(AMOUNT), 2) TOTAL_AMOUNT,
+    COUNT(1) TRANSACTION_COUNT,
+    COUNT(DISTINCT T.CATEGORY) UNIQUE_CATEGORIES,
+    ROUND(AVG(AMOUNT), 2) AVG_TRANSACTION_AMOUNT,
+    R.CATEGORY TOP_CATEGORY,
+    ROUND(COUNT(1) * 10 + SUM(AMOUNT) / 100, 2) LOYALTY_SCORE
+FROM
+    T T
+    JOIN R R ON T.CUSTOMER_ID = R.CUSTOMER_ID AND R.RK = 1
+GROUP BY 1
+ORDER BY 7 DESC, 1;
 ```
 ---
 ### 3252. Premier League Table Ranking II
 ```sql
+WITH
+    T AS (
+        SELECT
+            TEAM_NAME,
+            WINS * 3 + DRAWS AS POINTS,
+            RANK() OVER (ORDER BY WINS * 3 + DRAWS DESC) AS POSITION,
+            COUNT(1) OVER () AS TOTAL_TEAMS
+        FROM TEAMSTATS
+    )
+SELECT
+    TEAM_NAME,
+    POINTS,
+    POSITION,
+    CASE
+        WHEN POSITION <= CEIL(TOTAL_TEAMS / 3.0) THEN 'TIER 1'
+        WHEN POSITION <= CEIL(2 * TOTAL_TEAMS / 3.0) THEN 'TIER 2'
+        ELSE 'TIER 3'
+    END TIER
+FROM T
+ORDER BY 2 DESC, 1;
 ```
 ---
 ### 3262. Find Overlapping Shifts
