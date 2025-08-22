@@ -116,3 +116,44 @@ An **Interface Endpoint** is a type of **VPC Endpoint** that allows you to priva
 - Traffic never leaves the AWS backbone.
 - You can control access using **Security Groups** and **IAM policies**.
 - Helps meet **compliance** and **audit** requirements.
+
+## **What is VPC Peering?**
+
+**VPC Peering** is a networking connection between two Virtual Private Clouds (VPCs) that enables you to route traffic between them using private IP addresses. It’s useful for enabling communication between VPCs in the same or different AWS accounts and regions.
+
+### **When to Use VPC Peering**
+
+Use VPC Peering when:
+1. **You need private communication** between two VPCs.
+2. VPCs are in the **same region or different regions**.
+3. You want **low-latency, high-bandwidth** communication.
+4. You don’t need **transitive routing** (i.e., VPC A → VPC B → VPC C is not supported).
+5. You want to **avoid NAT gateways or VPNs** for internal traffic.
+
+### **How to Set Up VPC Peering**
+
+#### **Step-by-Step:**
+1. **Create a Peering Connection**
+   - Go to VPC Console → Peering Connections → Create Peering Connection.
+   - Choose requester and accepter VPCs.
+
+2. **Accept the Peering Request**
+   - The owner of the accepter VPC must accept the request.
+
+3. **Update Route Tables**
+   - Add routes in both VPCs to allow traffic to flow between them.
+
+4. **Update Security Groups**
+   - Allow inbound traffic from the peer VPC’s CIDR block.
+
+### **When to Avoid VPC Peering**
+
+Avoid VPC Peering if:
+1. You need **transitive routing** between multiple VPCs.
+   - Use **AWS Transit Gateway** instead.
+2. You have **many VPCs** to connect (e.g., hub-and-spoke architecture).
+   - Peering becomes hard to manage at scale.
+3. You need **centralized egress or ingress**.
+   - Transit Gateway or PrivateLink is better suited.
+4. You want **fine-grained service access** (e.g., only specific services).
+   - Use **AWS PrivateLink**.
