@@ -4028,14 +4028,82 @@ ORDER BY
 ---
 ### 3293. Calculate Product Final Price
 ```sql
+SELECT
+    PRODUCT_ID,
+    PRICE * (100 - ISNULL(DISCOUNT, 0)) / 100 AS FINAL_PRICE,
+    CATEGORY
+FROM
+    PRODUCTS
+    LEFT JOIN DISCOUNTS ON PRODUCTS.CATEGORY = DISCOUNTS.CATEGORY
+ORDER BY
+    PRODUCT_ID;
 ```
 ---
 ### 3308. Find Top Performing Driver
 ```sql
+WITH
+    T AS (
+        SELECT
+            FUEL_TYPE,
+            DRIVER_ID,
+            ROUND(AVG(RATING), 2) AS RATING,
+            SUM(DISTANCE) AS DISTANCE,
+            SUM(ACCIDENTS) AS ACCIDENTS
+        FROM
+            DRIVERS
+            JOIN VEHICLES ON DRIVERS.DRIVER_ID = VEHICLES.DRIVER_ID
+            JOIN TRIPS ON VEHICLES.VEHICLE_ID = TRIPS.VEHICLE_ID
+        GROUP BY
+            FUEL_TYPE,
+            DRIVER_ID
+    ),
+    P AS (
+        SELECT
+            *,
+            RANK() OVER (
+                PARTITION BY FUEL_TYPE
+                ORDER BY RATING DESC, DISTANCE DESC, ACCIDENTS ASC
+            ) AS [RK]
+        FROM T
+    )
+SELECT
+    FUEL_TYPE, DRIVER_ID, RATING, DISTANCE
+FROM P
+WHERE
+    [RK] = 1
+ORDER BY
+    FUEL_TYPE;
 ```
 ---
 ### 3322. Premier League Table Ranking III
 ```sql
+WITH TEAMSTATSCALCULATED AS (
+    SELECT
+        SEASON_ID,
+        TEAM_ID,
+        TEAM_NAME,
+        WINS * 3 + DRAWS AS POINTS,
+        GOALS_FOR - GOALS_AGAINST AS GOAL_DIFFERENCE
+    FROM
+        SEASONSTATS
+)
+SELECT
+    SEASON_ID,
+    TEAM_ID,
+    TEAM_NAME,
+    POINTS,
+    GOAL_DIFFERENCE,
+    RANK() OVER (
+        PARTITION BY SEASON_ID
+        ORDER BY
+            POINTS DESC,
+            GOAL_DIFFERENCE DESC,
+            TEAM_NAME
+    ) AS POSITION
+FROM
+    TEAMSTATSCALCULATED
+ORDER BY
+    SEASON_ID, POSITION, TEAM_NAME;
 ```
 ---
 ### 3328. Find Cities in Each State II
