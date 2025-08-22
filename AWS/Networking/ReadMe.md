@@ -1,8 +1,8 @@
-## **What is Amazon VPC?**
+# **What is Amazon VPC?**
 
 Amazon VPC is a **logically isolated network** within the AWS cloud where you can launch AWS resources (like EC2 instances). It gives you full control over your virtual networking environment, including IP address ranges, subnets, route tables, gateways, and security settings.
 
-### **Core Concepts of VPC**
+## **Core Concepts of VPC**
 
 ### 1. **CIDR Block**
 - Defines the IP address range of your VPC.
@@ -43,11 +43,11 @@ Amazon VPC is a **logically isolated network** within the AWS cloud where you ca
 - Private connections to AWS services without using the internet.
 - Types: **Interface Endpoint** and **Gateway Endpoint**.
 
-## What Are Security Groups in AWS?
+# What Are Security Groups in AWS?
 
 **Security Groups** are virtual firewalls that control **inbound and outbound traffic** to AWS resources—primarily **EC2 instances**. They operate at the **instance level**, not the subnet level.
 
-### Key Characteristics
+## Key Characteristics
 
 - **Stateful**: If you allow inbound traffic, the response is automatically allowed outbound.
 - **Instance-Level**: Applied directly to EC2 instances or other supported resources.
@@ -69,7 +69,7 @@ Define what traffic your instance is **allowed to send out**.
 Example:
 - Allow all outbound traffic: `0.0.0.0/0` on all ports (default)
 
-### Where to Use Security Groups
+## Where to Use Security Groups
 
 | Resource Type        | Use Case Example                                      |
 |----------------------|--------------------------------------------------------|
@@ -79,11 +79,11 @@ Example:
 | **Lambda (VPC-enabled)** | Control access to other VPC resources               |
 | **ECS Tasks (Fargate)** | Secure communication between containers              |
 
-## What is an **Interface Endpoint** in AWS?
+# What is an **Interface Endpoint** in AWS?
 
 An **Interface Endpoint** is a type of **VPC Endpoint** that allows you to privately connect your VPC to supported **AWS services**, **third-party services**, or **your own services**—**without using public IPs** or traversing the internet.
 
-### Key Features
+## Key Features
 
 - **Powered by AWS PrivateLink**: Uses private IPs within your VPC.
 - **Creates an Elastic Network Interface (ENI)** in your subnet.
@@ -95,14 +95,14 @@ An **Interface Endpoint** is a type of **VPC Endpoint** that allows you to priva
   - CloudWatch
   - Custom services hosted behind a Network Load Balancer
   
-### How It Works
+## How It Works
 
 1. You create an **Interface Endpoint** in a subnet of your VPC.
 2. AWS provisions an **ENI** with a private IP in that subnet.
 3. Your VPC resources use this ENI to communicate with the target service.
 4. No need for NAT Gateway, Internet Gateway, or public IPs.
 
-### Use Cases
+## Use Cases
 
 | Use Case | Benefit |
 |----------|---------|
@@ -111,17 +111,17 @@ An **Interface Endpoint** is a type of **VPC Endpoint** that allows you to priva
 | Hosting internal services | Share securely across accounts/VPCs |
 | Compliance-sensitive workloads | Meets data residency and security requirements |
 
-### Security Benefits
+## Security Benefits
 
 - Traffic never leaves the AWS backbone.
 - You can control access using **Security Groups** and **IAM policies**.
 - Helps meet **compliance** and **audit** requirements.
 
-## **What is VPC Peering?**
+# **What is VPC Peering?**
 
 **VPC Peering** is a networking connection between two Virtual Private Clouds (VPCs) that enables you to route traffic between them using private IP addresses. It’s useful for enabling communication between VPCs in the same or different AWS accounts and regions.
 
-### **When to Use VPC Peering**
+## **When to Use VPC Peering**
 
 Use VPC Peering when:
 1. **You need private communication** between two VPCs.
@@ -130,9 +130,9 @@ Use VPC Peering when:
 4. You don’t need **transitive routing** (i.e., VPC A → VPC B → VPC C is not supported).
 5. You want to **avoid NAT gateways or VPNs** for internal traffic.
 
-### **How to Set Up VPC Peering**
+## **How to Set Up VPC Peering**
 
-#### **Step-by-Step:**
+### **Step-by-Step:**
 1. **Create a Peering Connection**
    - Go to VPC Console → Peering Connections → Create Peering Connection.
    - Choose requester and accepter VPCs.
@@ -146,7 +146,7 @@ Use VPC Peering when:
 4. **Update Security Groups**
    - Allow inbound traffic from the peer VPC’s CIDR block.
 
-### **When to Avoid VPC Peering**
+## **When to Avoid VPC Peering**
 
 Avoid VPC Peering if:
 1. You need **transitive routing** between multiple VPCs.
@@ -157,3 +157,15 @@ Avoid VPC Peering if:
    - Transit Gateway or PrivateLink is better suited.
 4. You want **fine-grained service access** (e.g., only specific services).
    - Use **AWS PrivateLink**.
+
+## **Why Overlapping IP Ranges Are Not Allowed**
+- VPC Peering uses **route tables** to forward traffic between VPCs.
+- If both VPCs have overlapping IP ranges (e.g., both use `10.0.0.0/16`), AWS cannot determine which VPC a packet is meant for.
+- This causes **routing conflicts** and **unpredictable behavior**.
+
+## **Best Practices**
+- Plan your VPC CIDR blocks carefully to avoid overlap.
+- Use **non-overlapping private IP ranges** like:
+  - VPC A: `10.0.0.0/16`
+  - VPC B: `10.1.0.0/16`
+- Consider using **smaller subnets** if IP space is limited.
