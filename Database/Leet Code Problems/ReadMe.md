@@ -4213,10 +4213,96 @@ ORDER BY 1;
 ---
 ### 3521. Find Product Recommendation Pairs
 ```sql
+WITH PRODUCTPAIRS AS (
+    SELECT
+        P1.USER_ID,
+        P1.PRODUCT_ID AS PRODUCT1_ID,
+        P2.PRODUCT_ID AS PRODUCT2_ID
+    FROM
+        PRODUCTPURCHASES AS P1
+    JOIN
+        PRODUCTPURCHASES AS P2
+        ON P1.USER_ID = P2.USER_ID
+    WHERE
+        P1.PRODUCT_ID < P2.PRODUCT_ID
+)
+SELECT
+    TP.PRODUCT1_ID,
+    TP.PRODUCT2_ID,
+    PI1.CATEGORY AS PRODUCT1_CATEGORY,
+    PI2.CATEGORY AS PRODUCT2_CATEGORY,
+    COUNT(DISTINCT TP.USER_ID) AS CUSTOMER_COUNT
+FROM
+    PRODUCTPAIRS AS TP
+JOIN
+    PRODUCTINFO AS PI1
+    ON TP.PRODUCT1_ID = PI1.PRODUCT_ID
+JOIN
+    PRODUCTINFO AS PI2
+    ON TP.PRODUCT2_ID = PI2.PRODUCT_ID
+GROUP BY
+    TP.PRODUCT1_ID,
+    TP.PRODUCT2_ID,
+    PI1.CATEGORY,
+    PI2.CATEGORY
+HAVING
+    COUNT(DISTINCT TP.USER_ID) >= 3
+ORDER BY
+    CUSTOMER_COUNT DESC,
+    PRODUCT1_ID ASC,
+    PRODUCT2_ID ASC;
 ```
 ---
 ### 3564. Seasonal Sales Analysis
 ```sql
+WITH
+    SEASONALSALES AS (
+        SELECT
+            CASE
+                WHEN MONTH(S.SALE_DATE) IN (12, 1, 2) THEN 'Winter'
+                WHEN MONTH(S.SALE_DATE) IN (3, 4, 5) THEN 'Spring'
+                WHEN MONTH(S.SALE_DATE) IN (6, 7, 8) THEN 'Summer'
+                WHEN MONTH(S.SALE_DATE) IN (9, 10, 11) THEN 'Fall'
+            END AS SEASON,
+            P.CATEGORY,
+            SUM(S.QUANTITY) AS TOTAL_QUANTITY,
+            SUM(S.QUANTITY * S.PRICE) AS TOTAL_REVENUE
+        FROM
+            SALES AS S
+        JOIN PRODUCTS AS P
+            ON S.PRODUCT_ID = P.PRODUCT_ID
+        GROUP BY
+            CASE
+                WHEN MONTH(S.SALE_DATE) IN (12, 1, 2) THEN 'Winter'
+                WHEN MONTH(S.SALE_DATE) IN (3, 4, 5) THEN 'Spring'
+                WHEN MONTH(S.SALE_DATE) IN (6, 7, 8) THEN 'Summer'
+                WHEN MONTH(S.SALE_DATE) IN (9, 10, 11) THEN 'Fall'
+            END,
+            P.CATEGORY
+    ),
+    TOPCATEGORYPERSEASON AS (
+        SELECT
+            SEASON,
+            CATEGORY,
+            TOTAL_QUANTITY,
+            TOTAL_REVENUE,
+            RANK() OVER (
+                PARTITION BY SEASON
+                ORDER BY TOTAL_QUANTITY DESC, TOTAL_REVENUE DESC
+            ) AS RK
+        FROM SEASONALSALES
+    )
+SELECT
+    SEASON,
+    CATEGORY,
+    TOTAL_QUANTITY,
+    TOTAL_REVENUE
+FROM
+    TOPCATEGORYPERSEASON
+WHERE
+    RK = 1
+ORDER BY
+    1;
 ```
 ---
 ### 3580. Find Consistently Improving Employees
