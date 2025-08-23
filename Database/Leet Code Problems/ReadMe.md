@@ -4249,6 +4249,14 @@ ORDER BY 1;
 ---
 ### 570. Managers with at Least 5 Direct Reports
 ```sql
+SELECT E1.NAME
+FROM EMPLOYEE E1
+JOIN (
+    SELECT MANAGERID, COUNT(*) AS DIRECTREPORTS
+    FROM EMPLOYEE
+    GROUP BY MANAGERID
+    HAVING COUNT(*) >= 5
+) E2 ON E1.ID = E2.MANAGERID;
 ```
 ---
 ### 574. Winning Candidate
