@@ -4307,6 +4307,35 @@ ORDER BY
 ---
 ### 3580. Find Consistently Improving Employees
 ```sql
+WITH
+    RECENT AS (
+        SELECT
+            EMPLOYEE_ID,
+            REVIEW_DATE,
+            RATING,
+            ROW_NUMBER() OVER (
+                PARTITION BY EMPLOYEE_ID
+                ORDER BY REVIEW_DATE DESC
+            ) AS RN,
+            (
+                LAG(RATING) OVER (
+                    PARTITION BY EMPLOYEE_ID
+                    ORDER BY REVIEW_DATE DESC
+                ) - RATING
+            ) AS DELTA
+        FROM PERFORMANCE_REVIEWS
+    )
+SELECT
+    R.EMPLOYEE_ID,
+    E.NAME,
+    SUM(R.DELTA) AS IMPROVEMENT_SCORE
+FROM
+    RECENT R
+    JOIN EMPLOYEES E ON R.EMPLOYEE_ID = E.EMPLOYEE_ID
+WHERE R.RN > 1 AND R.RN <= 3
+GROUP BY R.EMPLOYEE_ID, E.NAME
+HAVING COUNT(*) = 2 AND MIN(R.DELTA) > 0
+ORDER BY 3 DESC, 2;
 ```
 ---
 ### 3586. Find COVID Recovery Patients
