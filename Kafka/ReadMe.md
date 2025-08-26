@@ -1,3 +1,40 @@
+# In Sync Replica
+In Kafka, **In-Sync Replicas (ISR)** are a critical part of the **replication mechanism** that ensures **data durability and consistency** across the cluster.
+
+### What Are In-Sync Replicas (ISR)?
+
+An **In-Sync Replica** is a **replica of a partition** that is **fully caught up with the leader**. This means it has all the messages that the leader has written to its log, up to the latest committed offset.
+
+### Components Involved
+
+- **Leader Replica**: The broker that handles all read/write operations for a partition.
+- **Follower Replicas**: Brokers that replicate data from the leader.
+- **ISR**: A subset of replicas (including the leader) that are **up-to-date** with the leader.
+
+### How ISR Works
+
+1. **Producer sends data** to the leader of a partition.
+2. **Leader writes** the data to its local log.
+3. **Followers pull** the data from the leader.
+4. Kafka checks if followers are **caught up** (within a configured lag).
+5. If yes, they remain in the ISR. If not, they are **temporarily removed**.
+
+### Configuration Parameters
+
+- `replica.lag.time.max.ms`: Maximum time a follower can lag behind the leader before being removed from ISR.
+- `min.insync.replicas`: Minimum number of ISR members required for Kafka to acknowledge a write (used with `acks=all`).
+
+### Why ISR Matters
+
+- **Data Reliability**: Ensures that data is replicated before acknowledging to producers.
+- **Leader Election**: Only ISR members are eligible to become the new leader if the current one fails.
+- **Write Guarantees**: With `acks=all`, Kafka waits for all ISR members to confirm the write.
+
+### What Happens If ISR Shrinks?
+
+- If the number of ISR members drops below `min.insync.replicas`, Kafka **rejects writes** with `acks=all`.
+- This protects against **data loss** in case of broker failures.
+
 # Kafka Offsets
 In Kafka, an **offset** is a unique identifier assigned to each message within a **partition**. It represents the **position** of a record in the log and is crucial for tracking and consuming data reliably.
 
