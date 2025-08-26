@@ -1,3 +1,36 @@
+# Kafka Log Segments
+In Kafka, a **segment** is a **chunk of a partition log file** stored on disk. Each Kafka topic partition is made up of **multiple segments**, and these segments are the basic units Kafka uses to manage, store, and clean log data.
+
+### What Is a Segment?
+
+- A **log segment** is a file that stores a **sequence of messages** (records) for a partition.
+- Kafka **appends** new messages to the **active segment**.
+- When the segment reaches a certain **size** or **age**, it is **rolled** (closed), and a new segment is created.
+
+### Segment Structure
+
+Each segment consists of:
+- A **log file** (e.g., `00000000000000000000.log`)
+- An **index file** (e.g., `.index`) for fast offset lookup
+- A **time index** (e.g., `.timeindex`) for time-based searches
+
+### Segment Lifecycle
+
+1. **Active Segment**: Kafka writes new messages here.
+2. **Rolled Segment**: Once full (based on `log.segment.bytes` or `log.segment.ms`), it becomes inactive.
+3. **Eligible for Compaction or Deletion**:
+   - If `cleanup.policy=compact`, Kafka may compact it.
+   - If `cleanup.policy=delete`, Kafka may delete it after `retention.ms`.
+
+### Key Configs
+
+| Config | Description |
+|--------|-------------|
+| `log.segment.bytes` | Max size of a segment before rolling |
+| `log.segment.ms` | Max time before rolling |
+| `retention.ms` | How long to keep segments (for delete policy) |
+| `cleanup.policy` | Determines if segments are compacted or deleted |
+
 # Kafka Log Compaction Config
 Kafka log compaction is a mechanism for data retention that ensures only the latest value for each message key is retained within a topic's log. This contrasts with time-based retention (the default), which simply discards old segments based on age or size.
 ### Key Settings and Explanation:
