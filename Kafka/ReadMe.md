@@ -1,3 +1,37 @@
+# Kafka Offsets
+In Kafka, an **offset** is a unique identifier assigned to each message within a **partition**. It represents the **position** of a record in the log and is crucial for tracking and consuming data reliably.
+
+### What Is an Offset?
+
+- Think of a Kafka partition as a **log file**.
+- Each message in that log has a **sequential number** called an **offset**.
+- Offsets are **per-partition**, not global across the topic.
+
+### Why Offsets Matter
+
+Offsets allow:
+- **Consumers** to track where they left off.
+- **Kafka** to support **replayability** (you can re-read messages).
+- **Parallelism**: Each partition has its own offset sequence.
+
+### Offset Management
+
+Consumers can:
+- **Auto-commit** offsets (default, but risky if processing fails).
+- **Manually commit** offsets after successful processing.
+- Store offsets in:
+  - Kafka itself (default)
+  - External systems (e.g., Zookeeper, databases)
+
+### Key Concepts
+
+| Term | Description |
+|------|-------------|
+| **Offset** | Position of a message in a partition |
+| **Committed Offset** | Last offset acknowledged by the consumer |
+| **Current Offset** | Offset of the message being processed |
+| **Lag** | Difference between latest offset and committed offset |
+
 # Kafka Log Segments
 In Kafka, a **segment** is a **chunk of a partition log file** stored on disk. Each Kafka topic partition is made up of **multiple segments**, and these segments are the basic units Kafka uses to manage, store, and clean log data.
 
