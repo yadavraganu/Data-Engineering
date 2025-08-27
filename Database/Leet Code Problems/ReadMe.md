@@ -4935,5 +4935,22 @@ GROUP BY PLAYERTOINSTALLDATE.INSTALL_DT;
 ---
 ### 618. Students Report By Geography
 ```sql
+WITH
+    T AS (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (
+                PARTITION BY CONTINENT
+                ORDER BY NAME
+            ) AS RK
+        FROM STUDENT
+    )
+SELECT
+    MAX(CASE WHEN CONTINENT = 'america' THEN NAME ELSE NULL END) AS 'AMERICA',
+    MAX(CASE WHEN CONTINENT = 'asia' THEN NAME ELSE NULL END) AS 'ASIA',
+    MAX(CASE WHEN CONTINENT = 'europe' THEN NAME ELSE NULL END) AS 'EUROPE'
+FROM T
+GROUP BY RK
+ORDER BY RK;
 ```
 ---
