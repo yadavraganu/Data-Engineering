@@ -1356,6 +1356,10 @@ ORDER BY
   6 DESC, 2 ASC
 ```
 ---
+### 3642. Find Books with Polarized Opinions
+```sql
+```
+---
 ### 511. Game Play Analysis I
 ```sql
 SELECT PLAYER_ID , MIN(EVENT_DATE) AS FIRST_LOGIN FROM ACTIVITY GROUP BY PLAYER_ID
@@ -4473,6 +4477,10 @@ FROM
   AND IMBALANCE_RATIO > 1
 ORDER BY 
   6 DESC, 2 ASC
+```
+---
+### 3657. Find Loyal Customers
+```sql
 ```
 ---
 ### 534. Game Play Analysis III
