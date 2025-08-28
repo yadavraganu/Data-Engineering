@@ -4919,6 +4919,19 @@ GROUP BY PLAYERTOINSTALLDATE.INSTALL_DT;
 ---
 ### 571. Find Median Given Frequency of Numbers
 ```sql
+WITH
+    T AS (
+        SELECT
+            *,
+            SUM(FREQUENCY) OVER (ORDER BY NUM ASC) AS RK1,
+            SUM(FREQUENCY) OVER (ORDER BY NUM DESC) AS RK2,
+            SUM(FREQUENCY) OVER () AS S
+        FROM NUMBERS
+    )
+SELECT
+    ROUND(AVG(NUM), 1) AS MEDIAN
+FROM T
+WHERE RK1 >= S / 2 AND RK2 >= S / 2;
 ```
 ---
 ### 579. Find Cumulative Salary of an Employee
