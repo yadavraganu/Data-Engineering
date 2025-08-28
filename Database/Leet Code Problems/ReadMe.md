@@ -4899,6 +4899,29 @@ GROUP BY PLAYERTOINSTALLDATE.INSTALL_DT;
 ---
 ### 3451. Find Invalid IP Addresses
 ```sql
+SELECT L.IP,
+       COUNT(*) AS INVALID_COUNT
+FROM LOGS L
+WHERE (
+    -- IP MUST HAVE EXACTLY 4 PARTS
+    (SELECT COUNT(*) FROM STRING_SPLIT(L.IP, '.')) <> 4
+    OR
+    -- ANY PART > 255
+    EXISTS (
+        SELECT 1
+        FROM STRING_SPLIT(L.IP, '.')
+        WHERE TRY_CAST([VALUE] AS INT) > 255
+    )
+    OR
+    -- ANY PART HAS LEADING ZEROS
+    EXISTS (
+        SELECT 1
+        FROM STRING_SPLIT(L.IP, '.')
+        WHERE LEN([VALUE]) > 1 AND LEFT([VALUE], 1) = '0'
+    )
+)
+GROUP BY L.IP
+ORDER BY INVALID_COUNT DESC, L.IP DESC;
 ```
 ---
 ### 3482. Analyze Organization Hierarchy
