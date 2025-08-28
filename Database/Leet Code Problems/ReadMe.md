@@ -4923,14 +4923,66 @@ GROUP BY PLAYERTOINSTALLDATE.INSTALL_DT;
 ---
 ### 579. Find Cumulative Salary of an Employee
 ```sql
+WITH T AS (
+    SELECT 
+        ID, 
+        MONTH, 
+        SUM(SALARY) OVER (
+            PARTITION BY ID 
+            ORDER BY MONTH 
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ) AS SALARY,
+        RANK() OVER (
+            PARTITION BY ID 
+            ORDER BY MONTH DESC
+        ) AS RK
+    FROM EMPLOYEE
+)
+SELECT ID, MONTH, SALARY
+FROM T
+WHERE RK > 1
+ORDER BY ID, MONTH DESC;
 ```
 ---
 ### 601. Human Traffic of Stadium
 ```sql
+WITH S AS (
+    SELECT *,
+           ID - ROW_NUMBER() OVER (ORDER BY ID) AS RK
+    FROM STADIUM
+    WHERE PEOPLE >= 100
+),
+T AS (
+    SELECT *,
+           COUNT(1) OVER (PARTITION BY RK) AS CNT
+    FROM S
+)
+SELECT ID, VISIT_DATE, PEOPLE
+FROM T
+WHERE CNT >= 3
 ```
 ---
 ### 615. Average Salary: Departments VS Company
 ```sql
+WITH T AS (
+    SELECT
+        FORMAT(PAY_DATE, 'yyyy-MM') AS PAY_MONTH,
+        DEPARTMENT_ID,
+        AVG(AMOUNT) OVER (PARTITION BY PAY_DATE) AS COMPANY_AVG_AMOUNT,
+        AVG(AMOUNT) OVER (PARTITION BY PAY_DATE, DEPARTMENT_ID) AS DEPARTMENT_AVG_AMOUNT
+    FROM
+        SALARY AS S
+        JOIN EMPLOYEE AS E ON S.EMPLOYEE_ID = E.EMPLOYEE_ID
+)
+SELECT DISTINCT
+    PAY_MONTH,
+    DEPARTMENT_ID,
+    CASE
+        WHEN COMPANY_AVG_AMOUNT = DEPARTMENT_AVG_AMOUNT THEN 'same'
+        WHEN COMPANY_AVG_AMOUNT < DEPARTMENT_AVG_AMOUNT THEN 'higher'
+        ELSE 'lower'
+    END AS COMPARISON
+FROM T;
 ```
 ---
 ### 618. Students Report By Geography
