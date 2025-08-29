@@ -5036,6 +5036,15 @@ ORDER BY CYCLE_LENGTH DESC, TOTAL_STUDY_HOURS DESC;
 ---
 ### 569. Median Employee Salary
 ```sql
+WITH T AS (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY COMPANY ORDER BY SALARY ASC) AS RK,
+           COUNT(ID) OVER (PARTITION BY COMPANY) AS N
+    FROM EMPLOYEE
+)
+SELECT ID, COMPANY, SALARY
+FROM T
+WHERE RK >= N / 2 AND RK <= N / 2 + 1;
 ```
 ---
 ### 571. Find Median Given Frequency of Numbers
