@@ -169,3 +169,27 @@ Avoid VPC Peering if:
   - VPC A: `10.0.0.0/16`
   - VPC B: `10.1.0.0/16`
 - Consider using **smaller subnets** if IP space is limited.
+
+# Subnets
+
+In AWS, a **subnet** is a logical subdivision of a **Virtual Private Cloud (VPC)**. It's a range of IP addresses within your VPC's larger IP block. Subnets serve to organize and isolate your resources, providing a way to segment your network for security and management purposes. Each subnet must reside entirely within a single Availability Zone (AZ), which is a key design consideration for building highly available applications.
+
+## Types of Subnets
+
+AWS classifies subnets into two main types based on their connectivity to the internet:
+
+### Public Subnet
+A **public subnet** is a subnet with a **route table** that has a direct route to an **Internet Gateway (IGW)**. This configuration allows resources within the subnet to communicate with the public internet.
+
+* **Characteristics**:
+    * Instances can have public IP addresses (either automatically assigned or assigned via an Elastic IP).
+    * Used for public-facing resources like web servers, public-facing load balancers, and bastion hosts.
+    * Traffic destined for the internet is routed through the Internet Gateway.
+
+### Private Subnet
+A **private subnet** is a subnet whose route table **does not** have a direct route to an Internet Gateway. Resources in a private subnet cannot be directly accessed from the internet.
+
+* **Characteristics**:
+    * Instances only have private IP addresses.
+    * Used for backend services, databases, and application servers that should not be exposed to the internet.
+    * If resources in a private subnet need to access the internet (e.g., for software updates), they must do so indirectly, typically through a **NAT Gateway** located in a public subnet. 
