@@ -84,3 +84,33 @@ For a column like `marital_status` with values `married`, `single`, and `divorce
 Each bitmap has a length equal to the number of rows in the table. The bit at a specific position (e.g., the 500th bit) corresponds to the 500th row in the table. If the 500th bit in the `married` bitmap is 1, it means the 500th row has `marital_status = 'married'`.
 
 To manage and compress these bitmaps, database systems often use more sophisticated data structures. For instance, Oracle and other systems use **B-tree indexes** on the distinct values of the indexed column. The B-tree stores the distinct value (e.g., 'married') and a pointer to the associated compressed bitmap. This hybrid approach combines the fast lookup of a B-tree with the efficient bitwise operations of a bitmap.
+
+A hash index uses a **hash function** to compute an address for a specific value, allowing for very fast, direct lookups. Instead of sorting data, it organizes it into "buckets" based on the hashed value of the indexed column. This makes retrieving a single record a nearly constant-time operation.
+
+##  Hash Indexes
+### Underlying Data Structure
+
+The underlying data structure for a hash index is a **hash table** 📊. A hash table is an array of pointers to data. Each position in the array is called a "bucket." When a hash index is created, the database system applies a hash function to the values in the indexed column. This function produces a hash code, which is then used as the index to an array.
+
+* **Hash Function**: This is a mathematical algorithm that takes the key (e.g., a `user_id` or `product_code`) and generates a fixed-size integer value, or hash code.
+* **Buckets**: The hash table is an array where each index corresponds to a bucket. The hash code determines which bucket the data entry for a particular key will be stored in.
+* **Collision Handling**: A hash collision occurs when two different keys produce the same hash code. Hash tables handle this using methods like **separate chaining** (storing a linked list of all records that hash to the same bucket) or **open addressing** (probing for the next available empty slot in the array).
+
+The primary benefit of this structure is that it allows the database to go directly to the correct bucket, significantly reducing the amount of data it has to read to find the desired record.
+
+### When to Use Hash Indexes
+
+Hash indexes are ideal for scenarios where you need to perform **equality lookups** and a **high volume of read-heavy workloads**.
+
+* **Exact Match Queries**: They are most effective for queries that use the `=` operator. For example, `SELECT * FROM users WHERE email = 'john.doe@example.com'`. The hash index can compute the hash of the email address and go directly to its location.
+* **Primary Keys or Unique Constraints**: If you frequently search for records by their primary key, a hash index can provide very fast performance.
+* **In-Memory Tables**: For database storage engines that keep data in memory (like MySQL's `MEMORY` engine), hash indexes can be extremely fast due to the lack of disk I/O.
+
+### When to Avoid Hash Indexes
+
+Hash indexes are not a good fit for every situation, especially when queries involve sorting or searching for ranges of values.
+
+* **Range Queries**: Hash functions scatter data randomly across the hash table. This means there is no inherent order, making it impossible to perform queries with operators like `<`, `>`, `BETWEEN`, or `LIKE 'prefix%'`. For example, `SELECT * FROM products WHERE price > 50` would require a full table scan.
+* **Sorting**: Hash indexes cannot be used to speed up `ORDER BY` clauses because the data is not stored in a sorted manner.
+* **Hash Collisions**: If a poor hash function is used or the data has a highly uneven distribution, many keys might hash to the same bucket. This leads to long linked lists, degrading performance from a near-constant time lookup to a linear search within that list.
+* **Large Datasets with Skewed Data**: While they are efficient for large datasets with uniformly distributed keys, if data is highly non-unique (e.g., a column with only a few distinct values), a hash index can become unbalanced and perform worse than other index types, like B-trees.
