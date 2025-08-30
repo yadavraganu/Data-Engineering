@@ -86,3 +86,20 @@ aws lambda publish-layer-version \
   * `--region`: The AWS region where you want to create the layer.
 
 This command will output a JSON object containing details about the new layer version, including its **LayerVersionArn**. You'll need this ARN to attach the layer to a function.
+
+## Lambda with VPC
+
+By default, AWS Lambda functions run in a VPC managed by AWS, not your own. You need to configure a function to run inside your own Virtual Private Cloud (VPC) to access resources that are not publicly available, like an Amazon Relational Database Service (RDS) database or an Amazon ElastiCache cluster.
+
+### VPC Configuration Steps
+
+1.  **Create an IAM Role with VPC Permissions**: Your function's execution role must have permissions to manage network interfaces. The managed policy `AWSLambdaVPCAccessExecutionRole` grants the necessary permissions: `ec2:CreateNetworkInterface`, `ec2:DescribeNetworkInterfaces`, and `ec2:DeleteNetworkInterface`.
+2.  **Attach the Function to a VPC**: You configure the Lambda function by specifying a VPC, two or more subnets across different Availability Zones for high availability, and one or more security groups. When the function is invoked, Lambda creates an Elastic Network Interface (**ENI**) in one of your chosen subnets, which allows the function to communicate with other resources inside that VPC. 
+
+### Important Considerations
+
+* **No Internet Access by Default**: When a Lambda function is connected to your VPC, it loses its default internet access. If the function needs to connect to the public internet (e.g., to fetch data from a public API), you must configure a **NAT Gateway** in a public subnet and set up routing from the private subnet where the function's ENI resides.
+* **Security Groups**: The security groups you assign control the inbound and outbound traffic for the function. You must configure them to allow communication with the specific resources it needs to access within the VPC.
+* **Performance**: Attaching a Lambda function to a VPC can increase cold start times because of the time it takes for AWS to create and attach the ENI.
+* **IP Address Exhaustion**: Each ENI consumes an IP address from the subnet. If your function scales up rapidly and the subnets are too small, you could run out of available IP addresses, which would prevent your function from scaling further.
+* **Hyperplane ENIs**: To improve performance and reusability, AWS uses a technology called Hyperplane to manage ENIs more efficiently. This allows multiple function invocations to share ENIs.
