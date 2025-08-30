@@ -4931,6 +4931,38 @@ ORDER BY S.STUDENT_ID;
 ---
 ### 3214. Year on Year Growth Rate
 ```sql
+-- Step 1: Aggregate spend per product per year
+WITH T AS (
+    SELECT 
+        PRODUCT_ID,
+        YEAR(TRANSACTION_DATE) AS YEAR,
+        SUM(SPEND) AS CURR_YEAR_SPEND
+    FROM USER_TRANSACTIONS
+    GROUP BY PRODUCT_ID, YEAR(TRANSACTION_DATE)
+),
+
+-- Step 2: Join current year with previous year for same product
+S AS (
+    SELECT 
+        T1.YEAR,
+        T1.PRODUCT_ID,
+        T1.CURR_YEAR_SPEND,
+        T2.CURR_YEAR_SPEND AS PREV_YEAR_SPEND
+    FROM T T1
+    LEFT JOIN T T2 
+        ON T1.PRODUCT_ID = T2.PRODUCT_ID 
+        AND T1.YEAR = T2.YEAR + 1
+)
+
+-- Step 3: Calculate YoY growth rate
+SELECT 
+    *,
+    ROUND(
+        (CURR_YEAR_SPEND - PREV_YEAR_SPEND) * 100.0 / NULLIF(PREV_YEAR_SPEND, 0), 
+        2
+    ) AS YOY_RATE
+FROM S
+ORDER BY PRODUCT_ID, YEAR;
 ```
 ---
 ### 3236. CEO Subordinate Hierarchy
