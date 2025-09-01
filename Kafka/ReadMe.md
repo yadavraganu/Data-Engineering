@@ -120,3 +120,26 @@ When a message is "deleted" by sending a new message with the same key and a nul
 - It then creates new, "cleaned" segments containing only the latest value for each key.
 - These new segments replace the old, dirty ones, effectively compacting the log.
 - Offsets remain consistent: if a message is removed, consumers simply skip over its offset.
+
+# Kafka Delivery Semantics
+Kafka provides three delivery semantics to control how messages are sent and received: **at-most-once**, **at-least-once**, and **exactly-once**. The chosen semantic depends on the application's tolerance for data loss or duplication.
+
+### At-Most-Once Delivery
+In **at-most-once** delivery, the producer sends a message and considers it successful without waiting for an acknowledgment from the broker. This approach is the fastest and offers the lowest latency, but it risks message loss if the producer fails before the broker receives the message.
+
+* **How it works**: The producer sends the message and immediately moves on. If a network error or broker failure occurs, the message might be lost.
+* **Use case**: This is suitable for applications where some data loss is acceptable, like logging or real-to-time telemetry, where the goal is to get as much data as possible, and losing a small fraction isn't critical.
+
+### At-Least-Once Delivery
+**At-least-once** delivery ensures that a message is delivered to the broker at least once. The producer re-sends a message until it receives an acknowledgment (ACK) from the broker, confirming the message was successfully written to the topic partition.
+
+* **How it works**: The producer sends a message and waits for an ACK. If the ACK isn't received within a timeout period, the producer retries. This can lead to duplicate messages if the ACK is delayed or lost, but the message itself is guaranteed not to be lost.
+* **Use case**: This is the default setting in Kafka and is widely used for applications where data loss is unacceptable but duplication can be handled by the consumer, such as an idempotent consumer that processes a message multiple times without side effects.
+
+### Exactly-Once Delivery
+**Exactly-once** delivery guarantees that a message is delivered and processed by the consumer exactly one time, with no duplicates and no data loss. This is the most complex semantic and requires coordination between the producer, broker, and consumer. It is achieved through Kafka's **idempotent producers** and **transactions**.
+
+* **How it works**:
+    1.  **Idempotent Producers**: The producer assigns a unique identifier to each batch of messages. The broker tracks these identifiers and ignores any duplicate batches, preventing duplicate writes to the log.
+    2.  **Transactions**: Transactions group multiple message writes across various partitions into a single, atomic unit. All messages within a transaction are either committed successfully or aborted. This ensures that the messages are processed together.
+* **Use case**: This is essential for financial transactions, inventory management, or any application where data integrity is paramount and both data loss and duplication are unacceptable.
