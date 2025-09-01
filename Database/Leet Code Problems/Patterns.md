@@ -83,3 +83,86 @@ FROM GROUPED;
 | 7  | ESPRESSO |
 +----+----------+
 ```
+
+# Indetify Consequtive Groups
+
+### STEP 0: SAMPLE INPUT TABLE
+```SQL
+CREATE TABLE EVENTS (
+    ID INT,
+    STATUS CHAR(1)
+);
+INSERT INTO EVENTS (ID, STATUS) VALUES
+(1, 'A'),
+(2, 'A'),
+(3, 'B'),
+(4, 'B'),
+(5, 'B'),
+(6, 'C'),
+(7, 'C'),
+(8, 'B'),
+(9, 'B');
+```
+### Step 1: Assign Row Numbers
+```sql
+WITH NUMBERED AS (
+    SELECT *,
+        ROW_NUMBER() OVER (ORDER BY ID) AS RN_ALL,         -- SEQUENTIAL ROW NUMBER
+        ROW_NUMBER() OVER (PARTITION BY STATUS ORDER BY ID) AS RN_STATUS -- ROW NUMBER WITHIN EACH STATUS
+    FROM EVENTS
+)
+```
+**Output of `Numbered`:**
+| id | status | rn_all | rn_status |
+|----|--------|--------|-----------|
+| 1  | A      | 1      | 1         |
+| 2  | A      | 2      | 2         |
+| 3  | B      | 3      | 1         |
+| 4  | B      | 4      | 2         |
+| 5  | B      | 5      | 3         |
+| 6  | C      | 6      | 1         |
+| 7  | C      | 7      | 2         |
+| 8  | B      | 8      | 4         |
+| 9  | B      | 9      | 5         |
+
+### Step 2: Calculate Group Identifier
+
+```sql
+GROUPED AS (
+    SELECT *,
+        RN_ALL - RN_STATUS AS GRP  -- CONSTANT FOR CONSECUTIVE SAME-STATUS ROWS
+    FROM NUMBERED
+)
+```
+**Output of `Grouped`:**
+| id | status | rn_all | rn_status | grp |
+|----|--------|--------|-----------|-----|
+| 1  | A      | 1      | 1         | 0   |
+| 2  | A      | 2      | 2         | 0   |
+| 3  | B      | 3      | 1         | 2   |
+| 4  | B      | 4      | 2         | 2   |
+| 5  | B      | 5      | 3         | 2   |
+| 6  | C      | 6      | 1         | 5   |
+| 7  | C      | 7      | 2         | 5   |
+| 8  | B      | 8      | 4         | 4   |
+| 9  | B      | 9      | 5         | 4   |
+
+### Step 3: Count Consecutive Streaks
+
+```sql
+SELECT 
+    STATUS,
+    COUNT(*) AS STREAK_LENGTH
+FROM GROUPED
+GROUP BY GRP, STATUS
+ORDER BY MIN(ID);
+```
+
+**Final Output:**
+
+| status | streak_length |
+|--------|---------------|
+| A      | 2             |
+| B      | 3             |
+| C      | 2             |
+| B      | 2             |
