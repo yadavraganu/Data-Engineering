@@ -150,7 +150,9 @@ GROUPED AS (
 ### Step 3: Count Consecutive Streaks
 
 ```sql
-SELECT 
+SELECT
+    MIN(ID) AS START_ID,
+    MAX(ID) AS END_ID,
     STATUS,
     COUNT(*) AS STREAK_LENGTH
 FROM GROUPED
