@@ -84,7 +84,7 @@ FROM GROUPED;
 +----+----------+
 ```
 
-# Indetify Consequtive Groups
+# Identify Consecutive Groups
 
 ### STEP 0: SAMPLE INPUT TABLE
 ```SQL
