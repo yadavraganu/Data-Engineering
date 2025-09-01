@@ -1,4 +1,4 @@
-### Two Sum
+### 1.Two Sum
 ```python
 def twoSum(nums: list[int], target: int) -> list[int]:
     num_map = {}  # Stores value -> index
@@ -9,7 +9,7 @@ def twoSum(nums: list[int], target: int) -> list[int]:
         num_map[num] = i
     return [] # Should not reach here based on problem constraints
 ```
-### Best Time to Buy and Sell Stock
+### 2.Best Time to Buy and Sell Stock
 ```python
 def maxProfit(prices: list[int]) -> int:
     min_price = float('inf')
@@ -22,7 +22,7 @@ def maxProfit(prices: list[int]) -> int:
             max_profit = price - min_price
     return max_profit
 ```
-### Contains Duplicate
+### 3.Contains Duplicate
 ```python
 def maxProfit(prices: list[int]) -> int:
     min_price = float('inf')
@@ -35,7 +35,7 @@ def maxProfit(prices: list[int]) -> int:
             max_profit = price - min_price
     return max_profit
 ```
-### Contains Duplicate II
+### 4.Contains Duplicate II
 ```python
 def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
     num_indices = {}  # Stores value -> last_seen_index
@@ -45,7 +45,7 @@ def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
         num_indices[num] = i
     return False
 ```
-### Product of Array Except Self
+### 5.Product of Array Except Self
 ```python
 def productExceptSelf(nums: list[int]) -> list[int]:
     n = len(nums)
@@ -65,7 +65,7 @@ def productExceptSelf(nums: list[int]) -> list[int]:
 
     return answer
 ```
-### Maximum Subarray
+### 6.Maximum Subarray
 ```python
 class Solution:
     def maxSubArray(self, nums: List[int]) -> int:            
@@ -81,7 +81,7 @@ class Solution:
         
         return res
 ```
-### Maximum Product Subarray
+### 7.Maximum Product Subarray
 ```python
 class Solution:
     def maxProduct(self, nums: List[int]) -> int:
@@ -97,7 +97,7 @@ class Solution:
             res = max(res, curr_max)
         return res
 ```
-### Find Minimum in Rotated Sorted Array
+### 8.Find Minimum in Rotated Sorted Array
 ```python
 class Solution:
     def findMin(self, nums: List[int]) -> int:
@@ -115,7 +115,7 @@ class Solution:
                 r = mid - 1
         return res
 ```
-### Search in Rotated Sorted Array
+### 9.Search in Rotated Sorted Array
 ```python
 class Solution:
     def search(self, nums: List[int], target: int) -> int:
@@ -136,7 +136,7 @@ class Solution:
                     r = mid - 1
         return -1
 ```
-### Two Sum II
+### 10.Two Sum II
 ```python
 def two_sum(numbers, target):
     left, right = 0, len(numbers) - 1
@@ -153,7 +153,7 @@ def two_sum(numbers, target):
 
     return []
 ```
-### 3 Sum
+### 11.3 Sum
 ```python
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
@@ -183,7 +183,7 @@ class Solution:
             i += 1
         return res
 ```
-### Merge Sorted Array
+### 12.Merge Sorted Array
 ```python
 class Solution:
     def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
@@ -203,7 +203,7 @@ class Solution:
             n_ind -= 1
             merge_ind -= 1
 ```
-### Container With Most Water
+### 13.Container With Most Water
 ```python
 def max_area(height):
     left, right = 0, len(height) - 1
@@ -222,7 +222,7 @@ def max_area(height):
 
     return max_water
 ```
-### Verifying an Alien Dictionary
+### 14.Verifying an Alien Dictionary
 ```python
 import collections
 
@@ -252,7 +252,7 @@ def isAlienSorted(words: list[str], order: str) -> bool:
             return False
     return True
 ```
-### Next Permutation
+### 15.Next Permutation
 ```python
 class Solution:
     def nextPermutation(self, nums: List[int]) -> None:
@@ -276,7 +276,7 @@ class Solution:
             r -= 1
             l += 1
 ```
-### Remove Duplicates from Sorted Array
+### 16.Remove Duplicates from Sorted Array
 ```python
 def remove_duplicates(nums):
     if not nums:
@@ -290,7 +290,7 @@ def remove_duplicates(nums):
 
     return i + 1  # Length of array with unique elements
 ```
-### Find First and Last Position of Element in Sorted Array
+### 17.Find First and Last Position of Element in Sorted Array
 ```python
 class Solution:
     def searchRange(self, nums: List[int], target: int) -> List[int]:
@@ -322,7 +322,7 @@ class Solution:
             return last  
         return  [binary_search_left(nums,target),binary_search_right(nums,target)]
 ```
-### Trapping Rain Water
+### 18.Trapping Rain Water
 ```python
 class Solution:
     def trap(self, height: List[int]) -> int:
@@ -345,7 +345,7 @@ class Solution:
 
         return water
 ```
-### Median of Two Sorted Arrays
+### 19.Median of Two Sorted Arrays
 ```python
 class Solution:
     def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
@@ -379,7 +379,7 @@ class Solution:
                 l = part1 + 1
         return 0.0
 ```
-### Valid Anagram
+### 20.Valid Anagram
 ```python
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
@@ -396,7 +396,7 @@ class Solution:
             return False
         return True
 ```
-### Top K Frequent Elements
+### 21.Top K Frequent Elements
 ```python
 class Solution:
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
@@ -417,7 +417,7 @@ class Solution:
                 if len(res) == k:
                     return res
 ```
-### Group Anagrams
+### 22.Group Anagrams
 ```python
 class Solution:
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
@@ -434,7 +434,7 @@ class Solution:
 
         return list(anagram_groups.values())
 ```
-### Valid Sudoku
+### 23.Valid Sudoku
 ```python
 import collections
 
@@ -469,7 +469,7 @@ def isValidSudoku(board: list[list[str]]) -> bool:
             
     return True
 ```
-### Encode and Decode Strings
+### 24.Encode and Decode Strings
 ```python
 class Codec:
     def encode(self, strs: list[str]) -> str:
@@ -505,7 +505,7 @@ class Codec:
             
         return decoded_strings
 ```
-### Longest Consecutive Sequence
+### 25.Longest Consecutive Sequence
 ```python
 def longest_consecutive(nums):
     num_set = set(nums)
