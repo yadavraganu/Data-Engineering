@@ -103,3 +103,46 @@ By default, AWS Lambda functions run in a VPC managed by AWS, not your own. You 
 * **Performance**: Attaching a Lambda function to a VPC can increase cold start times because of the time it takes for AWS to create and attach the ENI.
 * **IP Address Exhaustion**: Each ENI consumes an IP address from the subnet. If your function scales up rapidly and the subnets are too small, you could run out of available IP addresses, which would prevent your function from scaling further.
 * **Hyperplane ENIs**: To improve performance and reusability, AWS uses a technology called Hyperplane to manage ENIs more efficiently. This allows multiple function invocations to share ENIs.
+
+## Throttling
+When AWS Lambda receives more concurrent or rapid-fire invocation requests than your account or function-level limits allow, it rejects the excess requests with a 429 TooManyRequestsException. This rejection behavior is called throttling.  
+
+### What Is Throttling?
+
+Throttling is AWS Lambda’s built-in mechanism to protect its infrastructure and ensure fair resource usage across all customers. When your function’s invocation rate or concurrent executions exceed specified quotas, Lambda starts returning 429 errors instead of processing new invocations.  
+
+### When Does Throttling Happen?
+
+- Account concurrency limit is exceeded (default 1,000 concurrent executions per region).  
+- Reserved concurrency for a specific function is reached if you’ve set a cap.  
+- Burst concurrency limit is hit during a sudden spike; Lambda can only launch a finite number of new execution environments in a short period.  
+- Downstream API calls inside your function are themselves throttled, causing your function to fail or retry.  
+
+### Why Does Throttling Happen?
+
+- Shared infrastructure must be protected from “noisy neighbor” effects.  
+- Prevents runaway costs and resource exhaustion at hyper scale.  
+- Encourages predictable performance by enforcing throughput boundaries.  
+- Ensures long-running or heavily loaded functions can’t starve others of capacity.  
+
+### How to Mitigate Throttling
+
+1. Monitor and Analyze  
+   - Use CloudWatch metrics: ConcurrentExecutions, Throttles, and IteratorAge (for stream-based triggers).  
+   - Set alarms to detect rising throttle rates early.  
+
+2. Reserve or Provision Concurrency  
+   - Reserved Concurrency guarantees minimum capacity or caps max concurrency for critical functions.  
+   - Provisioned Concurrency warms execution environments ahead of time for consistent performance and higher burst headroom.  
+
+3. Implement Retry and Backoff Logic  
+   - For synchronous calls: catch 429 errors and retry with exponential backoff and jitter.  
+   - For asynchronous or event-source mappings: tune the retry policy, maximum retry attempts, and dead-letter queue.  
+
+4. Smooth Invocation Patterns  
+   - Buffer spikes using SQS or Kinesis between your clients and Lambda.  
+   - Use Step Functions to orchestrate high-volume workflows with built-in error handling.  
+
+5. Optimize Function Runtime  
+   - Reduce execution time by right-sizing memory. Shorter functions free up concurrency faster.  
+   - Break monolithic flows into smaller, independent Lambdas to spread the load.  
