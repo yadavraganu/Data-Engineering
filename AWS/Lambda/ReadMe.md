@@ -1,4 +1,4 @@
-## Layers
+# Layers
 AWS Lambda Layers are a way to package libraries, custom runtimes, and other dependencies to be used by multiple Lambda functions. They help to manage dependencies, reduce the size of your deployment package, and promote code sharing across your functions.
 
 ### How to Set Up Layers for a Python Application
@@ -87,7 +87,7 @@ aws lambda publish-layer-version \
 
 This command will output a JSON object containing details about the new layer version, including its **LayerVersionArn**. You'll need this ARN to attach the layer to a function.
 
-## Lambda with VPC
+# Lambda with VPC
 
 By default, AWS Lambda functions run in a VPC managed by AWS, not your own. You need to configure a function to run inside your own Virtual Private Cloud (VPC) to access resources that are not publicly available, like an Amazon Relational Database Service (RDS) database or an Amazon ElastiCache cluster.
 
@@ -104,7 +104,7 @@ By default, AWS Lambda functions run in a VPC managed by AWS, not your own. You 
 * **IP Address Exhaustion**: Each ENI consumes an IP address from the subnet. If your function scales up rapidly and the subnets are too small, you could run out of available IP addresses, which would prevent your function from scaling further.
 * **Hyperplane ENIs**: To improve performance and reusability, AWS uses a technology called Hyperplane to manage ENIs more efficiently. This allows multiple function invocations to share ENIs.
 
-## Throttling
+# Throttling
 When AWS Lambda receives more concurrent or rapid-fire invocation requests than your account or function-level limits allow, it rejects the excess requests with a 429 TooManyRequestsException. This rejection behavior is called throttling.  
 
 ### What Is Throttling?
@@ -201,3 +201,60 @@ aws lambda update-function-configuration \
   --timeout 300 \
   --reserved-concurrent-executions 10
 ```
+
+# Versioning & Aliases
+
+Managing **Lambda versioning and aliases** is essential for deploying and maintaining serverless applications across environments like **dev**, **test**, and **prod**. Here's how it works:
+
+### **Managing Multiple Versions of Lambda**
+
+#### What is a Version?
+- A **version** is a snapshot of your Lambda function code and configuration.
+- Once published, it’s **immutable** — you can't change the code or settings.
+- Useful for rollback, testing, and stable deployments.
+
+### How to Create a Version
+#### Console:
+1. Go to your Lambda function.
+2. Click **Actions → Publish new version**.
+3. Add a description and publish.
+
+#### CLI:
+```bash
+aws lambda publish-version --function-name my-function
+```
+
+### **Using Aliases for Deployment Stages**
+
+#### What is an Alias?
+- An **alias** is a pointer to a specific version of your Lambda function.
+- You can name aliases like `dev`, `test`, `prod`.
+- Aliases can be updated to point to new versions without changing the function name.
+
+### How to Create and Use Aliases
+#### Console:
+1. Go to your Lambda function → **Aliases** tab.
+2. Click **Create alias**.
+3. Name it (e.g., `prod`) and choose a version.
+
+#### CLI:
+```bash
+aws lambda create-alias \
+  --function-name my-function \
+  --name prod \
+  --function-version 5
+```
+
+### Updating an Alias
+```bash
+aws lambda update-alias \
+  --function-name my-function \
+  --name prod \
+  --function-version 6
+```
+
+### **Benefits of Using Versions & Aliases**
+- **Safe deployments**: Test new versions before updating `prod`.
+- **Blue/Green deployments**: Shift traffic gradually using alias weights.
+- **Rollback**: Quickly revert to a previous version.
+- **Environment isolation**: Separate dev/test/prod without duplicating functions.
