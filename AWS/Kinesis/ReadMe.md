@@ -67,10 +67,46 @@
 
 ---
 
-- Use cases: real-time analytics, log processing, IoT, clickstream
+# Use cases: real-time analytics, log processing, IoT, clickstream
 
-### 🔹 Setting Up Kinesis Data Streams
-- Creating a stream via AWS Console and CLI
+### **Real-Time Analytics**
+- **Website clickstream analysis**: Track user behavior and engagement in real time.
+- **Application performance monitoring**: Stream logs and metrics for live dashboards.
+- **Financial transactions**: Detect fraud or anomalies as transactions occur.
+
+### **Log and Event Processing**
+- **Server and application logs**: Centralize logs from multiple sources for analysis.
+- **Security event monitoring**: Stream logs from firewalls, IDS/IPS, and SIEM tools.
+- **Audit trails**: Maintain real-time records of system and user activity.
+
+### **IoT Data Streaming**
+- **Sensor data ingestion**: Collect telemetry from devices like temperature, humidity, GPS.
+- **Smart home or industrial automation**: Process device events for control systems.
+- **Fleet tracking**: Stream location and status updates from vehicles.
+
+### **Machine Learning & AI**
+- **Real-time feature extraction**: Prepare data for ML models on the fly.
+- **Model inference pipelines**: Trigger predictions based on incoming data.
+- **Anomaly detection**: Identify outliers in metrics or behavior patterns.
+
+### **ETL and Data Pipeline Orchestration**
+- **Streaming ETL**: Transform and enrich data before storing in S3, Redshift, or Elasticsearch.
+- **Data lake ingestion**: Continuously feed raw data into a lake for batch processing.
+- **Data warehouse updates**: Push real-time updates to Redshift or Snowflake.
+
+### **Business Intelligence**
+- **Live dashboards**: Feed tools like QuickSight or Grafana with real-time data.
+- **Operational metrics**: Monitor KPIs like sales, inventory, or user activity.
+
+### **Service Integration & Automation**
+- **Trigger AWS Lambda functions**: Automate workflows based on incoming data.
+- **Stream to S3 via Firehose**: Store raw or transformed data for long-term analysis.
+- **Alerting and notifications**: Send alerts via SNS or email based on data thresholds.
+
+--- 
+
+# Creating a stream via AWS Console and CLI
+
 - Understanding shards and throughput
 - Pricing model and limits
 
