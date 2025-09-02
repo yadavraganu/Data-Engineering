@@ -146,3 +146,58 @@ Throttling is AWS Lambda’s built-in mechanism to protect its infrastructure an
 5. Optimize Function Runtime  
    - Reduce execution time by right-sizing memory. Shorter functions free up concurrency faster.  
    - Break monolithic flows into smaller, independent Lambdas to spread the load.  
+
+# Environment Variables & Configuration
+
+### **Setting Environment Variables**
+
+#### Using AWS Console
+1. Go to the **Lambda function** in the AWS Management Console.
+2. Navigate to **Configuration → Environment variables**.
+3. Click **Edit**.
+4. Add key-value pairs (e.g., `DB_HOST = mydb.example.com`).
+5. Click **Save**.
+
+#### Using AWS CLI
+```bash
+aws lambda update-function-configuration \
+  --function-name my-function-name \
+  --environment "Variables={DB_HOST=mydb.example.com,API_KEY=xyz123}"
+```
+
+#### Accessing in Python
+```python
+import os
+
+db_host = os.environ['DB_HOST']
+api_key = os.environ.get('API_KEY', 'default_value')
+```
+### **Security Best Practices**
+
+- **Avoid storing secrets directly** in environment variables.
+- Use **AWS Secrets Manager** for sensitive data.
+- Enable **encryption at rest** using AWS KMS.
+- Use **IAM roles** to restrict access to environment variables and secrets.
+
+### **Setting Memory, Timeout, and Concurrency**
+
+#### Memory
+- Range: **128 MB to 10,240 MB**
+- More memory = more CPU (proportional scaling)
+
+#### Timeout
+- Max: **15 minutes**
+- Set based on expected execution time
+
+#### Concurrency
+- **Reserved concurrency**: Guarantees a set number of concurrent executions.
+- **Provisioned concurrency**: Pre-warms Lambda instances to reduce cold starts.
+
+### Set via Console or CLI
+```bash
+aws lambda update-function-configuration \
+  --function-name my-function-name \
+  --memory-size 1024 \
+  --timeout 300 \
+  --reserved-concurrent-executions 10
+```
