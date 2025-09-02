@@ -160,8 +160,34 @@
 ### 🔹 Performance Optimization
 - Choosing optimal shard count
 - Efficient batching and compression
-- Latency vs throughput trade-offs
 
----
+--- 
 
-Would you like this roadmap as a **PDF**, or want help with a **hands-on project** using Python and Kinesis (e.g., real-time log processing or IoT data ingestion)?
+# Latency vs throughput trade-offs
+
+Understanding the **latency vs throughput trade-off** is crucial when designing and optimizing streaming systems like **AWS Kinesis**, **Kafka**, or any real-time data pipeline.
+
+- **Latency**: The time it takes for a single data item to travel from source to destination (e.g., from producer to consumer).
+- **Throughput**: The amount of data processed per unit of time (e.g., records per second).
+
+### **Trade-Off Explained**
+
+| **Aspect**               | **Low Latency Focus**                          | **High Throughput Focus**                        |
+|--------------------------|------------------------------------------------|--------------------------------------------------|
+| **Batch Size**           | Small or single record                         | Large batches                                    |
+| **Processing Frequency** | Frequent, near real-time                       | Periodic, bulk processing                        |
+| **Resource Usage**       | Higher (more frequent calls, less efficient)   | Lower per record (better resource utilization)   |
+| **Use Cases**            | Alerts, fraud detection, live dashboards       | Log aggregation, analytics, ETL pipelines        |
+| **Example in Kinesis**   | Lambda triggered with small batch size         | Firehose delivering large batches to S3          |
+
+### **Design Considerations**
+
+- **Small batches = lower latency**, but may increase cost and resource usage.
+- **Large batches = higher throughput**, but may delay individual record processing.
+- **Shard count** in Kinesis affects both — more shards can reduce latency and increase throughput.
+- **Consumer logic** should be optimized to handle batch sizes efficiently.
+
+### **Tuning Tips for AWS Kinesis**
+- Use **on-demand mode** for automatic scaling.
+- Adjust **batch size** and **buffer intervals** in Lambda or Firehose.
+- Monitor **CloudWatch metrics** like `GetRecords.IteratorAgeMilliseconds` and `PutRecord.Bytes`.
