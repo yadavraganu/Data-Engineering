@@ -1,5 +1,5 @@
 # Easy
-### 1050. Actors and Directors Who Cooperated At Least Three Times
+### [1050. Actors and Directors Who Cooperated At Least Three Times](https://leetcode.com/problems/actors-and-directors-who-cooperated-at-least-three-times/description/)
 ```sql
 SELECT ACTOR_ID, DIRECTOR_ID FROM ACTORDIRECTOR GROUP BY ACTOR_ID, DIRECTOR_ID HAVING COUNT(*) >= 3
 ```
