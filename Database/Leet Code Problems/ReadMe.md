@@ -4981,8 +4981,27 @@ ORDER BY USER1;
 ```sql
 ```
 ---
-### 3057. Employees Project Allocation
+### [3057. Employees Project Allocation](https://leetcode.com/problems/employees-project-allocation/description/)
 ```sql
+WITH EMPLOYEESWITHAVGWORKLOAD AS (
+    SELECT
+        E.EMPLOYEE_ID,
+        E.NAME AS EMPLOYEE_NAME,
+        E.TEAM,
+        P.PROJECT_ID,
+        P.WORKLOAD AS PROJECT_WORKLOAD,
+        AVG(P.WORKLOAD) OVER (PARTITION BY E.TEAM) AS AVG_TEAM_WORKLOAD
+    FROM PROJECT P
+    INNER JOIN EMPLOYEES E ON P.EMPLOYEE_ID = E.EMPLOYEE_ID
+)
+SELECT
+    EMPLOYEE_ID,
+    PROJECT_ID,
+    EMPLOYEE_NAME,
+    PROJECT_WORKLOAD
+FROM EMPLOYEESWITHAVGWORKLOAD
+WHERE PROJECT_WORKLOAD > AVG_TEAM_WORKLOAD
+ORDER BY EMPLOYEE_ID, PROJECT_ID;
 ```
 ---
 ### 3060. User Activities within Time Bounds
