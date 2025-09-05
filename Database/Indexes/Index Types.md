@@ -106,3 +106,38 @@ Hash indexes are not a good fit for every situation, especially when queries inv
 * **Sorting**: Hash indexes cannot be used to speed up `ORDER BY` clauses because the data is not stored in a sorted manner.
 * **Hash Collisions**: If a poor hash function is used or the data has a highly uneven distribution, many keys might hash to the same bucket. This leads to long linked lists, degrading performance from a near-constant time lookup to a linear search within that list.
 * **Large Datasets with Skewed Data**: While they are efficient for large datasets with uniformly distributed keys, if data is highly non-unique (e.g., a column with only a few distinct values), a hash index can become unbalanced and perform worse than other index types, like B-trees.
+
+# B-Tree
+B-tree indexes are a type of **self-balancing tree data structure** used by most database management systems (DBMS) like MySQL and PostgreSQL. The primary purpose of a B-tree index is to reduce the number of disk I/O operations required to find a specific piece of data, which is crucial for large datasets stored on a disk. They achieve this by organizing data in a hierarchical structure, ensuring that all leaf nodes are at the same depth, which guarantees efficient and consistent search, insertion, and deletion times.
+
+### The Underlying Data Structure
+
+The B-tree index itself is a tree-like structure composed of different types of nodes:
+
+* **Root Node:** The top-most node of the tree, which contains pointers to the branch nodes.
+* **Branch Nodes (or Internal Nodes):** These nodes are in between the root and the leaf nodes. They contain key values and pointers to other branch nodes or leaf nodes, directing the search toward the correct data.
+* **Leaf Nodes:** These are the lowest level of the tree. They contain the actual index items, which are composed of a key value and a pointer to the physical location of the corresponding row in the database table.
+
+A common variation, the **B+ tree**, is often used in practice. B+ trees store all data pointers only in the leaf nodes, while internal nodes only store keys. This allows for more keys to be stored in each internal node, creating a shorter and wider tree that requires fewer disk reads. Additionally, the leaf nodes in a B+ tree are linked together, which makes range queries (e.g., finding all values between X and Y) very efficient.
+
+### Where to Use and Avoid B-tree Indexes
+
+#### Use Cases
+
+B-tree indexes are highly effective and should be used in the following scenarios:
+
+* **Equality and Range Queries:** They are ideal for queries that use comparison operators like `=`, `>`, `>=`, `<`, `<=`, or `BETWEEN`. For example, `WHERE user_id = 123` or `WHERE order_date BETWEEN '2025-01-01' AND '2025-01-31'`.
+* **Primary Keys and Foreign Keys:** They are the standard for columns used as primary keys or foreign keys because they enforce uniqueness and speed up joins between tables.
+* **Prefix Searches:** They work well for `LIKE` queries that do not have a leading wildcard, such as `LIKE 'John%'`.
+* **Ordering Data:** Queries with an `ORDER BY` clause on an indexed column can be executed much faster because the data is already stored in a sorted order within the index.
+
+#### Scenarios to Avoid
+
+While powerful, B-tree indexes are not a silver bullet. You should avoid them or consider alternatives in these situations:
+
+* **High Write-Heavy Workloads:** Every time data is inserted, updated, or deleted, the B-tree index needs to be updated to maintain its balanced structure. This can introduce a performance overhead, so for tables with frequent writes and few reads, the overhead might outweigh the benefits.
+* **Small Datasets:** For tables with only a few hundred or thousand rows, a full table scan may be faster or equally fast, and the storage overhead of the index isn't worth it.
+* **Columns with Low Cardinality:** Columns with very few unique values (e.g., a "gender" column with values "Male," "Female," "Other") are not good candidates for a B-tree index. The index won't significantly narrow down the search, and a full table scan might be more efficient.
+* **Searches with Leading Wildcards:** B-tree indexes are inefficient for `LIKE` queries that start with a wildcard, such as `LIKE '%smith'`. The index cannot be used to narrow the search, so the database will resort to a full table scan.
+
+In these cases, other index types like **hash indexes** (for exact equality checks) or **full-text indexes** (for text searches with wildcards) may be more appropriate.
