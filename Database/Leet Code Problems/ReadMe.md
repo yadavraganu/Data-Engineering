@@ -4977,8 +4977,28 @@ ORDER BY USER1;
 ```sql
 ```
 ---
-### 3052. Maximize Items
+### [3052. Maximize Items](https://leetcode.com/problems/maximize-items/description/)
 ```sql
+WITH PRIME AS (
+    SELECT SUM(SQUARE_FOOTAGE) AS SUM_SQUARE_FOOTAGE
+    FROM INVENTORY
+    WHERE ITEM_TYPE = 'prime_eligible'
+)
+SELECT
+    'prime_eligible' AS ITEM_TYPE,
+    COUNT(*) * FLOOR(500000.0 / PRIME.SUM_SQUARE_FOOTAGE) AS ITEM_COUNT
+FROM INVENTORY
+CROSS JOIN PRIME
+WHERE ITEM_TYPE = 'prime_eligible'
+
+UNION ALL
+
+SELECT
+    'not_prime' AS ITEM_TYPE,
+    COUNT(*) * FLOOR((500000.0 % PRIME.SUM_SQUARE_FOOTAGE) / SUM(SQUARE_FOOTAGE))
+FROM INVENTORY
+CROSS JOIN PRIME
+WHERE ITEM_TYPE = 'not_prime';
 ```
 ---
 ### [3057. Employees Project Allocation](https://leetcode.com/problems/employees-project-allocation/description/)
