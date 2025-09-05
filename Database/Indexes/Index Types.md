@@ -1,4 +1,4 @@
-## How Database Indexes Are Categorized
+# How Database Indexes Are Categorized
 
 ### 1. **By Logical Role**
 
@@ -9,8 +9,6 @@
 | **Unique Index**    | Ensures all values in the indexed column are unique  | `email`, `SSN`, `license_number`     |
 | **Composite Index** | Index on multiple columns                            | `city + age`, `first_name + last_name` |
 
----
-
 ### 2. **By Physical Structure**
 
 | Category           | Description                                           | Strengths                            |
@@ -20,8 +18,6 @@
 | **Multilevel Index**| Index of indexes; hierarchical                       | Efficient for large datasets         |
 | **Clustered Index** | Data rows sorted by index key                        | Fast range queries; only one allowed |
 | **Non-clustered Index** | Separate structure with pointers to data         | Multiple allowed; flexible           |
-
----
 
 ### 3. **By Access Method / Engine Optimization**
 
@@ -34,16 +30,12 @@
 | **Spatial Index**   | Optimized for geometric data                         | GIS, maps, coordinates               |
 | **Function-based Index** | Indexes computed values                        | `LOWER(name)`, `ROUND(price)`        |
 
----
-
 ### 4. **By Storage Format / File Organization**
 
 | Category           | Description                                           | Example                              |
 |--------------------|-------------------------------------------------------|--------------------------------------|
 | **Sequential (Ordered)** | Sorted index values; dense or sparse           | Traditional B-tree indexes           |
 | **Hashed File Organization** | Hash buckets for keys                     | Hash indexes                         |
-
----
 
 ### Summary
 
@@ -52,7 +44,7 @@
 - **Access method** determines *performance characteristics*.
 - **Storage format** is more relevant for low-level DBMS internals.
 
-## Bitmap Indexes
+# Bitmap Indexes
 
 Bitmap indexes are a type of database index that uses a **bitmap** (a sequence of bits) to represent a row's presence for a specific key value. Unlike traditional B-tree indexes that store a list of row identifiers for each key, a bitmap index stores a bit for each row in the table. If the bit is set to 1, the row contains the key value; if it's 0, it doesn't.
 
@@ -87,7 +79,7 @@ To manage and compress these bitmaps, database systems often use more sophistica
 
 A hash index uses a **hash function** to compute an address for a specific value, allowing for very fast, direct lookups. Instead of sorting data, it organizes it into "buckets" based on the hashed value of the indexed column. This makes retrieving a single record a nearly constant-time operation.
 
-##  Hash Indexes
+#  Hash Indexes
 ### Underlying Data Structure
 
 The underlying data structure for a hash index is a **hash table** 📊. A hash table is an array of pointers to data. Each position in the array is called a "bucket." When a hash index is created, the database system applies a hash function to the values in the indexed column. This function produces a hash code, which is then used as the index to an array.
