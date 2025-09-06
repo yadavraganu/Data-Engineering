@@ -1145,7 +1145,41 @@ SELECT DISTINCT
 FROM T;
 ```
 
-# 618. Students Report By Geography
+# [618. Students Report By Geography](https://leetcode.com/problems/students-report-by-geography/)
+
+#### Schema
+
+Table: Student
+
+| Column Name | Type    |
+|-------------|---------|
+| name        | varchar |
+| continent   | varchar |
+
+This table may contain duplicate rows.
+
+#### Description
+
+Each row in the Student table indicates a student’s name and the continent they came from (America, Asia or Europe). Pivot the continent column into three output columns—America, Asia and Europe—so that each student’s name appears under its corresponding continent. Within each continent, sort names alphabetically, and align them by their rank (first, second, etc.), showing `null` when a continent has no student at a given position. It is guaranteed that America has at least as many students as Asia or Europe.
+
+#### Sample Input
+
+Student table:
+
+| name   | continent |
+|--------|-----------|
+| Jane   | America   |
+| Pascal | Europe    |
+| Xi     | Asia      |
+| Jack   | America   |
+
+#### Sample Output
+
+| America | Asia | Europe |
+|---------|------|--------|
+| Jack    | Xi   | Pascal |
+| Jane    | null | null   |
+
 ```sql
 WITH
     T AS (
