@@ -514,7 +514,61 @@ FROM S
 ORDER BY PRODUCT_ID, YEAR;
 ```
 
-# 3236. CEO Subordinate Hierarchy
+# [3236. CEO Subordinate Hierarchy](https://leetcode.com/problems/ceo-subordinate-hierarchy/  )
+
+#### Schema  
+
+Table: Employees  
+
+| Column Name   | Type    |
+|---------------|---------|
+| employee_id   | int     |
+| employee_name | varchar |
+| manager_id    | int     |
+| salary        | int     |
+
+Primary key: employee_id  
+
+#### Description  
+
+Find all subordinates of the CEO (both direct and indirect), reporting for each:  
+- subordinate_id: the employee_id of the subordinate  
+- subordinate_name: the name of the subordinate  
+- hierarchy_level: the distance from the CEO (1 for direct reports, 2 for their reports, etc.)  
+- salary_difference: subordinate’s salary minus the CEO’s salary  
+
+Return the rows ordered by hierarchy_level ascending, then subordinate_id ascending.  
+
+#### Sample Input  
+
+Employees table:  
+
+| employee_id | employee_name | manager_id | salary  |
+|-------------|---------------|------------|---------|
+| 1           | Alice         | NULL       | 150000  |
+| 2           | Bob           | 1          | 120000  |
+| 3           | Charlie       | 1          | 110000  |
+| 4           | David         | 2          | 105000  |
+| 5           | Eve           | 2          | 100000  |
+| 6           | Frank         | 3          | 95000   |
+| 7           | Grace         | 3          | 98000   |
+| 8           | Helen         | 5          | 90000   |
+
+#### Sample Output  
+
+| subordinate_id | subordinate_name | hierarchy_level | salary_difference |
+|----------------|------------------|-----------------|-------------------|
+| 2              | Bob              | 1               | -30000            |
+| 3              | Charlie          | 1               | -40000            |
+| 4              | David            | 2               | -45000            |
+| 5              | Eve              | 2               | -50000            |
+| 6              | Frank            | 2               | -55000            |
+| 7              | Grace            | 2               | -52000            |
+| 8              | Helen            | 3               | -60000            |  
+
+**Explanation:**  
+Bob and Charlie report directly to Alice (levels 1), David and Eve report to Bob (level 2), Frank and Grace report to Charlie (level 2), and Helen reports to Eve (level 3). Salary differences are computed relative to Alice’s salary of 150000.  
+
 ```sql
 WITH T AS (
     -- Base case: top-level manager(s)
