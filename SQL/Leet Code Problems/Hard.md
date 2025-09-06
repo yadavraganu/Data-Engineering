@@ -1,5 +1,5 @@
 # [1097. Game Play Analysis V](https://leetcode.com/problems/game-play-analysis-v/)
-### Schema
+#### Schema
 
 Table: Activity
 
@@ -12,11 +12,11 @@ Table: Activity
 
 Primary key: (player_id, event_date)
 
-### Description
+#### Description
 
 The Activity table records each time a player logs in and plays some games (possibly zero) before logging out on a given day using a specific device. A player’s install date is defined as their very first login day. Day one retention for an install date x is the fraction of players who installed on x and then logged back in on x + 1, rounded to two decimal places. You need to report, for each install date, the total number of installs and the day one retention. Return the result in any order.
 
-### Sample Input
+#### Sample Input
 
 Activity table:
 
@@ -28,7 +28,7 @@ Activity table:
 | 3         | 1         | 2016-03-01 | 0            |
 | 3         | 4         | 2016-07-03 | 5            |
 
-## Sample Output
+#### Sample Output
 
 | install_dt  | installs | Day1_retention |
 |-------------|----------|----------------|
