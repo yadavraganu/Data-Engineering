@@ -1,4 +1,4 @@
-## **Core Docker Concepts**
+# **Core Docker Concepts**
 <img width="1536" height="1024" alt="jpeg" src="https://github.com/user-attachments/assets/b6ecd8f3-2cee-4237-afa3-347e76ca157a" />
 
 ### 1. **Docker Image**
@@ -68,7 +68,7 @@
 - States: **created**, **running**, **paused**, **stopped**, **removed**.
 - Managed using commands like `start`, `stop`, `restart`, `rm`.
 
-## 🐳 **Docker CLI Commands Cheat Sheet**
+# **Docker CLI Commands Cheat Sheet**
 
 ### 📦 **Image Management**
 | Command | Description |
@@ -82,7 +82,7 @@
 | `docker save -o <file>.tar <image>` | Save image to a tar archive |
 | `docker load -i <file>.tar` | Load image from a tar archive |
 
-### 📦 **Container Management**
+### **Container Management**
 | Command | Description |
 |--------|-------------|
 | `docker run <image>` | Run a container from an image |
@@ -99,7 +99,7 @@
 | `docker top <container>` | Show running processes in a container |
 | `docker kill <container>` | Forcefully stop a container |
 
-### 🗃️ **Volumes & Storage**
+### **Volumes & Storage**
 | Command | Description |
 |--------|-------------|
 | `docker volume create <name>` | Create a volume |
@@ -108,7 +108,7 @@
 | `docker volume inspect <name>` | View volume details |
 | `docker run -v <host_path>:<container_path>` | Mount volume to container |
 
-### 🌐 **Networking**
+### **Networking**
 | Command | Description |
 |--------|-------------|
 | `docker network ls` | List all networks |
@@ -118,7 +118,7 @@
 | `docker run --network <name>` | Attach container to a network |
 | `docker run -p <host>:<container>` | Map container port to host port |
 
-### 🧹 **System Cleanup**
+### **System Cleanup**
 | Command | Description |
 |--------|-------------|
 | `docker system prune` | Remove unused data (containers, images, volumes) |
@@ -127,14 +127,14 @@
 | `docker volume prune` | Remove unused volumes |
 | `docker network prune` | Remove unused networks |
 
-### 🧪 **Debugging & Monitoring**
+### **Debugging & Monitoring**
 | Command | Description |
 |--------|-------------|
 | `docker stats` | Show real-time resource usage of containers |
 | `docker events` | Stream real-time Docker events |
 | `docker diff <container>` | Show changes in container filesystem |
 
-### 🧰 **Docker Compose**
+### **Docker Compose**
 | Command | Description |
 |--------|-------------|
 | `docker-compose up` | Start services defined in `docker-compose.yml` |
@@ -143,7 +143,7 @@
 | `docker-compose logs` | View logs from all services |
 | `docker-compose ps` | List containers managed by Compose |
 
-## 🐳 **Dockerfile Commands with Descriptions**
+# **Dockerfile Commands with Descriptions**
 
 | **Command** | **Description** | **Common Options / Usage** |
 |-------------|------------------|-----------------------------|
@@ -165,7 +165,7 @@
 | `ONBUILD` | Adds a trigger instruction for child images | `ONBUILD RUN pip install -r requirements.txt` |
 | `STOPSIGNAL` | Sets the system call signal to stop the container | `STOPSIGNAL SIGTERM` |
 
-### 🧠 **Tips for Using Dockerfile Commands**
+### **Tips for Using Dockerfile Commands**
 - Use `RUN` commands efficiently by chaining them to reduce image layers.
 - Prefer `COPY` over `ADD` unless you need archive extraction or remote URLs.
 - Use `ENV` and `ARG` to make your Dockerfile configurable.
