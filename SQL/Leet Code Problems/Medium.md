@@ -1,4 +1,4 @@
-# 1045. Customers Who Bought All Products
+# [1045. Customers Who Bought All Products](https://leetcode.com/problems/customers-who-bought-all-products/)
 ```sql
 WITH PRD_CNT AS (
     SELECT COUNT(DISTINCT PRODUCT_KEY) AS PC FROM PRODUCT
@@ -9,7 +9,7 @@ CST_CNT AS (
 SELECT CUSTOMER_ID FROM CST_CNT A INNER JOIN PRD_CNT B ON A.CPC = B.PC
 ```
 
-# 1070. Product Sales Analysis III
+# [1070. Product Sales Analysis III](https://leetcode.com/problems/product-sales-analysis-iii/)
 ```sql
 WITH EARLY_YR AS (
   SELECT 
@@ -29,7 +29,7 @@ WHERE
   FIRST_YEAR = YEAR
 ```
 
-# 1077. Project Employees III
+# [1077. Project Employees III](https://leetcode.com/problems/project-employees-iii/)
 ```sql
 SELECT
     PROJECT_ID,
@@ -46,7 +46,7 @@ FROM (
 WHERE MAXEXP = 1
 ```
 
-# 1098. Unpopular Books
+# [1098. Unpopular Books](https://leetcode.com/problems/unpopular-books/)
 ```sql
 SELECT
   B.BOOK_ID,
@@ -65,7 +65,7 @@ HAVING
   ISNULL(SUM(O.QUANTITY), 0) < 10;
 ```
 
-# 1107. New Users Daily Count
+# [1107. New Users Daily Count](https://leetcode.com/problems/new-users-daily-count/)
 ```sql
 WITH T AS (
   SELECT
@@ -85,7 +85,7 @@ GROUP BY
   LOGIN_DATE;
 ```
 
-# 1112. Highest Grade For Each Student
+# [1112. Highest Grade For Each Student](https://leetcode.com/problems/highest-grade-for-each-student/)
 ```sql
 WITH T AS (
     SELECT
@@ -109,7 +109,7 @@ ORDER BY
     STUDENT_ID;
 ```
 
-# 1126. Active Businesses
+# [1126. Active Businesses](https://leetcode.com/problems/active-businesses/)
 ```sql
 SELECT
   T1.BUSINESS_ID
@@ -132,7 +132,7 @@ HAVING
   COUNT(*) > 1;
 ```
 
-# 1132. Reported Posts II
+# [1132. Reported Posts II](https://leetcode.com/problems/reported-posts-ii/)
 ```sql
 WITH T AS (
     SELECT
@@ -152,7 +152,7 @@ FROM
     T;
 ```
 
-# 1149. Article Views II
+# [1149. Article Views II](https://leetcode.com/problems/article-views-ii/)
 ```sql
 SELECT
   DISTINCT VIEWER_ID AS ID
@@ -166,7 +166,7 @@ ORDER BY
   VIEWER_ID;
 ```
 
-# 1158. Market Analysis I
+# [1158. Market Analysis I](https://leetcode.com/problems/market-analysis-i/)
 ```sql
 SELECT 
   USER_ID AS BUYER_ID, 
@@ -182,7 +182,7 @@ GROUP BY
 ORDER BY 1
 ```
 
-# 1164. Product Price at a Given Date
+# [1164. Product Price at a Given Date](https://leetcode.com/problems/product-price-at-a-given-date/)
 ```sql
 WITH LATESTPRICES AS (
     SELECT
@@ -207,7 +207,7 @@ LEFT JOIN
     LATESTPRICES LP ON AP.PRODUCT_ID = LP.PRODUCT_ID AND LP.RN = 1;
 ```
 
-# 1174. Immediate Food Delivery II
+# [1174. Immediate Food Delivery II](https://leetcode.com/problems/immediate-food-delivery-ii/)
 ```sql
 WITH FIRSTORDERS AS (
     SELECT
@@ -226,7 +226,7 @@ WHERE
     RN = 1;
 ```
 
-# 1193. Monthly Transactions I
+# [1193. Monthly Transactions I](https://leetcode.com/problems/monthly-transactions-i/)
 ```sql
 SELECT
     FORMAT(TRANS_DATE, 'yyyy-MM') AS MONTH,
@@ -242,7 +242,7 @@ GROUP BY
     COUNTRY;
 ```
 
-# 1204. Last Person to Fit in the Bus
+# [1204. Last Person to Fit in the Bus](https://leetcode.com/problems/last-person-to-fit-in-the-bus/)
 ```sql
 WITH RN_SM AS (
   SELECT 
@@ -261,7 +261,7 @@ ORDER BY
   RUN_SUM DESC
 ```
 
-# 1205. Monthly Transactions II
+# [1205. Monthly Transactions II](https://leetcode.com/problems/monthly-transactions-ii/)
 ```sql
 WITH T AS (
     SELECT ID, COUNTRY, STATE, AMOUNT, TRANS_DATE
@@ -288,7 +288,7 @@ HAVING
     SUM(CASE WHEN STATE = 'chargeback' THEN AMOUNT ELSE 0 END) > 0;
 ```
 
-# 1212. Team Scores in Football Tournament
+# [1212. Team Scores in Football Tournament](https://leetcode.com/problems/team-scores-in-football-tournament/)
 ```sql
 WITH TWOWAYMATCHES AS (
     SELECT
@@ -327,7 +327,7 @@ ORDER BY
     T.TEAM_ID;
 ```
 
-# 1264. Page Recommendations
+# [1264. Page Recommendations](https://leetcode.com/problems/page-recommendations/)
 ```sql
 WITH
   USERTOFRIENDS AS (
@@ -350,7 +350,7 @@ WHERE
 GROUP BY 1;
 ```
 
-# 1270. All People Report to the Given Manager
+# [1270. All People Report to the Given Manager](https://leetcode.com/problems/all-people-report-to-the-given-manager/)
 ```sql
 SELECT
     EMPLOYEE.EMPLOYEE_ID
@@ -364,7 +364,7 @@ WHERE
     SKIPMANAGER.MANAGER_ID = 1 AND EMPLOYEE.EMPLOYEE_ID != 1;
 ```
 
-# 1285. Find the Start and End Number of Continuous Ranges
+# [1285. Find the Start and End Number of Continuous Ranges](https://leetcode.com/problems/find-the-start-and-end-number-of-continuous-ranges/)
 ```sql
 WITH LOGTOROWNUMBER AS (
     SELECT
@@ -379,7 +379,7 @@ FROM LOGTOROWNUMBER
 GROUP BY LOG_ID - ROW_NUMBER;
 ```
 
-# 1308. Running Total for Different Genders
+# [1308. Running Total for Different Genders](https://leetcode.com/problems/running-total-for-different-genders/)
 ```sql
 SELECT
     GENDER,
@@ -392,7 +392,7 @@ FROM SCORES
 ORDER BY 1, 2;
 ```
 
-# 1321. Restaurant Growth
+# [1321. Restaurant Growth](https://leetcode.com/problems/restaurant-growth/)
 ```sql
 SELECT 
 	VISITED_ON, 
@@ -404,7 +404,7 @@ ORDER BY VISITED_ON
 OFFSET 6 ROWS  
 ```
 
-# 1341. Movie Rating
+# [1341. Movie Rating](https://leetcode.com/problems/movie-rating/)
 ```sql
 WITH THEMOSTACTIVEUSER AS (
     SELECT TOP 1
@@ -439,7 +439,7 @@ UNION ALL
 SELECT TITLE FROM THEBESTMOVIEFEBRUARY;
 ```
 
-# 1355. Activity Participants
+# [1355. Activity Participants](https://leetcode.com/problems/activity-participants/)
 ```sql
 WITH
     T AS (
@@ -452,7 +452,7 @@ FROM T
 WHERE CNT > (SELECT MIN(CNT) FROM T) AND CNT < (SELECT MAX(CNT) FROM T);
 ```
 
-# 1364. Number of Trusted Contacts of a Customer
+# [1364. Number of Trusted Contacts of a Customer](https://leetcode.com/problems/number-of-trusted-contacts-of-a-customer/)
 ```sql
 SELECT
     T1.INVOICE_ID,
@@ -473,7 +473,7 @@ ORDER BY
     T1.INVOICE_ID;
 ```
 
-# 1393. Capital Gain/Loss
+# [1393. Capital Gain/Loss](https://leetcode.com/problems/capital-gainloss/)
 ```sql
 SELECT STOCK_NAME, SUM(
     CASE
@@ -485,7 +485,7 @@ FROM STOCKS
 GROUP BY STOCK_NAME
 ```
 
-# 1398. Customers Who Bought Products A and B but Not C
+# [1398. Customers Who Bought Products A and B but Not C](https://leetcode.com/problems/customers-who-bought-products-a-and-b-but-not-c/)
 ```sql
 SELECT
     C.CUSTOMER_ID,
@@ -502,7 +502,7 @@ HAVING
     AND SUM(CASE WHEN O.PRODUCT_NAME = 'C' THEN 1 ELSE 0 END) = 0;
 ```
 
-# 1440. Evaluate Boolean Expression
+# [1440. Evaluate Boolean Expression](https://leetcode.com/problems/evaluate-boolean-expression/)
 ```sql
 SELECT
     LEFT_OPERAND,
@@ -522,7 +522,7 @@ FROM
     JOIN VARIABLES AS V2 ON E.RIGHT_OPERAND = V2.NAME;
 ```
 
-# 1445. Apples & Oranges
+# [1445. Apples & Oranges](https://leetcode.com/problems/apples-oranges/)
 ```sql
 SELECT
     SALE_DATE,
@@ -535,7 +535,7 @@ GROUP BY SALE_DATE
 ORDER BY SALE_DATE;
 ```
 
-# 1454. Active Users
+# [1454. Active Users](https://leetcode.com/problems/active-users/)
 ```sql
 WITH RANKCTE AS (
     SELECT
@@ -561,7 +561,7 @@ ON F.ID = A.ID
 ORDER BY F.ID;
 ```
 
-# 1459. Rectangles Area
+# [1459. Rectangles Area](https://leetcode.com/problems/rectangles-area/)
 ```sql
 SELECT
     P1.ID AS P1,
@@ -574,7 +574,7 @@ WHERE P1.X_VALUE != P2.X_VALUE AND P1.Y_VALUE != P2.Y_VALUE
 ORDER BY AREA DESC, P1, P2;
 ```
 
-# 1468. Calculate Salaries
+# [1468. Calculate Salaries](https://leetcode.com/problems/calculate-salaries/)
 ```sql
 SELECT
     S.COMPANY_ID,
@@ -598,7 +598,7 @@ FROM
         ON S.COMPANY_ID = T.COMPANY_ID;
 ```
 
-# 1501. Countries You Can Safely Invest In
+# [1501. Countries You Can Safely Invest In](https://leetcode.com/problems/countries-you-can-safely-invest-in/)
 ```sql
 SELECT
     COUNTRY.NAME AS COUNTRY
@@ -617,7 +617,7 @@ HAVING
     );
 ```
 
-# 1532. The Most Recent Three Orders
+# [1532. The Most Recent Three Orders](https://leetcode.com/problems/the-most-recent-three-orders/)
 ```sql
     SELECT
       ORDER_ID,
@@ -641,7 +641,7 @@ WHERE ORDERSWITHROWNUMBER.ROW_NUMBER <= 3
 ORDER BY CUSTOMER_NAME, CUSTOMER_ID, ORDER_DATE DESC;
 ```
 
-# 1549. The Most Recent Orders for Each Product
+# [1549. The Most Recent Orders for Each Product](https://leetcode.com/problems/the-most-recent-orders-for-each-product/)
 ```sql
 WITH RANKEDPRODUCTS AS (
     SELECT
@@ -666,7 +666,7 @@ FROM RANKEDPRODUCTS
 WHERE RANKEDPRODUCTS.RNK = 1;
 ```
 
-# 1555. Bank Account Summary
+# [1555. Bank Account Summary](https://leetcode.com/problems/bank-account-summary/)
 ```sql
 WITH UPDATEDUSERS AS (
     SELECT
@@ -696,7 +696,7 @@ SELECT
 FROM UPDATEDUSERS;
 ```
 
-# 1596. The Most Frequently Ordered Products for Each Customer
+# [1596. The Most Frequently Ordered Products for Each Customer](https://leetcode.com/problems/the-most-frequently-ordered-products-for-each-customer/)
 ```sql
 WITH TMP AS (
     SELECT
@@ -728,7 +728,7 @@ WHERE
     RNK = 1;
 ```
 
-# 1613. Find the Missing IDs
+# [1613. Find the Missing IDs](https://leetcode.com/problems/find-the-missing-ids/)
 ```sql
 WITH CTE AS (
     -- ANCHOR MEMBER
@@ -751,7 +751,7 @@ WHERE C.ID NOT IN (
 ORDER BY 1 ASC;
 ```
 
-# 1699. Number of Calls Between Two Persons
+# [1699. Number of Calls Between Two Persons](https://leetcode.com/problems/number-of-calls-between-two-persons/)
 ```sql
 SELECT
   LEAST(FROM_ID, TO_ID) AS PERSON1,
@@ -762,7 +762,7 @@ FROM CALLS
 GROUP BY 1, 2;
 ```
 
-# 1709. Biggest Window Between Visits
+# [1709. Biggest Window Between Visits](https://leetcode.com/problems/biggest-window-between-visits/)
 ```sql
 SELECT 
   USER_ID, 
@@ -791,7 +791,7 @@ ORDER BY
   USER_ID;
 ```
 
-# 1715. Count Apples and Oranges
+# [1715. Count Apples and Oranges](https://leetcode.com/problems/count-apples-and-oranges/)
 ```sql
 SELECT SUM(ISNULL(BOX.APPLE_COUNT, 0) + ISNULL(CHEST.APPLE_COUNT, 0)) AS APPLE_COUNT,
        SUM(ISNULL(BOX.ORANGE_COUNT, 0) + ISNULL(CHEST.ORANGE_COUNT, 0)) AS ORANGE_COUNT
@@ -799,7 +799,7 @@ FROM BOXES AS BOX
 LEFT JOIN CHESTS AS CHEST ON BOX.CHEST_ID = CHEST.CHEST_ID;
 ```
 
-# 1747. Leetflex Banned Accounts
+# [1747. Leetflex Banned Accounts](https://leetcode.com/problems/leetflex-banned-accounts/)
 ```sql
 SELECT DISTINCT L1.ACCOUNT_ID
 FROM LOGINFO AS L1
@@ -809,7 +809,7 @@ INNER JOIN LOGINFO AS L2
   AND (L1.LOGIN BETWEEN L2.LOGIN AND L2.LOGOUT OR L1.LOGOUT BETWEEN L2.LOGIN AND L2.LOGOUT);
 ```
 
-# 176. Second Highest Salary
+# [176. Second Highest Salary](https://leetcode.com/problems/second-highest-salary/)
 ```sql
 WITH
   RANKEDEMPLOYEES AS (
@@ -821,7 +821,7 @@ FROM RANKEDEMPLOYEES
 WHERE RNK = 2;
 ```
 
-# 177. Nth Highest Salary
+# [177. Nth Highest Salary](https://leetcode.com/problems/nth-highest-salary/)
 ```sql
 CREATE FUNCTION getNthHighestSalary(@N INT) RETURNS INT AS BEGIN RETURN (
   SELECT 
@@ -843,7 +843,7 @@ CREATE FUNCTION getNthHighestSalary(@N INT) RETURNS INT AS BEGIN RETURN (
 END
 ```
 
-# 178. Rank Scores
+# [178. Rank Scores](https://leetcode.com/problems/rank-scores/)
 ```sql
 SELECT
   SCORE,
@@ -851,7 +851,7 @@ SELECT
 FROM SCORES
 ```
 
-# 1783. Grand Slam Titles
+# [1783. Grand Slam Titles](https://leetcode.com/problems/grand-slam-titles/)
 ```sql
 SELECT 
     T.PLAYER_ID, 
@@ -894,7 +894,7 @@ ORDER BY
     GRAND_SLAMS_COUNT DESC;
 ```
 
-# 180. Consecutive Numbers
+# [180. Consecutive Numbers](https://leetcode.com/problems/consecutive-numbers/)
 ```sql
 WITH
   LOGSNEIGHBORS AS (
@@ -911,7 +911,7 @@ WHERE
   AND NUM = NEXT_NUM;
 ```
 
-# 1811. Find Interview Candidates
+# [1811. Find Interview Candidates](https://leetcode.com/problems/find-interview-candidates/)
 ```sql
 WITH USERTOCONTEST AS (
   SELECT GOLD_MEDAL AS USER_ID, CONTEST_ID FROM CONTESTS 
@@ -943,7 +943,7 @@ SELECT
   JOIN USERS ON CANDIDATEUSERIDS.USER_ID = USERS.USER_ID;
 ```
 
-# 1831. Maximum Transaction Each Day
+# [1831. Maximum Transaction Each Day](https://leetcode.com/problems/maximum-transaction-each-day/)
 ```sql
 SELECT 
   TRANSACTION_ID 
@@ -960,7 +960,7 @@ ORDER BY
   TRANSACTION_ID;
 ```
 
-# 184. Department Highest Salary
+# [184. Department Highest Salary](https://leetcode.com/problems/department-highest-salary/)
 ```sql
 WITH
   EMPLOYEESWITHMAXSALARYINDEPARTMENT AS (
@@ -981,7 +981,7 @@ FROM EMPLOYEESWITHMAXSALARYINDEPARTMENT
 WHERE SALARY = MAX_SALARY;
 ```
 
-# 1841. League Statistics
+# [1841. League Statistics](https://leetcode.com/problems/league-statistics/)
 ```sql
 SELECT
   T.TEAM_NAME,
@@ -1013,7 +1013,7 @@ ORDER BY
   T.TEAM_NAME ASC;
 ```
 
-# 1843. Suspicious Bank Accounts
+# [1843. Suspicious Bank Accounts](https://leetcode.com/problems/suspicious-bank-accounts/)
 ```sql
 WITH SUSPICIOUSACCOUNTTOMONTH AS (
     -- 1. IDENTIFY MONTHS WITH SUSPICIOUS INCOME
@@ -1043,7 +1043,7 @@ WHERE
     DATEDIFF(MONTH, CONVERT(DATE, CURRMONTH.MONTH_STR + '01'), CONVERT(DATE, NEXTMONTH.MONTH_STR + '01')) = 1;
 ```
 
-# 1867. Orders With Maximum Quantity Above Average
+# [1867. Orders With Maximum Quantity Above Average](https://leetcode.com/problems/orders-with-maximum-quantity-above-average/)
 ```sql
 SELECT 
   ORDER_ID 
@@ -1068,7 +1068,7 @@ HAVING
   );
 ```
 
-# 1875. Group Employees of the Same Salary
+# [1875. Group Employees of the Same Salary](https://leetcode.com/problems/group-employees-of-the-same-salary/)
 ```sql
 WITH
   EMPLOYEESWITHCOUNTPERSALARY AS (
@@ -1087,7 +1087,7 @@ WHERE COUNT_PER_SALARY > 1
 ORDER BY TEAM_ID, EMPLOYEE_ID;
 ```
 
-# 1907. Count Salary Categories
+# [1907. Count Salary Categories](https://leetcode.com/problems/count-salary-categories/)
 ```sql
 SELECT
   'Low Salary' AS CATEGORY,
@@ -1105,7 +1105,7 @@ SELECT
 FROM ACCOUNTS;
 ```
 
-# 1934. Confirmation Rate
+# [1934. Confirmation Rate](https://leetcode.com/problems/confirmation-rate/)
 ```sql
 SELECT
     S.USER_ID,
@@ -1118,7 +1118,7 @@ GROUP BY
     S.USER_ID;
 ```
 
-# 1949. Strong Friendship
+# [1949. Strong Friendship](https://leetcode.com/problems/strong-friendship/)
 ```sql
 WITH BIDIRECTIONALFRIENDSHIPS AS (
     -- STEP 1: CREATE A TEMPORARY TABLE OF ALL FRIENDSHIPS IN BOTH DIRECTIONS.
@@ -1153,7 +1153,7 @@ JOIN FRIENDSHIP F
     OR (CF.USER1 = F.USER2_ID AND CF.USER2 = F.USER1_ID);
 ```
 
-# 1951. All the Pairs With the Maximum Number of Common Followers
+# [1951. All the Pairs With the Maximum Number of Common Followers](https://leetcode.com/problems/all-the-pairs-with-the-maximum-number-of-common-followers/)
 ```sql
 WITH R AS (
     SELECT R1.USER_ID AS USER1_ID, R2.USER_ID AS USER2_ID, COUNT(*) AS CNT
@@ -1167,7 +1167,7 @@ FROM R
 WHERE CNT = (SELECT MAX(CNT) FROM R);
 ```
 
-# 1988. Find Cutoff Score for Each School
+# [1988. Find Cutoff Score for Each School](https://leetcode.com/problems/find-cutoff-score-for-each-school/)
 ```sql
 SELECT SCHOOL_ID, IFNULL(MIN(SCORE), -1) AS SCORE
     FROM SCHOOLS LEFT JOIN EXAM
@@ -1175,7 +1175,7 @@ SELECT SCHOOL_ID, IFNULL(MIN(SCORE), -1) AS SCORE
     GROUP BY SCHOOL_ID;
 ```
 
-# 1990. Count the Number of Experiments
+# [1990. Count the Number of Experiments](https://leetcode.com/problems/count-the-number-of-experiments/)
 ```sql
 WITH P AS (
     SELECT 'Android' AS PLATFORM
@@ -1213,7 +1213,7 @@ ORDER BY
     T.PLATFORM, T.EXPERIMENT_NAME;
 ```
 
-# 2020. Number of Accounts That Did Not Stream
+# [2020. Number of Accounts That Did Not Stream](https://leetcode.com/problems/number-of-accounts-that-did-not-stream/)
 ```sql
 SELECT COUNT(DISTINCT SUB.ACCOUNT_ID) AS ACCOUNTS_COUNT
 FROM
@@ -1225,7 +1225,7 @@ WHERE
     AND (YEAR(STREAM_DATE) != 2021 OR STREAM_DATE > END_DATE);
 ```
 
-# 2041. Accepted Candidates From the Interviews
+# [2041. Accepted Candidates From the Interviews](https://leetcode.com/problems/accepted-candidates-from-the-interviews/)
 ```sql
 SELECT
     CANDIDATES.CANDIDATE_ID
@@ -1241,7 +1241,7 @@ HAVING
     SUM(ROUNDS.SCORE) > 15;
 ```
 
-# 2051. The Category of Each Member in the Store
+# [2051. The Category of Each Member in the Store](https://leetcode.com/problems/the-category-of-each-member-in-the-store/)
 ```sql
 SELECT
     M.MEMBER_ID,
@@ -1261,7 +1261,7 @@ FROM
 GROUP BY MEMBER_ID;
 ```
 
-# 2066. Account Balance
+# [2066. Account Balance](https://leetcode.com/problems/account-balance/)
 ```sql
 SELECT
     ACCOUNT_ID,
@@ -1280,7 +1280,7 @@ ORDER BY
     DAY;
 ```
 
-# 2084. Drop Type 1 Orders for Customers With Type 0 Orders
+# [2084. Drop Type 1 Orders for Customers With Type 0 Orders](https://leetcode.com/problems/drop-type-1-orders-for-customers-with-type-0-orders/)
 ```sql
 SELECT
     ORDER_ID,
@@ -1314,7 +1314,7 @@ FROM RANKEDORDERS
 WHERE RNK = 1
 ```
 
-# 2112. The Airport With the Most Traffic
+# [2112. The Airport With the Most Traffic](https://leetcode.com/problems/the-airport-with-the-most-traffic/)
 ```sql
 WITH
     AIRPORTTOCOUNT AS (
@@ -1347,7 +1347,7 @@ WHERE
     RANK = 1;
 ```
 
-# 2142. The Number of Passengers in Each Bus I
+# [2142. The Number of Passengers in Each Bus I](https://leetcode.com/problems/the-number-of-passengers-in-each-bus-i/)
 ```sql
 SELECT
     B.BUS_ID,
@@ -1370,7 +1370,7 @@ ORDER BY
     B.BUS_ID;
 ```
 
-# 2159. Order Two Columns Independently
+# [2159. Order Two Columns Independently](https://leetcode.com/problems/order-two-columns-independently/)
 ```sql
 WITH
     S AS (
@@ -1396,7 +1396,7 @@ JOIN
     T ON S.RK = T.RK;
 ```
 
-# 2175. The Change in Global Rankings
+# [2175. The Change in Global Rankings](https://leetcode.com/problems/the-change-in-global-rankings/)
 ```sql
 SELECT
     TEAMPOINTS.TEAM_ID,
@@ -1418,7 +1418,7 @@ INNER JOIN
     POINTSCHANGE ON TEAMPOINTS.TEAM_ID = POINTSCHANGE.TEAM_ID;
 ```
 
-# 2228. Users With Two Purchases Within Seven Days
+# [2228. Users With Two Purchases Within Seven Days](https://leetcode.com/problems/users-with-two-purchases-within-seven-days/)
 ```sql
 WITH
     T AS (
@@ -1445,7 +1445,7 @@ ORDER BY
     USER_ID;
 ```
 
-# 2238. Number of Times a Driver Was a Passenger
+# [2238. Number of Times a Driver Was a Passenger](https://leetcode.com/problems/number-of-times-a-driver-was-a-passenger/)
 ```sql
 WITH T AS (SELECT DISTINCT DRIVER_ID FROM RIDES)
 SELECT T.DRIVER_ID, COUNT(PASSENGER_ID) AS CNT
@@ -1455,7 +1455,7 @@ FROM
 GROUP BY 1;
 ```
 
-# 2292. Products With Three or More Orders in Two Consecutive Years
+# [2292. Products With Three or More Orders in Two Consecutive Years](https://leetcode.com/problems/products-with-three-or-more-orders-in-two-consecutive-years/)
 ```sql
 WITH P AS (
     SELECT 
@@ -1501,7 +1501,7 @@ WHERE PURCHASE_COUNT >= 3 AND PREV_YEAR_COUNT >= 3
 ORDER BY PRODUCT_ID;
 ```
 
-# 2298. Tasks Count in the Weekend
+# [2298. Tasks Count in the Weekend](https://leetcode.com/problems/tasks-count-in-the-weekend/)
 ```sql
 SELECT
     SUM(CASE WHEN DATEPART(WEEKDAY, SUBMIT_DATE) IN (1, 7) THEN 1 ELSE 0 END) AS WEEKEND_CNT,
@@ -1509,7 +1509,7 @@ SELECT
 FROM TASKS;
 ```
 
-# 2308. Arrange Table by Gender
+# [2308. Arrange Table by Gender](https://leetcode.com/problems/arrange-table-by-gender/)
 ```sql
 WITH T AS (
     SELECT
@@ -1530,7 +1530,7 @@ FROM T
 ORDER BY RK1, RK2;
 ```
 
-# 2314. The First Day of the Maximum Recorded Degree in Each City
+# [2314. The First Day of the Maximum Recorded Degree in Each City](https://leetcode.com/problems/the-first-day-of-the-maximum-recorded-degree-in-each-city/)
 ```sql
 WITH T AS (
     SELECT
@@ -1547,7 +1547,7 @@ WHERE RK = 1
 ORDER BY CITY_ID;
 ```
 
-# 2324. Product Sales Analysis IV
+# [2324. Product Sales Analysis IV](https://leetcode.com/problems/product-sales-analysis-iv/)
 ```sql
 WITH SALESTOTAL AS (
     SELECT 
@@ -1573,7 +1573,7 @@ FROM RANKED
 WHERE RK = 1;
 ```
 
-# 2346. Compute the Rank as a Percentage
+# [2346. Compute the Rank as a Percentage](https://leetcode.com/problems/compute-the-rank-as-a-percentage/)
 ```sql
 SELECT
     STUDENT_ID,
@@ -1593,7 +1593,7 @@ SELECT
 FROM STUDENTS;
 ```
 
-# 2372. Calculate the Influence of Each Salesperson
+# [2372. Calculate the Influence of Each Salesperson](https://leetcode.com/problems/calculate-the-influence-of-each-salesperson/)
 ```sql
 SELECT
     SP.SALESPERSON_ID,
@@ -1607,7 +1607,7 @@ GROUP BY
     SP.SALESPERSON_ID, NAME;
 ```
 
-# 2388. Change Null Values in a Table to the Previous Value
+# [2388. Change Null Values in a Table to the Previous Value](https://leetcode.com/problems/change-null-values-in-a-table-to-the-previous-value/)
 ```sql
 WITH RN_CTE AS (
     SELECT ID, DRINK, ROW_NUMBER() OVER () AS RN
@@ -1622,7 +1622,7 @@ FROM GROUP_CTE
 ORDER BY RN;
 ```
 
-# 2394. Employees With Deductions
+# [2394. Employees With Deductions](https://leetcode.com/problems/employees-with-deductions/)
 ```sql
 WITH T AS (
     SELECT
@@ -1647,7 +1647,7 @@ WHERE
     ISNULL(T.TOT, 0) < E.NEEDED_HOURS;
 ```
 
-# 2686. Immediate Food Delivery III
+# [2686. Immediate Food Delivery III](https://leetcode.com/problems/immediate-food-delivery-iii/)
 ```sql
 SELECT
     ORDER_DATE,
@@ -1665,7 +1665,7 @@ ORDER BY
     ORDER_DATE;
 ```
 
-# 2688. Find Active Users
+# [2688. Find Active Users](https://leetcode.com/problems/find-active-users/)
 ```sql
 SELECT DISTINCT USER_ID
 FROM USERS
@@ -1685,7 +1685,7 @@ WHERE USER_ID IN (
 );
 ```
 
-# 2738. Count Occurrences in Text
+# [2738. Count Occurrences in Text](https://leetcode.com/problems/count-occurrences-in-text/)
 ```sql
 SELECT 'bull' AS WORD, COUNT(*) AS COUNT
 FROM FILES
@@ -1696,7 +1696,7 @@ FROM FILES
 WHERE CONTENT LIKE '% bear %';
 ```
 
-# 2783. Flight Occupancy and Waitlist Analysis
+# [2783. Flight Occupancy and Waitlist Analysis](https://leetcode.com/problems/flight-occupancy-and-waitlist-analysis/)
 ```sql
 SELECT
     F.FLIGHT_ID,
@@ -1714,7 +1714,7 @@ GROUP BY F.FLIGHT_ID, F.CAPACITY
 ORDER BY F.FLIGHT_ID;
 ```
 
-# 2820. Election Results
+# [2820. Election Results](https://leetcode.com/problems/election-results/)
 ```sql
 WITH T AS (
     SELECT 
@@ -1741,7 +1741,7 @@ WHERE RK = 1
 ORDER BY CANDIDATE;
 ```
 
-# 2854. Rolling Average Steps
+# [2854. Rolling Average Steps](https://leetcode.com/problems/rolling-average-steps/)
 ```sql
 WITH T AS (
     SELECT
@@ -1774,7 +1774,7 @@ WHERE DATE_DIFF = 2
 ORDER BY USER_ID, STEPS_DATE;
 ```
 
-# 2893. Calculate Orders Within Each Interval
+# [2893. Calculate Orders Within Each Interval](https://leetcode.com/problems/calculate-orders-within-each-interval/)
 ```sql
 SELECT
     CEILING(CAST([MINUTE] AS FLOAT) / 6) AS INTERVAL_NO,
@@ -1787,7 +1787,7 @@ ORDER BY
     INTERVAL_NO;
 ```
 
-# 2922. Market Analysis III
+# [2922. Market Analysis III](https://leetcode.com/problems/market-analysis-iii/)
 ```sql
 WITH T AS (
     SELECT
@@ -1813,7 +1813,7 @@ ORDER BY
     SELLER_ID;
 ```
 
-# 2978. Symmetric Coordinates
+# [2978. Symmetric Coordinates](https://leetcode.com/problems/symmetric-coordinates/)
 ```sql
 WITH SYMMETRICCOORDINATES AS (
     SELECT DISTINCT C1.X, C1.Y
@@ -1833,7 +1833,7 @@ FROM SYMMETRICCOORDINATES
 ORDER BY 1, 2;
 ```
 
-# 2984. Find Peak Calling Hours for Each City
+# [2984. Find Peak Calling Hours for Each City](https://leetcode.com/problems/find-peak-calling-hours-for-each-city/)
 ```sql
 WITH T AS (
     SELECT
@@ -1858,7 +1858,7 @@ WHERE RK = 1
 ORDER BY PEAK_CALLING_HOUR DESC, CITY DESC;
 ```
 
-# 2986. Find Third Transaction
+# [2986. Find Third Transaction](https://leetcode.com/problems/find-third-transaction/)
 ```sql
 WITH TRANSACTIONNEIGHBORS AS (
   SELECT
@@ -1882,7 +1882,7 @@ WHERE
 ORDER BY 1;
 ```
 
-# 2988. Manager of the Largest Department
+# [2988. Manager of the Largest Department](https://leetcode.com/problems/manager-of-the-largest-department/)
 ```sql
 WITH RANKEDDEPARTMENTS AS (
     -- THIS CTE RANKS DEPARTMENTS BASED ON THE NUMBER OF EMPLOYEES THEY HAVE.
@@ -1913,7 +1913,7 @@ ORDER BY
     E.DEP_ID;
 ```
 
-# 2989. Class Performance
+# [2989. Class Performance](https://leetcode.com/problems/class-performance/)
 ```sql
 SELECT 
   MAX(
@@ -1925,7 +1925,7 @@ FROM
   SCORES;
 ```
 
-# 2993. Friday Purchases I
+# [2993. Friday Purchases I](https://leetcode.com/problems/friday-purchases-i/)
 ```sql
 SELECT
   -- CALCULATES THE WEEK NUMBER FOR THE PURCHASE DATE RELATIVE TO NOVEMBER 1, 2023.
@@ -1949,7 +1949,7 @@ ORDER BY
   WEEK_OF_MONTH;
 ```
 
-# 3050. Pizza Toppings Cost Analysis
+# [3050. Pizza Toppings Cost Analysis](https://leetcode.com/problems/pizza-toppings-cost-analysis/)
 ```sql
 WITH T AS (
     -- Ranks each topping alphabetically. The rank is used to ensure unique combinations.
@@ -1976,7 +1976,7 @@ ORDER BY
     PIZZA ASC;
 ```
 
-# 3054. Binary Tree Nodes
+# [3054. Binary Tree Nodes](https://leetcode.com/problems/binary-tree-nodes/)
 ```sql
 SELECT DISTINCT
     T1.N AS N,
@@ -1997,7 +1997,7 @@ ORDER BY
     N;
 ```
 
-# 3055. Top Percentile Fraud
+# [3055. Top Percentile Fraud](https://leetcode.com/problems/top-percentile-fraud/)
 ```sql
 WITH
   FRAUDPERCENTILE AS (
@@ -2017,7 +2017,7 @@ WHERE PCT_RNK < 0.05
 ORDER BY STATE, FRAUD_SCORE DESC, POLICY_ID;
 ```
 
-# 3056. Snaps Analysis
+# [3056. Snaps Analysis](https://leetcode.com/problems/snaps-analysis/)
 ```sql
 SELECT
     AGE_BUCKET,
@@ -2031,7 +2031,7 @@ GROUP BY
     AGE_BUCKET;
 ```
 
-# 3058. Friends With No Mutual Friends
+# [3058. Friends With No Mutual Friends](https://leetcode.com/problems/friends-with-no-mutual-friends/)
 ```sql
 WITH TWOWAYFRIENDS AS (
     -- Creates a list of all friendships in both directions (e.g., A -> B and B -> A)
@@ -2077,7 +2077,7 @@ WHERE
 ORDER BY 1, 2;
 ```
 
-# 3087. Find Trending Hashtags
+# [3087. Find Trending Hashtags](https://leetcode.com/problems/find-trending-hashtags/)
 ```sql
 SELECT 
   TOP 3 CONCAT(
@@ -2129,7 +2129,7 @@ ORDER BY
   HASHTAG DESC;
 ```
 
-# 3089. Find Bursty Behavior
+# [3089. Find Bursty Behavior](https://leetcode.com/problems/find-bursty-behavior/)
 ```sql
 WITH SEVENDAYPOSTCOUNTS AS (
   SELECT 
@@ -2173,7 +2173,7 @@ ORDER BY
   SEVENDAYPOSTCOUNTS.USER_ID;
 ```
 
-# 3118. Friday Purchase III
+# [3118. Friday Purchase III](https://leetcode.com/problems/friday-purchase-iii/)
 ```sql
 WITH FRIDAYS AS (
     SELECT
@@ -2207,7 +2207,7 @@ ORDER BY
     m.MEMBERSHIP;
 ```
 
-# 3124. Find Longest Calls
+# [3124. Find Longest Calls](https://leetcode.com/problems/find-longest-calls/)
 ```sql
 WITH T AS (
     SELECT
@@ -2235,7 +2235,7 @@ ORDER BY
     FIRST_NAME DESC;
 ```
 
-# 3126. Server Utilization Time
+# [3126. Server Utilization Time](https://leetcode.com/problems/server-utilization-time/)
 ```sql
 WITH
   SERVERNEIGHBORS AS (
@@ -2258,7 +2258,7 @@ FROM SERVERNEIGHBORS
 WHERE SERVERNEIGHBORS.SESSION_STATUS = 'start';
 ```
 
-# 3140. Consecutive Available Seats II
+# [3140. Consecutive Available Seats II](https://leetcode.com/problems/consecutive-available-seats-ii/)
 ```sql
 WITH
     T AS (
@@ -2283,7 +2283,7 @@ WHERE RK = 1
 ORDER BY 1;
 ```
 
-# 3166. Calculate Parking Fees and Duration
+# [3166. Calculate Parking Fees and Duration](https://leetcode.com/problems/calculate-parking-fees-and-duration/)
 ```sql
 WITH
     T AS (
@@ -2320,7 +2320,7 @@ GROUP BY
 ORDER BY T1.CAR_ID;
 ```
 
-# 3182. Find Top Scoring Students
+# [3182. Find Top Scoring Students](https://leetcode.com/problems/find-top-scoring-students/)
 ```sql
 SELECT
     STUDENT_ID
@@ -2336,7 +2336,7 @@ ORDER BY
     S.STUDENT_ID;
 ```
 
-# 3204. Bitwise User Permissions Analysis
+# [3204. Bitwise User Permissions Analysis](https://leetcode.com/problems/bitwise-user-permissions-analysis/)
 ```sql
 -- Function directly not available in SQL Sever
 SELECT
@@ -2345,7 +2345,7 @@ SELECT
 FROM USER_PERMISSIONS;
 ```
 
-# 3220. Odd and Even Transactions
+# [3220. Odd and Even Transactions](https://leetcode.com/problems/odd-and-even-transactions/)
 ```sql
 SELECT
     TRANSACTION_DATE,
@@ -2356,7 +2356,7 @@ GROUP BY TRANSACTION_DATE
 ORDER BY TRANSACTION_DATE;
 ```
 
-# 3230. Customer Purchasing Behavior Analysis
+# [3230. Customer Purchasing Behavior Analysis](https://leetcode.com/problems/customer-purchasing-behavior-analysis/)
 ```sql
 WITH
     T AS (
@@ -2399,7 +2399,7 @@ GROUP BY 1
 ORDER BY 7 DESC, 1;
 ```
 
-# 3252. Premier League Table Ranking II
+# [3252. Premier League Table Ranking II](https://leetcode.com/problems/premier-league-table-ranking-ii/)
 ```sql
 WITH
     T AS (
@@ -2423,7 +2423,7 @@ FROM T
 ORDER BY 2 DESC, 1;
 ```
 
-# 3262. Find Overlapping Shifts
+# [3262. Find Overlapping Shifts](https://leetcode.com/problems/find-overlapping-shifts/)
 ```sql
 SELECT
     T1.EMPLOYEE_ID,
@@ -2442,7 +2442,7 @@ ORDER BY
     T1.EMPLOYEE_ID;
 ```
 
-# 3278. Find Candidates for Data Scientist Position II
+# [3278. Find Candidates for Data Scientist Position II](https://leetcode.com/problems/find-candidates-for-data-scientist-position-ii/)
 ```sql
 WITH PROJECTSKILLS AS (
     SELECT
@@ -2496,7 +2496,7 @@ ORDER BY
     PROJECT_ID;
 ```
 
-# 3293. Calculate Product Final Price
+# [3293. Calculate Product Final Price](https://leetcode.com/problems/calculate-product-final-price/)
 ```sql
 SELECT
     PRODUCT_ID,
@@ -2509,7 +2509,7 @@ ORDER BY
     PRODUCT_ID;
 ```
 
-# 3308. Find Top Performing Driver
+# [3308. Find Top Performing Driver](https://leetcode.com/problems/find-top-performing-driver/)
 ```sql
 WITH
     T AS (
@@ -2545,7 +2545,7 @@ ORDER BY
     FUEL_TYPE;
 ```
 
-# 3322. Premier League Table Ranking III
+# [3322. Premier League Table Ranking III](https://leetcode.com/problems/premier-league-table-ranking-iii/)
 ```sql
 WITH TEAMSTATSCALCULATED AS (
     SELECT
@@ -2576,7 +2576,7 @@ ORDER BY
     SEASON_ID, POSITION, TEAM_NAME;
 ```
 
-# 3328. Find Cities in Each State II
+# [3328. Find Cities in Each State II](https://leetcode.com/problems/find-cities-in-each-state-ii/)
 ```sql
 SELECT
     STATE,
@@ -2592,7 +2592,7 @@ HAVING COUNT(CITY) >= 3 AND COUNT(CASE WHEN LEFT(CITY, 1) = LEFT(STATE, 1) THEN 
 ORDER BY MATCHING_LETTER_COUNT DESC, STATE;
 ```
 
-# 3338. Second Highest Salary II
+# [3338. Second Highest Salary II](https://leetcode.com/problems/second-highest-salary-ii/)
 ```sql
 WITH
   RANKEDEMPLOYEES AS (
@@ -2608,7 +2608,7 @@ WHERE RNK = 2
 ORDER BY 1;
 ```
 
-# 3421. Find Students Who Improved
+# [3421. Find Students Who Improved](https://leetcode.com/problems/find-students-who-improved/)
 ```sql
 WITH
   RANKEDSCORES AS (
@@ -2636,7 +2636,7 @@ WHERE LATEST_SCORE > FIRST_SCORE
 ORDER BY STUDENT_ID, SUBJECT
 ```
 
-# 3475. DNA Pattern Recognition
+# [3475. DNA Pattern Recognition](https://leetcode.com/problems/dna-pattern-recognition/)
 ```sql
 SELECT
   *,
@@ -2648,7 +2648,7 @@ FROM SAMPLES
 ORDER BY SAMPLE_ID;
 ```
 
-# 3497. Analyze Subscription Conversion
+# [3497. Analyze Subscription Conversion](https://leetcode.com/problems/analyze-subscription-conversion/)
 ```sql
 WITH
   FREETRIAL AS (
@@ -2681,7 +2681,7 @@ INNER JOIN PAID
 ORDER BY 1;
 ```
 
-# 3521. Find Product Recommendation Pairs
+# [3521. Find Product Recommendation Pairs](https://leetcode.com/problems/find-product-recommendation-pairs/)
 ```sql
 WITH PRODUCTPAIRS AS (
     SELECT
@@ -2723,7 +2723,7 @@ ORDER BY
     PRODUCT2_ID ASC;
 ```
 
-# 3564. Seasonal Sales Analysis
+# [3564. Seasonal Sales Analysis](https://leetcode.com/problems/seasonal-sales-analysis/)
 ```sql
 WITH
     SEASONALSALES AS (
@@ -2775,7 +2775,7 @@ ORDER BY
     1;
 ```
 
-# 3580. Find Consistently Improving Employees
+# [3580. Find Consistently Improving Employees](https://leetcode.com/problems/find-consistently-improving-employees/)
 ```sql
 WITH
     RECENT AS (
@@ -2808,7 +2808,7 @@ HAVING COUNT(*) = 2 AND MIN(R.DELTA) > 0
 ORDER BY 3 DESC, 2;
 ```
 
-# 3586. Find COVID Recovery Patients
+# [3586. Find COVID Recovery Patients](https://leetcode.com/problems/find-covid-recovery-patients/)
 ```sql
 WITH
     FIRST_POSITIVE AS (
@@ -2842,7 +2842,7 @@ FROM
 ORDER BY RECOVERY_TIME ASC, PATIENT_NAME ASC;
 ```
 
-# 3601. Find Drivers with Improved Fuel Efficiency
+# [3601. Find Drivers with Improved Fuel Efficiency](https://leetcode.com/problems/find-drivers-with-improved-fuel-efficiency/)
 ```sql
 SELECT A.DRIVER_ID, DRIVER_NAME
     , ROUND(FIRST_HALF_AVG, 2) FIRST_HALF_AVG
@@ -2860,7 +2860,7 @@ LEFT JOIN DRIVERS D ON A.DRIVER_ID = D.DRIVER_ID
 WHERE (SECOND_HALF_AVG - FIRST_HALF_AVG) > 0
 ```
 
-# 3611. Find Overbooked Employees
+# [3611. Find Overbooked Employees](https://leetcode.com/problems/find-overbooked-employees/)
 ```sql
 SET DATEFIRST 1; -- To start the week from Monday .It can change database to database
 WITH PROCESS_1 AS (
@@ -2893,7 +2893,7 @@ ORDER BY
     EMPLOYEE_NAME;
 ```
 
-# 3626. Find Stores with Inventory Imbalance
+# [3626. Find Stores with Inventory Imbalance](https://leetcode.com/problems/find-stores-with-inventory-imbalance/)
 ```sql
 WITH MIN_MAX_PRODUCT AS (
   SELECT 
@@ -2945,11 +2945,11 @@ ORDER BY
   6 DESC, 2 ASC
 ```
 
-# 3657. Find Loyal Customers
+# [3657. Find Loyal Customers](https://leetcode.com/problems/find-loyal-customers/)
 ```sql
 ```
 
-# 534. Game Play Analysis III
+# [534. Game Play Analysis III](https://leetcode.com/problems/game-play-analysis-iii/)
 ```sql
 SELECT  
     ACTIVITY.PLAYER_ID,  
@@ -2981,7 +2981,7 @@ ORDER BY
     EVENT_DATE;
 ```
 
-# 550. Game Play Analysis IV
+# [550. Game Play Analysis IV](https://leetcode.com/problems/game-play-analysis-iv/)
 ```sql
 WITH PLAYERS AS (
   SELECT PLAYER_ID, MIN(EVENT_DATE) AS FIRST_LOGIN
@@ -2998,7 +2998,7 @@ LEFT JOIN ACTIVITY AS T2
   AND DATEDIFF(DAY, T1.FIRST_LOGIN, T2.EVENT_DATE) = 1;
 ```
 
-# 570. Managers with at Least 5 Direct Reports
+# [570. Managers with at Least 5 Direct Reports](https://leetcode.com/problems/managers-with-at-least-5-direct-reports/)
 ```sql
 SELECT E1.NAME
 FROM EMPLOYEE E1
@@ -3010,7 +3010,7 @@ JOIN (
 ) E2 ON E1.ID = E2.MANAGERID;
 ```
 
-# 574. Winning Candidate
+# [574. Winning Candidate](https://leetcode.com/problems/winning-candidate/)
 ```sql
 SELECT C.NAME
 FROM CANDIDATE AS C
@@ -3020,7 +3020,7 @@ ORDER BY COUNT(V.CANDIDATEID) DESC
 OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
 ```
 
-# 578. Get Highest Answer Rate Question
+# [578. Get Highest Answer Rate Question](https://leetcode.com/problems/get-highest-answer-rate-question/)
 ```sql
 WITH T AS (
     SELECT
@@ -3034,7 +3034,7 @@ FROM T
 ORDER BY RATIO DESC, SURVEY_LOG;
 ```
 
-# 580. Count Student Number in Departments
+# [580. Count Student Number in Departments](https://leetcode.com/problems/count-student-number-in-departments/)
 ```sql
 SELECT D.DEPT_NAME, COUNT(S.STUDENT_ID) AS STUDENT_NUMBER
 FROM DEPARTMENT AS D
@@ -3043,7 +3043,7 @@ GROUP BY D.DEPT_ID, D.DEPT_NAME
 ORDER BY STUDENT_NUMBER DESC, D.DEPT_NAME;
 ```
 
-# 585. Investments in
+# [585. Investments in 2016](https://leetcode.com/problems/investments-in-2016/)
 ```sql
 WITH T AS (
     SELECT 
@@ -3057,7 +3057,7 @@ FROM T
 WHERE CNT_SAME_TIV_2015 > 1 AND CNT_SAME_LOCATION = 1;
 ```
 
-# 602. Friend Requests II: Who Has the Most Friends
+# [602. Friend Requests II: Who Has the Most Friends](https://leetcode.com/problems/friend-requests-ii-who-has-the-most-friends/)
 ```sql
 WITH BASE AS (
     SELECT REQUESTER_ID AS ID FROM REQUESTACCEPTED
@@ -3070,7 +3070,7 @@ GROUP BY ID
 ORDER BY NUM DESC;
 ```
 
-# 608. Tree Node
+# [608. Tree Node](https://leetcode.com/problems/tree-node/)
 ```sql
 SELECT DISTINCT T1.ID, (
     CASE
@@ -3084,7 +3084,7 @@ LEFT JOIN TREE T2
 ON T1.ID = T2.P_ID
 ```
 
-# 612. Shortest Distance in a Plane
+# [612. Shortest Distance in a Plane](https://leetcode.com/problems/shortest-distance-in-a-plane/)
 ```sql
 SELECT ROUND(SQRT(MIN(POWER(p2.x - p1.x, 2) + POWER(p2.y - p1.y, 2))), 2) AS shortest
 FROM point_2d p1
@@ -3092,7 +3092,7 @@ JOIN point_2d p2
     ON p1.x <> p2.x OR p1.y <> p2.y;
 ```
 
-# 614. Second Degree Follower
+# [614. Second Degree Follower](https://leetcode.com/problems/second-degree-follower/)
 ```sql
 SELECT F1.FOLLOWER, COUNT(DISTINCT F2.FOLLOWER) AS NUM
 FROM FOLLOW AS F1
@@ -3101,7 +3101,7 @@ GROUP BY F1.FOLLOWER
 ORDER BY F1.FOLLOWER;
 ```
 
-# 626. Exchange Seats
+# [626. Exchange Seats](https://leetcode.com/problems/exchange-seats/)
 ```sql
 SELECT
     CASE
@@ -3128,7 +3128,7 @@ ORDER BY
     ID ASC;
 ```
 
-# 627. Swap Salary
+# [627. Swap Salary](https://leetcode.com/problems/swap-salary/)
 ```sql
 UPDATE SALARY SET SEX = CASE WHEN SEX = 'm' THEN 'f' ELSE 'm' END;
 ```
