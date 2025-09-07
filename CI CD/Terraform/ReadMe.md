@@ -112,7 +112,83 @@ terraform destroy
 Use this command when you need to tear down an environment entirely, ensuring no orphaned resources remain.
 
 - Writing your first HCL configuration: providers and resources  
-- Variables and outputs: defining, referencing, and overriding  
+# Variables and outputs: defining, referencing, and overriding
+
+Terraform’s variables and outputs form the backbone of reusable, maintainable configurations. Here’s how to declare inputs and outputs, reference them in your code, and override default values for flexible environments.
+
+### Defining Input Variables
+
+Input variables serve as parameters for Terraform modules. Each is declared in a `variable` block that includes a name, an optional description, a type constraint, a default value, and a sensitivity flag.
+
+- name: the identifier used in configurations  
+- description: human-readable explanation of purpose  
+- type: enforces data types (string, number, bool, list, map, object, set)  
+- default: optional fallback value if none is provided  
+- sensitive: hides the variable’s value in CLI output  
+
+Example:
+
+```hcl
+variable "instance_count" {
+  description = "Number of instances to launch"
+  type        = number
+  default     = 2
+}
+```
+
+### Referencing Variables
+
+Once declared, variables are accessed using the `var.` prefix plus the variable name. This syntax keeps your configurations clear and type-safe.
+
+Example:
+
+```hcl
+resource "aws_instance" "web" {
+  count         = var.instance_count
+  instance_type = var.instance_type
+  tags = {
+    Name = "web-${count.index + 1}"
+  }
+}
+```
+
+### Overriding Variable Values
+
+Terraform supports several mechanisms to override defaults, enabling environment-specific customizations:
+
+- Command-line flags:  
+  `terraform apply -var="key=value"`
+
+- Variable files:  
+  `terraform apply -var-file="prod.tfvars"`
+
+- Environment variables:  
+  `export TF_VAR_key=value`
+
+- Automatic loading:  
+  Place `*.auto.tfvars` in your working directory or leverage workspaces
+
+Overrides merge with defaults, and Terraform errors if a required (no-default) variable remains unset.
+
+### Defining Output Values
+
+Output values let modules and users inspect or consume data produced by your configurations. Each `output` block specifies:
+
+- `value`: the expression to expose  
+- optional `description` and `sensitive` flag to mask sensitive outputs  
+
+Example:
+
+```hcl
+output "instance_ips" {
+  description = "Public IPs of the web instances"
+  value       = aws_instance.web[*].public_ip
+  sensitive   = false
+}
+```
+
+After `terraform apply`, retrieve outputs with `terraform output`, or access module outputs via `module.<name>.<output_name>` in calling configurations.
+
 - State basics: local state, the Terraform state file, and `.tfstate` format  
 - Managing the Terraform CLI: common commands (`fmt`, `validate`, `taint`, `untaint`)  
 - Using the Terraform console for expressions and debugging  
