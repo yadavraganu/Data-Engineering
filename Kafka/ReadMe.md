@@ -143,3 +143,79 @@ In **at-most-once** delivery, the producer sends a message and considers it succ
     1.  **Idempotent Producers**: The producer assigns a unique identifier to each batch of messages. The broker tracks these identifiers and ignores any duplicate batches, preventing duplicate writes to the log.
     2.  **Transactions**: Transactions group multiple message writes across various partitions into a single, atomic unit. All messages within a transaction are either committed successfully or aborted. This ensures that the messages are processed together.
 * **Use case**: This is essential for financial transactions, inventory management, or any application where data integrity is paramount and both data loss and duplication are unacceptable.
+
+# Compaction
+
+Kafka topics support two main ways of discarding old data: time-based deletion and key-based compaction. Time-based deletion removes messages older than a configured retention period, while compaction retains only the latest value for each unique key.
+
+- delete  
+  Removes all records older than `retention.ms`, regardless of key.  
+
+- compact  
+  Keeps only the newest record per key; earlier versions are dropped. Requires non-null keys.  
+
+- delete_and_compact  
+  First compacts by key, then deletes any remaining records older than the retention window.
+
+Common use cases for compaction include storing each customer’s most recent shipping address and maintaining an application’s latest state checkpoint for crash recovery. Compacted topics provide a space-efficient snapshot of current state without historical noise.
+
+# How Kafka Log Compaction Works
+
+Kafka compaction is a background process that shrinks each partition down to exactly one record per key—the latest value—by scanning only the “dirty” portion of the log and merging it with the already “clean” history.
+
+### 1. Partition Layout: Clean vs. Dirty
+
+- **Clean portion**  
+  Contains segments that were processed in previous compaction runs. Each key appears exactly once here, holding its latest known value at that time.
+
+- **Dirty portion**  
+  Holds all messages written since the last compaction. Keys may appear multiple times, with newer updates appended to the tail.
+
+### 2. Compaction Threads
+
+- When you enable `log.cleaner.enabled=true`, each broker spins up:  
+  - A **compaction manager** that coordinates work  
+  - Multiple **cleaner threads** that actually do the compaction  
+- Each thread picks the partition with the highest ratio of dirty data to total size—so Kafka focuses on the messiest logs first.
+
+### 3. Building the Offset Map
+
+1. The cleaner reads the dirty segments of a chosen partition.  
+2. It constructs an in-memory map of `(keyHash → offsetOfNextNewerRecord)`.  
+3. Each entry is 24 bytes (16 bytes for the key hash + 8 bytes for the offset).  
+   - E.g., a 1 GB segment with 1 million 1 KB messages uses ~24 MB of map memory.  
+4. If keys repeat, the map reuses entries and memory needs shrink further.
+
+### 4. Memory Configuration
+
+- You set a total budget for all cleaner threads via `log.cleaner.dedicated.max.memory`.  
+- That budget is divided evenly across threads—so 1 GB total with 5 threads → each gets 200 MB.  
+- Kafka only requires that at least one full segment fit in a thread’s map:  
+  - If no segment fits, you’ll see errors.  
+  - If only some segments fit, the cleaner compacts the oldest ones first and leaves the rest dirty for later.
+
+### 5. The Compaction Pass
+
+1. **Scan Clean Segments**  
+   The cleaner reads the oldest clean segment one record at a time.  
+2. **Check the Map**  
+   - If the record’s key is still present in the map → skip it (a newer version exists).  
+   - If the key is absent → copy the record into a new replacement segment (it’s still the most recent).  
+3. **Swap Segments**  
+   Once all surviving records are copied, the new segment replaces the old clean segment on disk.  
+4. **Repeat**  
+   The thread moves on to the next segment until the dirty portion is fully processed or memory runs out.
+
+### 6. End Result
+
+After compaction finishes, the partition holds exactly one message per key—and that message is the most recent update. Historical churn is eliminated, making compacted topics an efficient snapshot of current state.
+
+### Beyond the Basics
+
+- **Tuning tips**  
+  - Adjust `log.cleaner.threads` and total map memory based on your throughput and key-cardinality.  
+  - Monitor `LogCleanerManager` JMX metrics (`percentDirty`, `cleanerIdleRatio`) to spot lagging compaction.  
+
+- **Trade-offs**  
+  - Very large keys or ultra-high update rates can bloat map requirements.  
+  - Compaction still incurs I/O and CPU overhead—plan your cluster size accordingly.
