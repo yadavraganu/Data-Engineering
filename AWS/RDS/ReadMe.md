@@ -28,8 +28,8 @@ To **master Amazon RDS (Relational Database Service)** from beginner to expert, 
 
 ## 🟡 **Intermediate Level: Administration & Performance**
 
-### 5. **Storage and Scaling**
-- Storage types: General Purpose (gp2/gp3), Provisioned IOPS
+# 5. **Storage and Scaling**
+- ### Storage types: General Purpose (gp2/gp3), Provisioned IOPS
 - Vertical scaling (instance resizing)
 - Read replicas for horizontal scaling
 
