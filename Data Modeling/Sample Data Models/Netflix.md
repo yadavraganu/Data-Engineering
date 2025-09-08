@@ -1,2 +1,2 @@
 # OLTP
-<img src="./images/my-chart.svg" alt="My data chart" width="500">
+<img src="./Netflix_OLTP" width="500">
