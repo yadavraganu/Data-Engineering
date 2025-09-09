@@ -1,4 +1,4 @@
-## What is Apache Arrow?
+# What is Apache Arrow?
 
 **Apache Arrow** is a cross-language development platform for **in-memory data**. It defines a **language-independent columnar memory format** that is optimized for analytics and data interchange.
 
@@ -31,7 +31,7 @@ spark = SparkSession.builder \
     .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
     .getOrCreate()
 ```
-## **Why PySpark UDFs Are Considered Slow**
+# **Why PySpark UDFs Are Considered Slow**
 
 User-Defined Functions (UDFs) in PySpark offer flexibility, but they come with significant performance drawbacks. Here's a breakdown of the key reasons:
 
@@ -60,10 +60,105 @@ User-Defined Functions (UDFs) in PySpark offer flexibility, but they come with s
 | Pandas UDFs         | ⚡ Moderate  | ❌ No                  | ⚠️ Partial         |
 | Python UDFs         | 🐢 Slowest   | ❌ No                  | ❌ No              |
 
-### 🛠️ **Tips to Improve UDF Performance**
+### **Tips to Improve UDF Performance**
 - Replace UDFs with **built-in functions** whenever possible.
 - Use **Pandas UDFs** for vectorized operations.
 - Enable Arrow optimizations:  
   ```python
   spark.conf.set("spark.sql.execution.arrow.enabled", "true")
   ```
+# What Is Catalyst Optimizer?
+
+The **Catalyst Optimizer** is the heart of **Spark SQL**, designed to optimize query execution plans for structured data processing. It’s a **rule-based and extensible query optimization framework** that transforms user queries into efficient execution strategies. Here's an in-depth breakdown:
+
+Catalyst is a **modular library** built using **Scala's functional programming features**. It powers Spark SQL, DataFrames, and Datasets by optimizing queries through multiple stages:
+
+### Stages of Query Optimization
+
+1. **Parsing**
+   - Converts SQL or DataFrame code into an **unresolved logical plan**.
+   - Example: `SELECT * FROM employees WHERE age > 30`
+
+2. **Analysis**
+   - Resolves references (e.g., column names, table names).
+   - Checks for semantic correctness.
+   - Produces a **resolved logical plan**.
+
+3. **Logical Optimization**
+   - Applies **rule-based transformations** to improve the logical plan.Below are Common Rule-Based Transformations
+		#### 1. **Constant Folding**
+		- Evaluates constant expressions at compile time.
+		- Example: `SELECT 2 + 3` → `SELECT 5`
+
+		#### 2. **Predicate Pushdown**
+		- Moves filter conditions as close to the data source as possible.
+		- Reduces the amount of data read and processed.
+		- Example: `SELECT * FROM table WHERE age > 30` → Pushes `age > 30` into the scan.
+
+		#### 3. **Projection Pruning**
+		- Removes unused columns from the query plan.
+		- Example: `SELECT name FROM table` → Only reads `name`, not all columns.
+
+		#### 4. **Null Propagation**
+		- Simplifies expressions involving nulls.
+		- Example: `NULL + 1` → `NULL`
+
+		#### 5. **Boolean Simplification**
+		- Simplifies boolean expressions.
+		- Example: `WHERE TRUE AND condition` → `WHERE condition`
+
+		#### 6. **Filter Combination**
+		- Combines multiple filters into one.
+		- Example: `WHERE age > 30 AND age < 50` → Single filter node.
+
+		#### 7. **Reordering Joins**
+		- Reorders join operations based on estimated cost or size.
+		- Helps reduce shuffle and improve performance.
+
+		#### 8. **Eliminate Redundant Sorts**
+		- Removes unnecessary sort operations if data is already sorted.
+
+		#### 9. **Pushdown of Aggregations**
+		- Moves aggregation operations closer to the data source when possible.
+
+		#### 10. **Simplify Case Statements**
+		- Optimizes `CASE WHEN` expressions by removing unreachable branches.
+
+		#### 11. **Optimize IN Clauses**
+		- Converts `IN` clauses into more efficient lookup structures.
+
+		#### 12. **Subquery Elimination**
+		- Removes unnecessary subqueries or flattens them into the main query.
+
+		#### 13. **Join Simplification**
+		- Converts complex joins into simpler forms when possible (e.g., semi joins).
+
+		#### 14. **Union Pushdown**
+		- Pushes filters and projections into individual branches of a `UNION`.
+
+		#### 15. **Redundant Alias Removal**
+		- Removes unnecessary aliasing in query plans.
+
+		#### 16. **Foldable Expression Evaluation**
+		- Evaluates expressions that can be computed at compile time.
+
+		#### 17. **Rewrite SortMergeJoin to BroadcastJoin**
+		- If one side of the join is small, rewrites to a broadcast join for efficiency.
+
+		#### 18. **Window Function Optimization**
+		- Optimizes partitioning and ordering in window functions.
+
+4. **Physical Planning**
+   - Converts the optimized logical plan into one or more **physical plans**.
+   - Chooses the most efficient one based on cost.
+
+5. **Code Generation (Tungsten)**
+   - Uses **whole-stage code generation** to compile parts of the physical plan into Java bytecode.
+   - Reduces JVM overhead and improves CPU efficiency.
+
+### Catalyst Transformation:
+1. **Unresolved Logical Plan**: `Project(name) ← Filter(age > 30) ← employees`
+2. **Resolved Logical Plan**: Validates schema and types.
+3. **Optimized Logical Plan**: Pushes down filter, prunes unused columns.
+4. **Physical Plan**: Chooses between broadcast join, sort-merge join, etc.
+5. **Code Generation**: Compiles into bytecode for execution.
