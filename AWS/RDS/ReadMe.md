@@ -1,9 +1,3 @@
-To **master Amazon RDS (Relational Database Service)** from beginner to expert, here’s a structured roadmap broken down into progressive levels:
-
----
-
-## 🟢 **Beginner Level: Fundamentals**
-
 ### 1. **Introduction to RDS**
 - What is Amazon RDS?
 - Supported database engines (MySQL, PostgreSQL, MariaDB, Oracle, SQL Server, Aurora)
@@ -137,7 +131,5 @@ You create an RDS subnet group including these three subnets. When you launch a 
 - AWS DMS (Database Migration Service)
 - Schema conversion
 - Cutover planning
-
----
 
 Would you like this roadmap as a downloadable checklist or a visual mind map? Or should I tailor it to a specific engine like PostgreSQL or Aurora?
