@@ -82,3 +82,54 @@ Instead of physically removing rows, deletion vectors **mark rows as deleted or 
 | **Retention Check Config**| Controls safety check for `VACUUM` retention duration                   | Allows aggressive cleanup                                                | Use with caution: `spark.databricks.delta.retentionDurationCheck.enabled`  |
 | **Concurrency Control**   | Uses optimistic concurrency for transactions                            | Ensures ACID compliance                                                  | Always active in Delta Lake                                                 |
 | **Time Travel**           | Access previous versions of data                                        | Enables debugging, auditing, rollback                                    | Use `VERSION AS OF` or `TIMESTAMP AS OF` in queries                         |
+
+# What is Delta Table Checkpointing?
+
+**Checkpointing** in Delta Lake is a mechanism that improves the **efficiency of reading and reconstructing the state of a Delta table** by summarizing the transaction log.
+
+### Why Is Checkpointing Needed?
+
+Delta Lake maintains a **transaction log** in the `__delta_log` directory. Each change to the table (insert, update, delete) creates a new **JSON log file**. Over time, these files accumulate and can slow down reads because:
+
+- Delta needs to **replay all JSON logs** from the beginning to reconstruct the current state.
+- This becomes inefficient as the number of commits grows.
+
+### How Checkpointing Works
+
+- Every **N commits** (default is **10**), Delta Lake creates a **checkpoint file** in **Parquet format**.
+  `spark.conf.set("spark.databricks.delta.checkpointInterval", "N")`
+- This file contains:
+  - The **state of the table** (active files, metadata, etc.)
+  - **Statistics** for data skipping
+  - **Schema information**
+
+- When reading the table, Delta Lake:
+  1. Loads the **latest checkpoint**.
+  2. Reads only the **JSON logs after the checkpoint**.
+  3. Combines them to reconstruct the current table state.
+
+### Example Structure of `__delta_log`
+
+```
+__delta_log/
+├── 00000000000000000001.json
+├── 00000000000000000002.json
+...
+├── 00000000000000000010.checkpoint.parquet
+├── 00000000000000000011.json
+├── 00000000000000000012.json
+```
+
+Here, the checkpoint at version 10 summarizes all changes from version 0 to 10. To read version 12, Delta Lake reads:
+- `10.checkpoint.parquet`
+- `11.json`
+- `12.json`
+
+### Benefits of Checkpointing
+
+| Benefit                  | Description                                                                 |
+|--------------------------|-----------------------------------------------------------------------------|
+| **Faster Reads**         | Reduces the number of JSON files to parse                                  |
+| **Efficient Time Travel**| Quickly reconstructs table state at a specific version                     |
+| **Improved Metadata Ops**| Speeds up schema and file-level metadata access                            |
+| **Scalability**          | Supports large-scale tables with thousands of commits                      |
