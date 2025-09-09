@@ -64,3 +64,21 @@ Instead of physically removing rows, deletion vectors **mark rows as deleted or 
 - Large-scale **DELETE/UPDATE/MERGE** operations.
 - **Time travel** and **audit** scenarios.
 - **Streaming ingestion** with frequent updates.
+
+# Delta Table Optimization Techniques
+
+| Technique / Command        | Purpose                                                                 | Benefits                                                                 | When to Use                                                                 |
+|---------------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| **OPTIMIZE**              | Compacts small files into larger ones                                   | Improves read performance, reduces file overhead                         | After frequent inserts, streaming, or batch loads                           |
+| **OPTIMIZE ZORDER BY**    | Reorders data to cluster by specified columns                           | Speeds up filtering and range queries                                    | When queries frequently filter on specific columns                          |
+| **VACUUM**                | Removes obsolete files no longer referenced                             | Reclaims storage, cleans up stale data                                   | Periodically, especially after deletes/updates                              |
+| **Data Skipping**         | Automatically skips irrelevant files during query execution             | Reduces I/O and speeds up queries                                        | Enabled by default; works best with partitioning and Z-Ordering             |
+| **Partitioning**          | Organizes data into directories based on column values                  | Improves query performance and parallelism                               | When data has natural grouping (e.g., by date, region)                      |
+| **Delta Caching**         | Caches frequently read data in memory                                   | Speeds up repeated queries                                               | On Databricks clusters with caching enabled                                 |
+| **Change Data Feed (CDF)**| Tracks row-level changes in Delta tables                                | Efficient incremental processing                                         | When consuming changes for downstream systems                               |
+| **Auto Compaction**       | Automatically merges small files during write operations                | Reduces file count, improves performance                                 | Enabled via `spark.databricks.delta.autoCompact.enabled`                   |
+| **Optimize Write**        | Writes fewer, larger files during ingestion                             | Reduces small file problem                                               | Enabled via `spark.databricks.delta.optimizeWrite.enabled`                 |
+| **Schema Evolution**      | Automatically updates schema during writes                              | Simplifies ingestion pipeline                                            | When schema changes are expected                                            |
+| **Retention Check Config**| Controls safety check for `VACUUM` retention duration                   | Allows aggressive cleanup                                                | Use with caution: `spark.databricks.delta.retentionDurationCheck.enabled`  |
+| **Concurrency Control**   | Uses optimistic concurrency for transactions                            | Ensures ACID compliance                                                  | Always active in Delta Lake                                                 |
+| **Time Travel**           | Access previous versions of data                                        | Enables debugging, auditing, rollback                                    | Use `VERSION AS OF` or `TIMESTAMP AS OF` in queries                         |
