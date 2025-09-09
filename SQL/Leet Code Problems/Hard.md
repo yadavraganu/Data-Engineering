@@ -59,7 +59,7 @@ LEFT JOIN ACTIVITY
 GROUP BY PLAYERTOINSTALLDATE.INSTALL_DT;
 ```
 
-# 1127. User Purchase Platform
+# [1127. User Purchase Platform](https://leetcode.com/problems/user-purchase-platform/)
 ```sql
 WITH USERTOAMOUNT AS (
     SELECT
@@ -91,7 +91,7 @@ LEFT JOIN USERTOAMOUNT UA
 GROUP BY DP.SPEND_DATE, DP.PLATFORM;
 ```
 
-# 1159. Market Analysis II
+# [1159. Market Analysis II](https://leetcode.com/problems/market-analysis-ii/)
 ```sql
 ```
 
@@ -137,7 +137,7 @@ FROM RANKEDPLAYERS
 WHERE RANK = 1;
 ```
 
-# 1225. Report Contiguous Dates
+# [1225. Report Contiguous Dates](https://leetcode.com/problems/report-contiguous-dates/)
 ```sql
 -- COMBINE FAILED AND SUCCEEDED DATES WITH STATUS
 WITH COMBINED AS (
@@ -174,7 +174,7 @@ GROUP BY ST, GRP
 ORDER BY START_DATE;
 ```
 
-# 1336. Number of Transactions per Visit
+# [1336. Number of Transactions per Visit](https://leetcode.com/problems/number-of-transactions-per-visit/)
 ```sql
 -- GENERATE SEQUENCE FROM 0 TO MAX TRANSACTIONS PER VISIT
 WITH S AS (
@@ -219,103 +219,103 @@ GROUP BY S.N
 ORDER BY S.N;
 ```
 
-# 1369. Get the Second Most Recent Activity
+# [1369. Get the Second Most Recent Activity](https://leetcode.com/problems/get-the-second-most-recent-activity/)
 ```sql
 ```
 
-# 1384. Total Sales Amount by Year
+# [1384. Total Sales Amount by Year](https://leetcode.com/problems/total-sales-amount-by-year/)
 ```sql
 ```
 
-# 1412. Find the Quiet Students in All Exams
+# [1412. Find the Quiet Students in All Exams](https://leetcode.com/problems/find-the-quiet-students-in-all-exams/)
 ```sql
 ```
 
-# 1479. Sales by Day of the Week
+# [1479. Sales by Day of the Week](https://leetcode.com/problems/sales-by-day-of-the-week/)
 ```sql
 ```
 
-# 1635. Hopper Company Queries I
+# [1635. Hopper Company Queries I](https://leetcode.com/problems/hopper-company-queries-i/)
 ```sql
 ```
 
-# 1645. Hopper Company Queries II
+# [1645. Hopper Company Queries II](https://leetcode.com/problems/hopper-company-queries-ii/)
 ```sql
 ```
 
-# 1651. Hopper Company Queries III
+# [1651. Hopper Company Queries III](https://leetcode.com/problems/hopper-company-queries-iii/)
 ```sql
 ```
 
-# 1767. Find the Subtasks That Did Not Execute
+# [1767. Find the Subtasks That Did Not Execute](https://leetcode.com/problems/find-the-subtasks-that-did-not-execute/)
 ```sql
 ```
 
-# 185. Department Top Three Salaries
+# [185. Department Top Three Salaries](https://leetcode.com/problems/department-top-three-salaries/)
 ```sql
 ```
 
-# 1892. Page Recommendations II
+# [1892. Page Recommendations II](https://leetcode.com/problems/page-recommendations-ii/)
 ```sql
 ```
 
-# 1917. Leetcodify Friends Recommendations
+# [1917. Leetcodify Friends Recommendations](https://leetcode.com/problems/leetcodify-friends-recommendations/)
 ```sql
 ```
 
-# 1919. Leetcodify Similar Friends
+# [1919. Leetcodify Similar Friends](https://leetcode.com/problems/leetcodify-similar-friends/)
 ```sql
 ```
 
-# 1972. First and Last Call On the Same Day
+# [1972. First and Last Call On the Same Day](https://leetcode.com/problems/first-and-last-call-on-the-same-day/)
 ```sql
 ```
 
-# 2004. The Number of Seniors and Juniors to Join the Company
+# [2004. The Number of Seniors and Juniors to Join the Company](https://leetcode.com/problems/the-number-of-seniors-and-juniors-to-join-the-company/)
 ```sql
 ```
 
-# 2010. The Number of Seniors and Juniors to Join the Company II
+# [2010. The Number of Seniors and Juniors to Join the Company II](https://leetcode.com/problems/the-number-of-seniors-and-juniors-to-join-the-company-ii/)
 ```sql
 ```
 
-# 2118. Build the Equation
+# [2118. Build the Equation](https://leetcode.com/problems/build-the-equation/)
 ```sql
 ```
 
-# 2153. The Number of Passengers in Each Bus II
+# [2153. The Number of Passengers in Each Bus II](https://leetcode.com/problems/the-number-of-passengers-in-each-bus-ii/)
 ```sql
 ```
 
-# 2173. Longest Winning Streak
+# [2173. Longest Winning Streak](https://leetcode.com/problems/longest-winning-streak/)
 ```sql
 ```
 
-# 2199. Finding the Topic of Each Post
+# [2199. Finding the Topic of Each Post](https://leetcode.com/problems/finding-the-topic-of-each-post/)
 ```sql
 ```
 
-# 2252. Dynamic Pivoting of a Table
+# [2252. Dynamic Pivoting of a Table](https://leetcode.com/problems/dynamic-pivoting-of-a-table/)
 ```sql
 ```
 
-# 2253. Dynamic Unpivoting of a Table
+# [2253. Dynamic Unpivoting of a Table](https://leetcode.com/problems/dynamic-unpivoting-of-a-table/)
 ```sql
 ```
 
-# 2362. Generate the Invoice
+# [2362. Generate the Invoice](https://leetcode.com/problems/generate-the-invoice/)
 ```sql
 ```
 
-# 2474. Customers With Strictly Increasing Purchases
+# [2474. Customers With Strictly Increasing Purchases](https://leetcode.com/problems/customers-with-strictly-increasing-purchases/)
 ```sql
 ```
 
-# 2494. Merge Overlapping Events in the Same Hall
+# [2494. Merge Overlapping Events in the Same Hall](https://leetcode.com/problems/merge-overlapping-events-in-the-same-hall/)
 ```sql
 ```
 
-# 262. Trips and Users
+# [262. Trips and Users](https://leetcode.com/problems/trips-and-users/)
 ```sql
 SELECT 
     REQUEST_AT AS DAY,
@@ -338,11 +338,11 @@ ORDER BY
     REQUEST_AT;
 ```
 
-# 2701. Consecutive Transactions with Increasing Amounts
+# [2701. Consecutive Transactions with Increasing Amounts](https://leetcode.com/problems/consecutive-transactions-with-increasing-amounts/)
 ```sql
 ```
 
-# 2720. Popularity Percentage
+# [2720. Popularity Percentage](https://leetcode.com/problems/popularity-percentage/)
 ```sql
 WITH F AS (
     -- MAKE FRIENDSHIPS BIDIRECTIONAL
@@ -365,27 +365,27 @@ FROM F
 ORDER BY USER1;
 ```
 
-# 2752. Customers with Maximum Number of Transactions on Consecutive Days
+# [2752. Customers with Maximum Number of Transactions on Consecutive Days](https://leetcode.com/problems/customers-with-maximum-number-of-transactions-on-consecutive-days/)
 ```sql
 ```
 
-# 2793. Status of Flight Tickets
+# [2793. Status of Flight Tickets](https://leetcode.com/problems/status-of-flight-tickets/)
 ```sql
 ```
 
-# 2991. Top Three Wineries
+# [2991. Top Three Wineries](https://leetcode.com/problems/top-three-wineries/)
 ```sql
 ```
 
-# 2994. Friday Purchases II
+# [2994. Friday Purchases II](https://leetcode.com/problems/friday-purchases-ii/)
 ```sql
 ```
 
-# 2995. Viewers Turned Streamers
+# [2995. Viewers Turned Streamers](https://leetcode.com/problems/viewers-turned-streamers/)
 ```sql
 ```
 
-# [3052. Maximize Items](https://leetcode.com/problems/maximize-items/description/)
+# [3052. Maximize Items](https://leetcode.com/problems/maximize-items/)
 ```sql
 WITH PRIME AS (
     SELECT SUM(SQUARE_FOOTAGE) AS SUM_SQUARE_FOOTAGE
@@ -409,7 +409,7 @@ CROSS JOIN PRIME
 WHERE ITEM_TYPE = 'not_prime';
 ```
 
-# [3057. Employees Project Allocation](https://leetcode.com/problems/employees-project-allocation/description/)
+# [3057. Employees Project Allocation](https://leetcode.com/problems/employees-project-allocation/)
 ```sql
 WITH EMPLOYEESWITHAVGWORKLOAD AS (
     SELECT
@@ -432,19 +432,19 @@ WHERE PROJECT_WORKLOAD > AVG_TEAM_WORKLOAD
 ORDER BY EMPLOYEE_ID, PROJECT_ID;
 ```
 
-# 3060. User Activities within Time Bounds
+# [3060. User Activities within Time Bounds](https://leetcode.com/problems/user-activities-within-time-bounds/)
 ```sql
 ```
 
-# 3061. Calculate Trapping Rain Water
+# [3061. Calculate Trapping Rain Water](https://leetcode.com/problems/calculate-trapping-rain-water/)
 ```sql
 ```
 
-# 3103. Find Trending Hashtags II
+# [3103. Find Trending Hashtags II](https://leetcode.com/problems/find-trending-hashtags-ii/)
 ```sql
 ```
 
-# 3156. Employee Task Duration and Concurrent Tasks
+# [3156. Employee Task Duration and Concurrent Tasks](https://leetcode.com/problems/employee-task-duration-and-concurrent-tasks/)
 ```sql
 -- STEP 1: COLLECT ALL UNIQUE TIME POINTS (START AND END) FOR EACH EMPLOYEE
 WITH EMPLOYEETIMES AS (
@@ -485,7 +485,7 @@ GROUP BY EMPLOYEE_ID
 ORDER BY EMPLOYEE_ID;
 ```
 
-# 3188. Find Top Scoring Students II
+# [3188. Find Top Scoring Students II](https://leetcode.com/problems/find-top-scoring-students-ii/)
 ```sql
 -- STEP 1: FILTER STUDENTS WITH AVERAGE GPA >= 2.5
 WITH T AS (
@@ -516,7 +516,7 @@ HAVING
 ORDER BY S.STUDENT_ID;
 ```
 
-# 3214. Year on Year Growth Rate
+# [3214. Year on Year Growth Rate](https://leetcode.com/problems/year-on-year-growth-rate/)
 ```sql
 -- Step 1: Aggregate spend per product per year
 WITH T AS (
@@ -552,7 +552,7 @@ FROM S
 ORDER BY PRODUCT_ID, YEAR;
 ```
 
-# [3236. CEO Subordinate Hierarchy](https://leetcode.com/problems/ceo-subordinate-hierarchy/  )
+# [3236. CEO Subordinate Hierarchy](https://leetcode.com/problems/ceo-subordinate-hierarchy/)
 
 #### Schema  
 
@@ -647,7 +647,7 @@ WHERE T.HIERARCHY_LEVEL != 0
 ORDER BY T.HIERARCHY_LEVEL, T.EMPLOYEE_ID;
 ```
 
-# 3268. Find Overlapping Shifts II
+# [3268. Find Overlapping Shifts II](https://leetcode.com/problems/find-overlapping-shifts-ii/)
 ```sql
 -- STEP 1: COLLECT ALL UNIQUE TIME POINTS (START AND END TIMES)
 WITH T AS (
@@ -716,7 +716,7 @@ GROUP BY S.EMPLOYEE_ID
 ORDER BY S.EMPLOYEE_ID;
 ```
 
-# 3368. First Letter Capitalization
+# [3368. First Letter Capitalization](https://leetcode.com/problems/first-letter-capitalization/)
 ```sql
 -- Step 1: Recursive CTE to capitalize each word in content_text
 WITH CAPITALIZED_WORDS AS (
@@ -767,7 +767,7 @@ FROM CAPITALIZED_WORDS
 GROUP BY CONTENT_ID, CONTENT_TEXT;
 ```
 
-# 3374. First Letter Capitalization II
+# [3374. First Letter Capitalization II](https://leetcode.com/problems/first-letter-capitalization-ii/)
 ```sql
 -- STEP 1: RECURSIVELY SPLIT CONTENT_TEXT INTO WORDS USING SUBSTRING
 WITH WORDS AS (
@@ -828,7 +828,7 @@ FROM USER_CONTENT U
 JOIN CONVERTED C ON U.CONTENT_ID = C.CONTENT_ID;
 ```
 
-# 3384. Team Dominance by Pass Success
+# [3384. Team Dominance by Pass Success](https://leetcode.com/problems/team-dominance-by-pass-success/)
 ```sql
 -- COMMON TABLE EXPRESSION TO PREPARE PASS DATA WITH TEAM AND HALF INFO
 WITH T AS (
@@ -859,7 +859,7 @@ GROUP BY TEAM_NAME, HALF_NUMBER
 ORDER BY TEAM_NAME, HALF_NUMBER;
 ```
 
-# 3390. Longest Team Pass Streak
+# [3390. Longest Team Pass Streak](https://leetcode.com/problems/longest-team-pass-streak/)
 ```sql
 WITH PASSESWITHTEAMS AS (
     SELECT
@@ -908,7 +908,7 @@ FROM LONGESTSTREAKS
 ORDER BY TEAM_NAME;
 ```
 
-# 3401. Find Circular Gift Exchange Chains
+# [3401. Find Circular Gift Exchange Chains](https://leetcode.com/problems/find-circular-gift-exchange-chains/)
 ```sql
 -- BUILD GIFT CHAINS RECURSIVELY
 WITH RECURSIVE CHAINS AS (
@@ -952,7 +952,7 @@ SELECT
 FROM UNIQUECHAINS;
 ```
 
-# 3451. Find Invalid IP Addresses
+# [3451. Find Invalid IP Addresses](https://leetcode.com/problems/find-invalid-ip-addresses/)
 ```sql
 SELECT L.IP,
        COUNT(*) AS INVALID_COUNT
@@ -979,7 +979,7 @@ GROUP BY L.IP
 ORDER BY INVALID_COUNT DESC, L.IP DESC;
 ```
 
-# 3482. Analyze Organization Hierarchy
+# [3482. Analyze Organization Hierarchy](https://leetcode.com/problems/analyze-organization-hierarchy/)
 ```sql
 WITH HIERARCHY AS (
     SELECT EMPLOYEE_ID, EMPLOYEE_NAME, MANAGER_ID, SALARY, DEPARTMENT, 1 AS LEVEL
@@ -1020,7 +1020,7 @@ INNER JOIN BUDGET B ON E.EMPLOYEE_ID = B.MANAGER_ID
 ORDER BY H.LEVEL ASC, B.BUDGET DESC, E.EMPLOYEE_NAME ASC;
 ```
 
-# 3554. Find Category Recommendation Pairs
+# [3554. Find Category Recommendation Pairs](https://leetcode.com/problems/find-category-recommendation-pairs/)
 ```sql
 WITH USERCATEGORY AS (
     SELECT DISTINCT PP.USER_ID, PI.CATEGORY
@@ -1047,7 +1047,7 @@ HAVING COUNT(DISTINCT USER_ID) >= 3
 ORDER BY CUSTOMER_COUNT DESC, CATEGORY1 ASC, CATEGORY2 ASC;
 ```
 
-# 3617. Find Students with Study Spiral Pattern
+# [3617. Find Students with Study Spiral Pattern](https://leetcode.com/problems/find-students-with-study-spiral-pattern/)
 ```sql
 WITH STUDENT_SESSION_COUNTS AS (
     SELECT STUDENT_ID, SUBJECT, COUNT(*) AS CNT
@@ -1089,7 +1089,7 @@ WHERE UNIQUE_STUDENT_ID_SHOULDATLEAST_MORETHAN_1_STUDENTS_IS_THE_KEY > 1
 ORDER BY CYCLE_LENGTH DESC, TOTAL_STUDY_HOURS DESC;
 ```
 
-# 569. Median Employee Salary
+# [569. Median Employee Salary](https://leetcode.com/problems/median-employee-salary/)
 ```sql
 WITH T AS (
     SELECT *,
@@ -1102,7 +1102,7 @@ FROM T
 WHERE RK >= N / 2 AND RK <= N / 2 + 1;
 ```
 
-# 571. Find Median Given Frequency of Numbers
+# [571. Find Median Given Frequency of Numbers](https://leetcode.com/problems/find-median-given-frequency-of-numbers/)
 ```sql
 WITH
     T AS (
@@ -1119,7 +1119,7 @@ FROM T
 WHERE RK1 >= S / 2 AND RK2 >= S / 2;
 ```
 
-# 579. Find Cumulative Salary of an Employee
+# [579. Find Cumulative Salary of an Employee](https://leetcode.com/problems/find-cumulative-salary-of-an-employee/)
 ```sql
 WITH T AS (
     SELECT 
@@ -1142,7 +1142,7 @@ WHERE RK > 1
 ORDER BY ID, MONTH DESC;
 ```
 
-# 601. Human Traffic of Stadium
+# [601. Human Traffic of Stadium](https://leetcode.com/problems/human-traffic-of-stadium/)
 ```sql
 WITH S AS (
     SELECT *,
@@ -1160,7 +1160,7 @@ FROM T
 WHERE CNT >= 3
 ```
 
-# 615. Average Salary: Departments VS Company
+# [615. Average Salary: Departments VS Company](https://leetcode.com/problems/average-salary-departments-vs-company/)
 ```sql
 WITH T AS (
     SELECT
