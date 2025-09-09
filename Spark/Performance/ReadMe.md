@@ -162,3 +162,66 @@ Catalyst is a **modular library** built using **Scala's functional programming f
 3. **Optimized Logical Plan**: Pushes down filter, prunes unused columns.
 4. **Physical Plan**: Chooses between broadcast join, sort-merge join, etc.
 5. **Code Generation**: Compiles into bytecode for execution.
+
+# Spark Shuffle Process
+
+Shuffle is the process of redistributing data across partitions during **wide transformations** like `reduceByKey`, `groupByKey`, `join`, and `distinct`. It involves:
+- Writing intermediate data to disk
+- Transferring data across the network
+- Reading data from other executors
+
+### **Source Code Components**
+
+#### 1. `ShuffleWriter`
+- Writes partitioned data to disk during the map stage.
+- Uses `ExternalSorter` to buffer, sort, and spill data.
+- Returns `MapStatus` with metadata for reduce tasks.
+
+#### 2. `ExternalSorter`
+- Buffers records in memory.
+- Spills to disk if memory is exceeded.
+- Sorts and aggregates data before writing.
+
+#### 3. `IndexShuffleBlockResolver`
+- Creates `.data` and `.index` files per map task.
+- `.data` contains all reduce partitions' data.
+- `.index` contains byte offsets for each partition.
+
+#### 4. `BlockStoreShuffleReader`
+- Reads shuffle data during reduce stage.
+- Uses index file to locate partition data in `.data` file.
+
+### **Shuffle File Format**
+
+#### For each **map task**, Spark creates:
+- **1 `.data` file**: Contains serialized key-value pairs for all reduce partitions.
+- **1 `.index` file**: Contains byte offsets for each partition in the `.data` file.
+
+#### Example:
+- `.data` file layout:
+  ```
+  [partition_0_data][partition_1_data][partition_2_data]
+  ```
+- `.index` file:
+  ```
+  Offset[0] = 0
+  Offset[1] = 128
+  Offset[2] = 256
+  Offset[3] = 384
+  ```
+### **Shuffle Read Phase**
+- Reduce tasks read only their partition’s data using offsets from `.index`.
+- Data is deserialized and aggregated.
+
+### **Why Spark Uses This Format**
+- Reduces file count (avoids M × R explosion).
+- Enables fast access via index.
+- Scales well with large clusters.
+
+### **Performance Considerations**
+- Shuffle is expensive due to disk I/O and network transfer.
+- Use `reduceByKey` instead of `groupByKey`.
+- Avoid skewed keys.
+- Monitor shuffle metrics in Spark UI:
+  - Shuffle Read/Write Size
+  - Spill (Memory/Disk)
