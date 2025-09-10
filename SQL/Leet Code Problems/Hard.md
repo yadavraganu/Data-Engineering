@@ -383,6 +383,31 @@ ORDER BY USER1;
 
 # [2995. Viewers Turned Streamers](https://leetcode.com/problems/viewers-turned-streamers/)
 ```sql
+WITH T AS (
+    SELECT
+        USER_ID,
+        SESSION_TYPE,
+        RANK() OVER (
+            PARTITION BY USER_ID
+            ORDER BY SESSION_START
+        ) AS RK
+    FROM SESSIONS
+)
+SELECT 
+    T.USER_ID, 
+    COUNT(*) AS SESSIONS_COUNT
+FROM 
+    T T
+    INNER JOIN SESSIONS S ON T.USER_ID = S.USER_ID
+WHERE 
+    T.RK = 1 
+    AND T.SESSION_TYPE = 'Viewer' 
+    AND S.SESSION_TYPE = 'Streamer'
+GROUP BY 
+    T.USER_ID
+ORDER BY 
+    SESSIONS_COUNT DESC, 
+    T.USER_ID DESC;
 ```
 
 # [3052. Maximize Items](https://leetcode.com/problems/maximize-items/)
@@ -1236,4 +1261,5 @@ SELECT
 FROM T
 GROUP BY RK
 ORDER BY RK;
+
 ```
