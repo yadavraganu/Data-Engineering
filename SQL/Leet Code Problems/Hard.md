@@ -378,7 +378,75 @@ ORDER BY USER1;
 ```
 
 # [2994. Friday Purchases II](https://leetcode.com/problems/friday-purchases-ii/)
+
+### Description
+
+The `Purchases` table has the following schema:  
+- user_id       int  
+- purchase_date date  
+- amount_spend int  
+
+The primary key is the combination `(user_id, purchase_date, amount_spend)`.  
+The `purchase_date` ranges from November 1, 2023, to November 30, 2023.  
+
+Write a query to compute, for each Friday in November 2023, the total amount spent by all users on that day.  
+If no purchases occurred on a given Friday, report 0.  
+Return the result ordered by `week_of_month` in ascending order, where `week_of_month` is 1 for the first Friday, 2 for the second, and so on.
+
+### Sample Input
+
+Purchases table:
+
+| user_id | purchase_date | amount_spend |
+|---------|---------------|--------------|
+| 11      | 2023-11-07    | 1126         |
+| 15      | 2023-11-30    | 7473         |
+| 17      | 2023-11-14    | 2414         |
+| 12      | 2023-11-24    | 9692         |
+| 8       | 2023-11-03    | 5117         |
+| 1       | 2023-11-16    | 5241         |
+| 10      | 2023-11-12    | 8266         |
+| 13      | 2023-11-24    | 12000        |
+
+### Sample Output
+
+| week_of_month | purchase_date | total_amount |
+|---------------|---------------|--------------|
+| 1             | 2023-11-03    | 5117         |
+| 2             | 2023-11-10    | 0            |
+| 3             | 2023-11-17    | 0            |
+| 4             | 2023-11-24    | 21692        |
+
+### Explanation
+
+- Week 1’s Friday is 2023-11-03, total spending = 5,117.  
+- Week 2’s Friday is 2023-11-10, no purchases → 0.  
+- Week 3’s Friday is 2023-11-17, no purchases → 0.  
+- Week 4’s Friday is 2023-11-24, two purchases (9,692 + 12,000) → 21,692.
+
 ```sql
+WITH FRIDAYS AS (
+    -- SEED WITH THE FIRST FRIDAY OF NOVEMBER 2023
+    SELECT CAST('2023-11-03' AS DATE) AS FRIDAY
+    UNION ALL
+    -- ADD 7 DAYS UNTIL THE END OF NOVEMBER
+    SELECT DATEADD(DAY, 7, FRIDAY)
+    FROM FRIDAYS
+    WHERE DATEADD(DAY, 7, FRIDAY) <= '2023-11-30'
+)
+SELECT
+    -- CALCULATE WEEK_OF_MONTH AS 1 FOR THE FIRST FRIDAY, 2 FOR THE NEXT, ETC.
+    DATEDIFF(DAY, '2023-11-03', F.FRIDAY) / 7 + 1 AS WEEK_OF_MONTH,
+    F.FRIDAY           AS PURCHASE_DATE,
+    ISNULL(SUM(P.AMOUNT_SPEND), 0) AS TOTAL_AMOUNT
+FROM FRIDAYS AS F
+LEFT JOIN PURCHASES AS P
+    ON P.PURCHASE_DATE = F.FRIDAY
+GROUP BY
+    F.FRIDAY
+ORDER BY
+    WEEK_OF_MONTH
+OPTION (MAXRECURSION 0);
 ```
 
 # [2995. Viewers Turned Streamers](https://leetcode.com/problems/viewers-turned-streamers/)
@@ -1263,3 +1331,4 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
