@@ -26,7 +26,57 @@ class Solution:
 # 2. Best Time to Buy And Sell Stock   	
 # 3. Longest Substring Without Repeating Characters   	
 # 4. Longest Repeating Character Replacement   	
-# 5. Permutation In String   	
+# 5. Permutation In String
+```python
+class Solution:
+    def checkInclusion(self, s1: str, s2: str) -> bool:
+        # If s1 is longer than s2, no permutation is possible
+        if len(s1) > len(s2):
+            return False
+
+        # Frequency arrays for characters 'a' to 'z'
+        s1Count, s2Count = [0] * 26, [0] * 26
+
+        # Initialize counts for s1 and the first window of s2
+        for i in range(len(s1)):
+            s1Count[ord(s1[i]) - ord('a')] += 1
+            s2Count[ord(s2[i]) - ord('a')] += 1
+
+        # Count how many characters match in frequency
+        matches = sum(1 for i in range(26) if s1Count[i] == s2Count[i])
+
+        # Start sliding window
+        l = 0
+        for r in range(len(s1), len(s2)):
+            if matches == 26:
+                return True  # All characters match → permutation found
+
+            # Add new character to the window (right side)
+            index = ord(s2[r]) - ord('a')
+            s2Count[index] += 1
+
+            # Update matches based on the new character
+            if s1Count[index] == s2Count[index]:
+                matches += 1  # New character now matches
+            elif s1Count[index] + 1 == s2Count[index]:
+                matches -= 1  # It was matching before, now it's over-counted
+
+            # Remove old character from the window (left side)
+            index = ord(s2[l]) - ord('a')
+            s2Count[index] -= 1
+
+            # Update matches based on the removed character
+            if s1Count[index] == s2Count[index]:
+                matches += 1  # After removal, it matches again
+            elif s1Count[index] - 1 == s2Count[index]:
+                matches -= 1  # It was matching before, now it's under-counted
+
+            l += 1  # Move the window forward
+
+        # Final check after loop
+        return matches == 26
+
+```
 # 6. Minimum Size Subarray Sum   	
 # 7. Find K Closest Elements   	
 # 8. Minimum Window Substring
