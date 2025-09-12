@@ -83,7 +83,54 @@ You can also use the `Encrypt` and `Decrypt` APIs to let KMS handle encryption d
   - Public key: Encrypt or verify.
   - Private key: Decrypt or sign.
 
-### Data encryption at rest vs in transit
+# Data encryption at rest vs in transit
+
+### **Encryption at Rest**
+
+Data is encrypted **when stored** on disk or persistent storage.
+
+#### AWS Examples:
+- **Amazon S3**: Server-side encryption (SSE) with KMS keys.
+- **Amazon EBS**: Encrypted volumes using KMS.
+- **Amazon RDS**: Encrypted databases using KMS.
+- **AWS Secrets Manager**: Secrets are encrypted using KMS.
+
+#### How It Works:
+- AWS encrypts the data using a **KMS key** before writing it to disk.
+- When data is read, it is **automatically decrypted**.
+- You can use **Customer Managed Keys (CMKs)** for more control.
+
+#### Purpose:
+- Protect data from unauthorized access if storage is compromised.
+- Meet compliance requirements (e.g., GDPR, HIPAA).
+
+---
+
+### **Encryption in Transit**
+
+Data is encrypted **while being transmitted** between systems or services.
+
+#### AWS Examples:
+- **HTTPS**: Secure communication between clients and AWS services.
+- **TLS**: Used in services like API Gateway, CloudFront, and RDS.
+- **VPC Peering / PrivateLink**: Secure internal communication.
+
+#### How It Works:
+- Data is encrypted using protocols like **TLS/SSL** during transmission.
+- AWS services enforce encryption for APIs and SDKs.
+
+#### Purpose:
+- Prevent **man-in-the-middle attacks**.
+- Ensure data integrity and confidentiality during transfer.
+
+### Summary Table
+
+| Feature               | Encryption at Rest         | Encryption in Transit       |
+|-----------------------|----------------------------|-----------------------------|
+| **When it happens**   | While data is stored       | While data is moving        |
+| **AWS Services**      | S3, EBS, RDS, Secrets Manager | API Gateway, CloudFront, RDS |
+| **Tech Used**         | KMS, AES-256               | TLS/SSL, HTTPS              |
+| **Goal**              | Protect stored data        | Protect data in motion      |
 
 3. **KMS Key Types**
    - Customer Managed Keys (CMKs)
