@@ -79,3 +79,54 @@
   ```
 - **Manage files:**  
   Use `PUT INTO`, `GET`, `REMOVE` commands or `dbutils.fs` for file operations
+
+# Metastore
+### **What is a Metastore?**
+- A **top-level container** in Unity Catalog.
+- Stores **metadata** for data assets: tables, views, volumes, external locations, and shares.
+- Enables **centralized governance** across workspaces.
+- Supports a **three-level namespace**: `catalog.schema.table`.
+
+### **What Does It Do?**
+- Manages metadata and access control.
+- Supports data lineage and auditing.
+- Enables cross-workspace and cross-region data sharing.
+
+### **Who Can Create a Metastore?**
+- Only a **Databricks Account Admin** can create a metastore.
+- Workspace Admins **cannot** create one unless they have account-level privileges.
+
+### **Requirements to Create a Metastore**
+
+#### **Mandatory**
+1. **Databricks Account Admin access**
+2. **Premium Tier or higher**
+3. **Region selection** (must match workspace region)
+
+#### **Optional (but recommended)**
+1. **S3 Bucket**  
+   - For storing managed tables  
+   - Must be in the same region  
+   - Avoid dots in bucket name
+
+2. **IAM Role**  
+   - Grants Databricks access to the S3 bucket  
+   - Requires trust relationship setup
+
+### **What If Optional Setup Is Ignored?**
+- Metastore can still be created.
+- **Managed tables won’t work** until storage is configured.
+- You can **add storage later** via the account console.
+
+### **Storage Location Hierarchy**
+
+Unity Catalog supports storage configuration at:
+
+1. **Metastore Level** (recommended)
+2. **Catalog Level**
+3. **Schema Level**
+
+#### If You Provide Storage at Lower Levels:
+- It **overrides** metastore-level storage for that scope.
+- Useful for **fine-grained control** or **multi-tenant setups**.
+- Adds **complexity** in management and governance.
