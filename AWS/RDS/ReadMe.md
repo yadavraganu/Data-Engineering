@@ -49,9 +49,69 @@ You create an RDS subnet group including these three subnets. When you launch a 
 ### 4. **Basic Operations**
 - Creating databases and tables
 - Running queries
-- Backups and snapshots
 
----
+# Backups and snapshots
+
+### **1. Automated Backups**
+
+#### What Are They?
+- A **built-in feature** of Amazon RDS that automatically backs up your database.
+- Includes:
+  - **Daily snapshots**
+  - **Transaction logs** for **Point-in-Time Recovery (PITR)**
+
+#### Key Features:
+- **Retention Period**: Configurable from **1 to 35 days**
+- **Point-in-Time Recovery**: You can restore your DB to any specific second within the retention window.
+- **Enabled by Default**: When you create an RDS instance (unless explicitly disabled).
+- **Storage Location**: Stored in **Amazon S3**, managed by AWS (not directly accessible).
+- **Encryption**: Backups are encrypted using the **KMS key** associated with your DB instance.
+
+#### Use Cases:
+- Disaster recovery
+- Automatic protection against data loss
+- Compliance with short-term data retention policies
+
+### **2. Manual Snapshots**
+
+#### What Are They?
+- **User-initiated backups** of your RDS instance.
+- Persist until you manually delete them.
+
+#### Key Features:
+- **No Expiry**: Stored indefinitely until deleted.
+- **Cross-Region Copy**: Can be copied to other AWS regions for disaster recovery.
+- **Sharing**: Can be shared with other AWS accounts.
+- **Storage Location**: Stored in **Amazon S3**, managed by AWS.
+- **Encryption**: Encrypted using the **KMS key** selected during snapshot creation.
+
+#### Use Cases:
+- Long-term archival
+- Pre-deployment safety
+- Migration across regions or accounts
+- Compliance with long-term retention policies
+
+### **Comparison Table**
+
+| Feature                     | Automated Backups           | Manual Snapshots             |
+|-----------------------------|-----------------------------|-------------------------------|
+| **Created By**              | AWS (automatically)         | User (manually)               |
+| **Retention Period**        | 1–35 days                   | Until manually deleted        |
+| **Point-in-Time Recovery**  | ✅ Yes                      | ❌ No (only to snapshot time) |
+| **Cross-Region Copy**       | ❌ No (unless exported)      | ✅ Yes                        |
+| **Sharing Across Accounts** | ❌ No                        | ✅ Yes                        |
+| **Storage Location**        | Amazon S3 (managed by AWS)  | Amazon S3 (managed by AWS)    |
+| **Encryption**              | KMS (automated)             | KMS (user-selected)           |
+
+### **Restoration Options**
+
+- **Automated Backup Restore**:
+  - Restore to a specific point in time.
+  - Creates a new DB instance.
+
+- **Snapshot Restore**:
+  - Restore to the exact time the snapshot was taken.
+  - Creates a new DB instance.
 
 ## 🟡 **Intermediate Level: Administration & Performance**
 
