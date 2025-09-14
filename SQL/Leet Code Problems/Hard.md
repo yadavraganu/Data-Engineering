@@ -93,6 +93,31 @@ GROUP BY DP.SPEND_DATE, DP.PLATFORM;
 
 # [1159. Market Analysis II](https://leetcode.com/problems/market-analysis-ii/)
 ```sql
+-- Rank each seller's orders by order_date
+WITH RANKEDORDERS AS (
+    SELECT
+        ORDER_DATE,
+        ITEM_ID,
+        SELLER_ID,
+        RANK() OVER (
+            PARTITION BY SELLER_ID
+            ORDER BY ORDER_DATE
+        ) AS RK
+    FROM ORDERS
+)
+
+-- Join users with their second sold item and compare brands
+SELECT
+    U.USER_ID AS SELLER_ID,
+    CASE
+        WHEN U.FAVORITE_BRAND = I.ITEM_BRAND THEN 'yes'
+        ELSE 'no'
+    END AS SECOND_ITEM_FAV_BRAND
+FROM USERS AS U
+LEFT JOIN RANKEDORDERS AS O
+    ON U.USER_ID = O.SELLER_ID AND O.RK = 2
+LEFT JOIN ITEMS AS I
+    ON O.ITEM_ID = I.ITEM_ID;
 ```
 
 # [1194. Tournament Winners](https://leetcode.com/problems/tournament-winners/)
@@ -1421,6 +1446,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
