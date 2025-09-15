@@ -69,6 +69,30 @@ def subsets_with_dup(nums):
 ```
 ## Combination Sum
 ```python
+from typing import List
+
+class Solution:
+    def combinationSum(self, nums: List[int], target: int) -> List[List[int]]:
+        res = []          # Stores all valid combinations
+        subset = []       # Current combination being built
+
+        def _helper(i: int, tgt: int) -> None:
+            if tgt == 0:
+                res.append(subset.copy())  # Found a valid combination
+                return
+            if tgt < 0 or i == len(nums):
+                return  # Invalid path or end of list
+
+            # Include current number and recurse
+            subset.append(nums[i])
+            _helper(i, tgt - nums[i])      # Reuse same number
+            subset.pop()                   # Backtrack
+
+            # Skip current number and move to next
+            _helper(i + 1, tgt)
+
+        _helper(0, target)                 # Start recursion
+        return res
 ```
 ## Combination Sum II
 ```python
