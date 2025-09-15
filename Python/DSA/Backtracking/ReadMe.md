@@ -96,6 +96,37 @@ class Solution:
 ```
 ## Combination Sum II
 ```python
+from typing import List
+
+
+class Solution:
+    def combinationSum2(self, nums: List[int], target: int) -> List[List[int]]:
+        res = []          # Stores all unique combinations
+        subset = []       # Current combination being built
+        nums.sort()       # Sort to group duplicates together
+
+        def _helper(i: int, tgt: int) -> None:
+            if tgt == 0:
+                res.append(subset.copy())  # Found a valid combination
+                return
+            if i >= len(nums) or tgt < 0:
+                return  # Out of bounds or invalid path
+
+            # Include current number
+            subset.append(nums[i])
+            _helper(i + 1, tgt - nums[i])  # Move to next index
+            subset.pop()                  # Backtrack
+
+            # Skip duplicates
+            next_i = i + 1
+            while next_i < len(nums) and nums[next_i] == nums[i]:
+                next_i += 1
+
+            # Exclude current number and move to next distinct value
+            _helper(next_i, tgt)
+
+        _helper(0, target)
+        return res
 ```
 ## Word Search
 ```python
