@@ -7,8 +7,6 @@ While "SSL" is still a commonly used term, especially for digital certificates, 
 - **TLS** was developed to address vulnerabilities found in the older **SSL protocols**.
 - All versions of **SSL** are now **deprecated** and **no longer considered secure**.
 
-### TLS 1.2 Handshake: Step-by-Step Breakdown
-
 To establish a secure connection between your browser (client) and a website's server, a **TLS handshake** takes place. While TLS 1.3 has streamlined this process, TLS 1.2 provides a more detailed view of how secure communication is established.
 
 ### 1. Client Hello
