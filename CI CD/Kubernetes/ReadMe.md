@@ -53,3 +53,64 @@ Avoid namespaces when you require hard isolation (use separate clusters) or when
   ```bash
   kubectl config set-context --current --namespace=my-team
   ```
+
+# Pods in Kubernetes
+
+Pods are the smallest deployable units in Kubernetes, serving as the fundamental building blocks for containerized applications.
+
+### What Is a Pod?
+
+A Pod is a group of one or more containers that share storage, networking, and specifications for how to run those containers. It acts as a logical host, co-locating tightly coupled application components within the same scheduling and isolation context.
+
+### Pod Structure and Features
+
+- Shared Network Namespace: All containers in a Pod share the same IP address and port space, allowing them to communicate via localhost.  
+- Shared Storage Volumes: Volumes defined in the Pod spec are accessible to every container in the Pod.  
+- Specification for Containers: The Pod manifest describes each container’s image, resource requirements, ports, and environment variables.  
+- Init and Ephemeral Containers: Init containers run to completion before app containers start, and ephemeral containers can be injected for debugging purposes.
+
+### Common Use Cases
+
+- Single-Container Pods  
+  Use the “one-container-per-Pod” pattern when your application runs in a single process. Here, a Pod is essentially a lightweight wrapper around that container for easier orchestration and scaling.  
+
+- Multi-Container Pods  
+  Employ when multiple processes need to work closely together and share resources. Typical scenarios include sidecar patterns (e.g., logging or proxy containers) and ambassador or adapter containers for data transformation.
+
+### Pod Lifecycle
+
+1. Scheduling: The control plane assigns a Pod to a node based on resource requirements and affinity rules.  
+2. Init Containers: Run sequentially to set up prerequisites (e.g., pulling secrets, setting up volumes).  
+3. Application Containers: Start concurrently once init containers complete.  
+4. Termination: When containers finish or fail, the Pod’s status updates; controllers can recreate Pods to maintain desired state.  
+5. Deletion: Pods are removed when their managing controller is scaled down or explicitly deleted.
+
+### Types of Pods
+
+1. Single-Container Pods  
+   - Basic building block for stateless apps.  
+2. Multi-Container Pods  
+   - Sidecar pattern for helpers (logging, metrics).  
+3. Static Pods  
+   - Managed directly by a node’s kubelet without the API server; used for bootstrapping critical services.  
+4. DaemonSet Pods  
+   - Ensure one copy runs on every node, ideal for monitoring agents or log collectors.
+
+### Working with Pods
+
+Pods are rarely created directly in production. Instead, you define higher-level workload resources—such as Deployments, StatefulSets, or Jobs—that manage Pod creation, scaling, and updates. For ad hoc testing, you can apply a manifest like:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+```
+
+Run `kubectl apply -f simple-pod.yaml` to create this Pod directly on the cluster.
