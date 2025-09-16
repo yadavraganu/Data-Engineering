@@ -1,4 +1,4 @@
-## Subsets
+# 1.Subsets
 ```python
 def subsets(nums):
     result = []
@@ -15,33 +15,32 @@ def subsets(nums):
     backtrack(0, [])
     return result
 ```
-## Permutations
+# 2.Permutations
 ```python
-def permutations(nums):
-    result = []
-    n = len(nums)
-    used = [False] * n
+from typing import List
 
-    def backtrack(current_permutation):
-        if len(current_permutation) == n:
-            result.append(list(current_permutation))
-            return
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []  # Stores all the permutations
+        used = [False] * len(nums)  # Tracks which elements are used in the current permutation
 
-        for i in range(n):
-            if not used[i]:
-                used[i] = True
-                current_permutation.append(nums[i])
-                backtrack(current_permutation)
-                current_permutation.pop()
-                used[i] = False
+        def _helper(subset):
+            if len(subset) == len(nums):
+                res.append(subset[:])  # Add a copy of the current permutation to the result
+                return
 
-    backtrack([])
-    return result
+            for i in range(len(nums)):
+                if not used[i]:  # Skip if the element is already used
+                    used[i] = True
+                    subset.append(nums[i])  # Choose the element
+                    _helper(subset)         # Explore further
+                    subset.pop()           # Undo the choice (backtrack)
+                    used[i] = False        # Mark the element as unused again
 
-# Example Usage:
-# print(permutations([1, 2, 3]))
+        _helper([])
+        return res
 ```
-## Subsets II
+# 3.Subsets II
 ```python
 def subsets_with_dup(nums):
     result = []
@@ -64,10 +63,10 @@ def subsets_with_dup(nums):
 # Example Usage:
 # print(subsets_with_dup([1, 2, 2]))
 ```
-## Letter Combinations of a Phone Number
+# 4.Letter Combinations of a Phone Number
 ```python
 ```
-## Combination Sum
+# 5.Combination Sum
 ```python
 from typing import List
 
@@ -94,7 +93,7 @@ class Solution:
         _helper(0, target)                 # Start recursion
         return res
 ```
-## Combination Sum II
+# 6.Combination Sum II
 ```python
 from typing import List
 
@@ -128,19 +127,19 @@ class Solution:
         _helper(0, target)
         return res
 ```
-## Word Search
+# 7.Word Search
 ```python
 ```
-## Word Search II
+# 8.Word Search II
 ```python
 ```
-## Palindrome Partitioning
+# 9.Palindrome Partitioning
 ```python
 ```
-## N Queens
+# 10.N Queens
 ```python
 ```
-# Combinations
+# 11.Combinations
 ```python
 class Solution:
     def combine(self, n: int, k: int) -> List[List[int]]:
