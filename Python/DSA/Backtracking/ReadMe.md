@@ -1,4 +1,4 @@
-# 1.Subsets
+# 1. Subsets
 ```python
 def subsets(nums):
     result = []
@@ -15,7 +15,7 @@ def subsets(nums):
     backtrack(0, [])
     return result
 ```
-# 2.Permutations
+# 2. Permutations
 ```python
 from typing import List
 
@@ -40,7 +40,7 @@ class Solution:
         _helper([])
         return res
 ```
-# 3.Subsets II
+# 3. Subsets II
 ```python
 def subsets_with_dup(nums):
     result = []
@@ -63,10 +63,10 @@ def subsets_with_dup(nums):
 # Example Usage:
 # print(subsets_with_dup([1, 2, 2]))
 ```
-# 4.Letter Combinations of a Phone Number
+# 4. Letter Combinations of a Phone Number
 ```python
 ```
-# 5.Combination Sum
+# 5. Combination Sum
 ```python
 from typing import List
 
@@ -93,7 +93,7 @@ class Solution:
         _helper(0, target)                 # Start recursion
         return res
 ```
-# 6.Combination Sum II
+# 6. Combination Sum II
 ```python
 from typing import List
 
@@ -127,19 +127,19 @@ class Solution:
         _helper(0, target)
         return res
 ```
-# 7.Word Search
+# 7. Word Search
 ```python
 ```
-# 8.Word Search II
+# 8. Word Search II
 ```python
 ```
-# 9.Palindrome Partitioning
+# 9. Palindrome Partitioning
 ```python
 ```
-# 10.N Queens
+# 10. N Queens
 ```python
 ```
-# 11.Combinations
+# 11. Combinations
 ```python
 class Solution:
     def combine(self, n: int, k: int) -> List[List[int]]:
