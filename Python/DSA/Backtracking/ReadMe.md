@@ -62,6 +62,34 @@ def subsets_with_dup(nums):
 
 # Example Usage:
 # print(subsets_with_dup([1, 2, 2]))
+####################
+from typing import List
+
+class Solution:
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        nums.sort()  # Sort to group duplicates together
+
+        def _helper(idx, subset):
+            if idx == len(nums):
+                res.append(subset.copy())  # Add a copy of the current subset
+                return
+
+            # Include the current element
+            subset.append(nums[idx])
+            _helper(idx + 1, subset)
+            subset.pop()  # Backtrack
+
+            # Skip duplicates
+            next_idx = idx + 1
+            while next_idx < len(nums) and nums[next_idx] == nums[next_idx - 1]:
+                next_idx += 1
+
+            # Exclude the current element and move to the next distinct one
+            _helper(next_idx, subset)
+
+        _helper(0, [])
+        return res
 ```
 # 4. Letter Combinations of a Phone Number
 ```python
