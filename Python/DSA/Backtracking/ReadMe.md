@@ -166,6 +166,43 @@ class Solution:
 ```
 # 10. N Queens
 ```python
+from typing import List
+
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        result = []  # Stores all valid board configurations
+        board = [["."] * n for _ in range(n)]  # Initialize empty board
+        col = set()  # Tracks occupied columns
+        pos_diag = set()  # Tracks occupied positive diagonals (r - c)
+        neg_diag = set()  # Tracks occupied negative diagonals (r + c)
+
+        def _helper(r):
+            if r == n:
+                # All queens placed successfully, add current board to result
+                result.append(["".join(row) for row in board])
+                return
+
+            for c in range(n):
+                # Skip if column or diagonal is under attack
+                if c in col or (r + c) in neg_diag or (r - c) in pos_diag:
+                    continue
+
+                # Place queen and mark column and diagonals
+                col.add(c)
+                pos_diag.add(r - c)
+                neg_diag.add(r + c)
+                board[r][c] = 'Q'
+
+                _helper(r + 1)  # Move to next row
+
+                # Backtrack: remove queen and unmark threats
+                board[r][c] = '.'
+                col.remove(c)
+                pos_diag.remove(r - c)
+                neg_diag.remove(r + c)
+
+        _helper(0)  # Start placing queens from row 0
+        return result
 ```
 # 11. Combinations
 ```python
