@@ -168,3 +168,47 @@ ORDER BY MIN(ID);
 | B      | 3             |
 | C      | 2             |
 | B      | 2             |
+
+# IN and NOT IN Using Joins
+
+### 1. **`IN` using `JOIN`**
+
+#### Use Case: Get employees who belong to departments located in 'Pune'
+
+```sql
+-- Using IN
+SELECT E.NAME
+FROM EMPLOYEES E
+WHERE E.DEPARTMENT_ID IN (
+    SELECT D.ID
+    FROM DEPARTMENTS D
+    WHERE D.LOCATION = 'PUNE'
+);
+
+-- USING JOIN (EQUIVALENT)
+SELECT E.NAME
+FROM EMPLOYEES E
+JOIN DEPARTMENTS D ON E.DEPARTMENT_ID = D.ID
+WHERE D.LOCATION = 'PUNE';
+```
+
+### 2. **`NOT IN` using `JOIN`**
+
+#### Use Case: Get employees who do **not** belong to departments located in 'Pune'
+
+```sql
+-- Using NOT IN
+SELECT E.NAME
+FROM EMPLOYEES E
+WHERE E.DEPARTMENT_ID NOT IN (
+    SELECT D.ID
+    FROM DEPARTMENTS D
+    WHERE D.LOCATION = 'PUNE'
+);
+
+-- USING LEFT JOIN AND IS NULL (ANTI-JOIN)
+SELECT E.NAME
+FROM EMPLOYEES E
+LEFT JOIN DEPARTMENTS D ON E.DEPARTMENT_ID = D.ID AND D.LOCATION = 'PUNE'
+WHERE D.ID IS NULL;
+```
