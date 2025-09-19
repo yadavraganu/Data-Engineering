@@ -454,6 +454,30 @@ ORDER BY USER1;
 
 # [2991. Top Three Wineries](https://leetcode.com/problems/top-three-wineries/)
 ```sql
+-- STEP 1: AGGREGATE AND RANK WINERIES BY COUNTRY
+WITH RANKEDWINERIES AS (
+    SELECT 
+        COUNTRY,
+        WINERY,
+        SUM(POINTS) AS TOTAL_POINTS,
+        RANK() OVER (
+            PARTITION BY COUNTRY 
+            ORDER BY SUM(POINTS) DESC, WINERY ASC
+        ) AS RK
+    FROM WINERIES
+    GROUP BY COUNTRY, WINERY
+)
+
+-- STEP 2: PIVOT TOP 3 WINERIES PER COUNTRY WITH FALLBACK VALUES
+SELECT 
+    COUNTRY,
+    ISNULL(MAX(CASE WHEN RK = 1 THEN CONCAT(WINERY, ' (', TOTAL_POINTS, ')') END), 'no first winery') AS TOP_WINERY,
+    ISNULL(MAX(CASE WHEN RK = 2 THEN CONCAT(WINERY, ' (', TOTAL_POINTS, ')') END), 'No second winery') AS SECOND_WINERY,
+    ISNULL(MAX(CASE WHEN RK = 3 THEN CONCAT(WINERY, ' (', TOTAL_POINTS, ')') END), 'No third winery') AS THIRD_WINERY
+FROM RANKEDWINERIES
+WHERE RK <= 3
+GROUP BY COUNTRY
+ORDER BY COUNTRY;
 ```
 
 # [2994. Friday Purchases II](https://leetcode.com/problems/friday-purchases-ii/)
@@ -1500,6 +1524,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
