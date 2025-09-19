@@ -299,3 +299,116 @@ While the "read-repartition-write" pattern is the most common, here are other po
 | **Periodic Compaction Job** | Set up a separate, dedicated Spark job that runs periodically (e.g., every hour or day). This job's sole purpose is to run the "read-repartition-write" logic, cleaning up the small files and replacing them with compacted ones. | Continuous, streaming ingestion pipelines where new small files are constantly arriving. |
 | **Using Delta Lake** | If you're using the Delta Lake format, you can run the `OPTIMIZE` command. This command automatically handles the compaction of small files for you under the hood. It's the simplest and most robust solution if you're in the Databricks ecosystem or have adopted Delta Lake. | Workloads already using or able to migrate to Delta Lake. It simplifies file management significantly. |
 | **Fixing the Source** | The best solution is to prevent the small files from being created in the first place. If you control the upstream process, modify it to buffer data and write it in larger, less frequent batches. | Scenarios where you have full control over the data ingestion pipeline. |
+
+# What is GC issue
+GC is a **JVM process** that automatically reclaims memory by removing objects that are no longer in use. Spark runs on the JVM, so GC is crucial for managing memory during distributed data processing.
+
+### 2. **Who Performs GC in Spark?**
+- **Driver JVM**: Handles GC for job coordination, metadata, and result collection.
+- **Executor JVMs (Workers)**: Handle GC for actual data processing tasks — this is where **most GC activity and issues** occur.
+
+### 3. **What Happens During GC?**
+GC typically involves three phases:
+
+#### a. **Mark Phase**
+- JVM identifies all **live objects** by traversing from GC roots (e.g., thread stacks, static references).
+
+### b. **Sweep Phase**
+- JVM removes **unreachable (dead)** objects and reclaims their memory.
+
+#### c. **Compaction Phase** *(optional)*
+- JVM **defragments memory** by moving live objects together to optimize allocation.
+
+#### 4. **Types of GC in JVM (Used by Spark)**
+
+| GC Type | Description | Impact |
+|--------|-------------|--------|
+| **Minor GC** | Cleans Young Generation (short-lived objects) | Frequent, fast |
+| **Major/Full GC** | Cleans Old Generation (long-lived objects) | Slower, can pause JVM |
+| **GC Overhead Limit Exceeded** | JVM spends too much time in GC with little memory reclaimed | Causes task/job failure |
+
+Common GC algorithms:
+- **G1GC** (default in newer JVMs): Balanced for large heaps.
+- **Parallel GC**: High throughput, longer pauses.
+- **CMS**: Low pause, deprecated.
+- **ZGC/Shenandoah**: Ultra-low pause (experimental).
+
+### 5. **Why GC Problems Happen in Spark**
+
+- **Large number of intermediate objects** from transformations.
+- **Insufficient executor memory** or poor memory configuration.
+- **Data skew**: Uneven partition sizes.
+- **Inefficient serialization**: Java serialization creates large objects.
+- **Overuse of caching**: `.cache()` or `.persist()` without enough memory.
+- **Wide transformations**: `groupByKey` creates large shuffle data.
+
+### 6. **How to Identify GC Issues**
+
+#### a. **Spark UI**
+- **Executors tab**: Check GC Time vs Task Time.
+- **Stages tab**: Look for long task durations and high deserialization time.
+
+#### b. **Databricks Monitoring**
+- Use **Ganglia metrics** or **Spark Monitoring tab**:
+  - `jvm.gc.time`
+  - `jvm.heap.used`
+  - `jvm.gc.count`
+
+#### c. **Logs**
+- Look for:
+  - `GC overhead limit exceeded`
+  - `OutOfMemoryError`
+  - Long GC pause logs
+
+### 7. **Signs of GC Issues**
+
+| Symptom | Description |
+|--------|-------------|
+| **High GC Time** | GC time dominates task execution time |
+| **GC Overhead Errors** | JVM spends >98% time in GC with <2% memory reclaimed |
+| **Long GC Pauses** | Tasks or stages take unusually long |
+| **Frequent GC Cycles** | GC runs very often, indicating memory pressure |
+| **OutOfMemoryError** | JVM crashes due to memory exhaustion |
+| **Executor Slowness** | Some executors lag due to GC stress |
+| **High Deserialization Time** | Indicates large or inefficient object handling |
+| **Job Stalls/Hangs** | GC pauses block progress |
+
+### 8. **How to Avoid GC Issues**
+
+- **Use Kryo serialization**:
+  ```scala
+  sparkConf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+  ```
+
+- **Tune memory settings**:
+  - `spark.executor.memory`
+  - `spark.memory.fraction`
+  - `spark.memory.storageFraction`
+
+- **Avoid unnecessary caching**:
+  - Use `.cache()` only when needed.
+  - Call `.unpersist()` when done.
+
+- **Optimize data structures**:
+  - Use primitive types.
+  - Avoid deeply nested objects.
+
+- **Reduce data skew**:
+  - Use salting or custom partitioning.
+
+- **Use efficient joins**:
+  - Prefer broadcast joins for small tables.
+
+- **Avoid wide transformations**:
+  - Use `reduceByKey` or `aggregateByKey` instead of `groupByKey`.
+
+### 9. **How to Mitigate GC Issues (If Already Occurring)**
+
+- **Increase executor memory** or reduce cores per executor.
+- Use `persist(StorageLevel.MEMORY_AND_DISK)` instead of `.cache()` to avoid memory-only storage.
+- **Repartition** large datasets to balance load.
+- **Avoid wide transformations** that cause large shuffles.
+- **Use Spark SQL**: Catalyst optimizer can reduce memory usage.
+- **Monitor and tune GC settings**:
+  - Choose appropriate GC algorithm (e.g., G1GC).
+  - Tune JVM flags if needed.
