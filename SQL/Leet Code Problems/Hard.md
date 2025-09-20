@@ -60,6 +60,46 @@ GROUP BY PLAYERTOINSTALLDATE.INSTALL_DT;
 ```
 
 # [1127. User Purchase Platform](https://leetcode.com/problems/user-purchase-platform/)
+#### Schema
+
+Table: Spending
+
+| Column Name | Type    |
+|-------------|---------|
+| user_id     | int     |
+| spend_date  | date    |
+| platform    | varchar |
+| amount      | int     |
+
+Primary key: (user_id, spend_date, platform)
+
+#### Description
+
+Given the Spending table, write an SQL query to find, for every spend_date and platform (desktop, mobile, both), the total amount spent and the number of unique users who spent on that platform on that day. If there is no user for a platform on a given day, the result should show 0 for total_amount and total_users.
+
+#### Sample Input
+
+| user_id | spend_date  | platform | amount |
+|---------|-------------|----------|--------|
+| 1       | 2022-01-01  | desktop  | 100    |
+| 1       | 2022-01-01  | mobile   | 200    |
+| 2       | 2022-01-01  | desktop  | 300    |
+| 3       | 2022-01-02  | mobile   | 400    |
+
+#### Sample Output
+
+| spend_date  | platform | total_amount | total_users |
+|-------------|----------|--------------|-------------|
+| 2022-01-01  | desktop  | 400          | 2           |
+| 2022-01-01  | mobile   | 200          | 1           |
+| 2022-01-01  | both     | 300          | 1           |
+| 2022-01-02  | desktop  | 0            | 0           |
+| 2022-01-02  | mobile   | 400          | 1           |
+| 2022-01-02  | both     | 0            | 0           |
+
+**Explanation:**  
+- On 2022-01-01, user 1 spent on both platforms, so he is counted for 'both', and also for desktop and mobile individually.
+
 ```sql
 WITH USERTOAMOUNT AS (
     SELECT
@@ -92,6 +132,77 @@ GROUP BY DP.SPEND_DATE, DP.PLATFORM;
 ```
 
 # [1159. Market Analysis II](https://leetcode.com/problems/market-analysis-ii/)
+#### Schema
+
+Table: Users
+
+| Column Name    | Type    |
+|----------------|---------|
+| user_id        | int     |
+| favorite_brand | varchar |
+
+user_id is the primary key for this table.
+
+Table: Orders
+
+| Column Name | Type    |
+|-------------|---------|
+| order_id    | int     |
+| order_date  | date    |
+| item_id     | int     |
+| seller_id   | int     |
+
+order_id is the primary key for this table.
+
+Table: Items
+
+| Column Name | Type    |
+|-------------|---------|
+| item_id     | int     |
+| item_brand  | varchar |
+
+item_id is the primary key for this table.
+
+#### Description
+
+A seller's second sold item is the item they sold in their second earliest order. Write an SQL query to find whether the seller's favorite brand matches the brand of their second sold item. Return seller_id and 'yes' if their favorite brand matches, 'no' otherwise.
+
+#### Sample Input
+
+Users table:
+
+| user_id | favorite_brand |
+|---------|---------------|
+| 1       | Lenovo        |
+| 2       | Samsung       |
+
+Orders table:
+
+| order_id | order_date | item_id | seller_id |
+|----------|------------|---------|-----------|
+| 1        | 2020-01-01 | 2       | 1         |
+| 2        | 2020-01-02 | 3       | 1         |
+| 3        | 2020-01-02 | 4       | 2         |
+
+Items table:
+
+| item_id | item_brand |
+|---------|------------|
+| 2       | Lenovo     |
+| 3       | Samsung    |
+| 4       | Samsung    |
+
+#### Sample Output
+
+| seller_id | second_item_fav_brand |
+|-----------|----------------------|
+| 1         | no                   |
+| 2         | yes                  |
+
+**Explanation:**  
+- Seller 1's second item is item 3 (Samsung), favorite is Lenovo → "no"
+- Seller 2's second item is item 4 (Samsung), favorite is Samsung → "yes"
+
 ```sql
 -- Rank each seller's orders by order_date
 WITH RANKEDORDERS AS (
@@ -121,6 +232,69 @@ LEFT JOIN ITEMS AS I
 ```
 
 # [1194. Tournament Winners](https://leetcode.com/problems/tournament-winners/)
+#### Schema
+
+Table: Players
+
+| Column Name | Type |
+|-------------|------|
+| player_id   | int  |
+| group_id    | int  |
+
+player_id is the primary key for this table.
+
+Table: Matches
+
+| Column Name   | Type |
+|---------------|------|
+| match_id      | int  |
+| first_player  | int  |
+| second_player | int  |
+| first_score   | int  |
+| second_score  | int  |
+
+match_id is the primary key for this table.
+
+#### Description
+
+Given the results of matches in a tournament, find the player(s) with the highest total score in each group.
+
+#### Sample Input
+
+Players table:
+
+| player_id | group_id |
+|-----------|----------|
+| 15        | 1        |
+| 25        | 1        |
+| 30        | 1        |
+| 45        | 2        |
+| 50        | 2        |
+| 60        | 2        |
+
+Matches table:
+
+| match_id | first_player | second_player | first_score | second_score |
+|----------|-------------|--------------|-------------|--------------|
+| 1        | 15          | 45           | 3           | 5            |
+| 2        | 30          | 60           | 2           | 6            |
+| 3        | 15          | 60           | 7           | 0            |
+| 4        | 25          | 45           | 1           | 2            |
+| 5        | 30          | 25           | 5           | 5            |
+
+#### Sample Output
+
+| group_id | player_id |
+|----------|-----------|
+| 1        | 15        |
+| 2        | 45        |
+| 2        | 60        |
+
+**Explanation:**  
+- Group 1: 15 (3+7=10), 25 (1+5=6), 30 (2+5=7) → 15 wins  
+- Group 2: 45 (5+2=7), 50 (0), 60 (6+0=6) → 45 and 60 tie
+
+
 ```sql
 -- CTE TO GATHER ALL SCORES FOR EACH PLAYER (AS FIRST OR SECOND PLAYER)
 WITH PLAYERTOSCORE AS (
@@ -163,6 +337,64 @@ WHERE RANK = 1;
 ```
 
 # [1225. Report Contiguous Dates](https://leetcode.com/problems/report-contiguous-dates/)
+#### Schema
+
+Table: Failed
+
+| Column Name | Type    |
+|-------------|---------|
+| fail_date   | date    |
+
+fail_date is the primary key for this table.
+
+Table: Succeeded
+
+| Column Name   | Type    |
+|---------------|---------|
+| success_date  | date    |
+
+success_date is the primary key for this table.
+
+#### Description
+
+Given two tables Failed and Succeeded, each with dates in 2019 when a process failed or succeeded, report every contiguous period of days where the process had the same status (either succeeded or failed).
+
+#### Sample Input
+
+Failed table:
+
+| fail_date   |
+|-------------|
+| 2019-01-01  |
+| 2019-01-02  |
+| 2019-01-03  |
+| 2019-01-07  |
+| 2019-01-08  |
+
+Succeeded table:
+
+| success_date |
+|--------------|
+| 2019-01-04   |
+| 2019-01-05   |
+| 2019-01-06   |
+| 2019-01-09   |
+
+#### Sample Output
+
+| period_state | start_date | end_date   |
+|--------------|------------|------------|
+| failed       | 2019-01-01 | 2019-01-03 |
+| succeeded    | 2019-01-04 | 2019-01-06 |
+| failed       | 2019-01-07 | 2019-01-08 |
+| succeeded    | 2019-01-09 | 2019-01-09 |
+
+**Explanation:**  
+- 2019-01-01 to 2019-01-03: failed  
+- 2019-01-04 to 2019-01-06: succeeded  
+- 2019-01-07 to 2019-01-08: failed  
+- 2019-01-09: succeeded
+
 ```sql
 -- COMBINE FAILED AND SUCCEEDED DATES WITH STATUS
 WITH COMBINED AS (
@@ -200,6 +432,61 @@ ORDER BY START_DATE;
 ```
 
 # [1336. Number of Transactions per Visit](https://leetcode.com/problems/number-of-transactions-per-visit/)
+#### Schema
+
+Table: Visits
+
+| Column Name  | Type |
+|--------------|------|
+| user_id      | int  |
+| visit_date   | date |
+
+Primary key: (user_id, visit_date)
+
+Table: Transactions
+
+| Column Name      | Type |
+|------------------|------|
+| user_id          | int  |
+| transaction_date | date |
+
+Primary key: (user_id, transaction_date)
+
+#### Description
+
+For each possible number of transactions (including zero), report how many visits had that many transactions. Return the result ordered by transactions_count.
+
+#### Sample Input
+
+Visits table:
+
+| user_id | visit_date  |
+|---------|-------------|
+| 1       | 2020-01-01  |
+| 2       | 2020-01-01  |
+| 3       | 2020-01-01  |
+| 4       | 2020-01-01  |
+
+Transactions table:
+
+| user_id | transaction_date |
+|---------|-----------------|
+| 1       | 2020-01-01      |
+| 2       | 2020-01-01      |
+| 2       | 2020-01-01      |
+| 3       | 2020-01-01      |
+
+#### Sample Output
+
+| transactions_count | visits_count |
+|--------------------|-------------|
+| 0                  | 1           |
+| 1                  | 2           |
+| 2                  | 1           |
+
+**Explanation:**  
+- User 4 had 0 transactions, users 1 and 3 had 1, user 2 had 2.
+
 ```sql
 -- GENERATE SEQUENCE FROM 0 TO MAX TRANSACTIONS PER VISIT
 WITH S AS (
@@ -245,18 +532,173 @@ ORDER BY S.N;
 ```
 
 # [1369. Get the Second Most Recent Activity](https://leetcode.com/problems/get-the-second-most-recent-activity/)
+#### Schema
+
+Table: UserActivity
+
+| Column Name  | Type    |
+|--------------|---------|
+| username     | varchar |
+| activity     | varchar |
+| startDate    | date    |
+| endDate      | date    |
+
+Primary key: (username, startDate)
+
+#### Description
+
+Write an SQL query to find the second most recent activity of each user. If there is only one activity for a user, return that activity.
+
+#### Sample Input
+
+| username | activity    | startDate  | endDate    |
+|----------|-------------|------------|------------|
+| Alice    | Travel      | 2020-02-12 | 2020-02-20 |
+| Alice    | Dancing     | 2020-02-21 | 2020-02-23 |
+| Bob      | Travel      | 2020-02-12 | 2020-02-20 |
+
+#### Sample Output
+
+| username | activity | startDate  | endDate    |
+|----------|----------|------------|------------|
+| Alice    | Travel   | 2020-02-12 | 2020-02-20 |
+| Bob      | Travel   | 2020-02-12 | 2020-02-20 |
+
+**Explanation:**  
+- Alice has two activities, the second most recent is "Travel".
+- Bob only has one activity, so it is returned.
+
+
 ```sql
 ```
 
 # [1384. Total Sales Amount by Year](https://leetcode.com/problems/total-sales-amount-by-year/)
+#### Schema
+
+Table: Sales
+
+| Column Name | Type    |
+|-------------|---------|
+| sale_id     | int     |
+| product_id  | int     |
+| year        | int     |
+| quantity    | int     |
+| price       | int     |
+
+sale_id is the primary key for this table.
+
+#### Description
+
+Write an SQL query to report the total sales amount for each year. The total sales amount is calculated as quantity * price for each sale.
+
+#### Sample Input
+
+| sale_id | product_id | year | quantity | price |
+|---------|------------|------|----------|-------|
+| 1       | 100        | 2008 | 10       | 500   |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
+
+#### Sample Output
+
+| year | total |
+|------|-------|
+| 2008 | 5000  |
+| 2009 | 60000 |
+| 2011 | 135000|
+
+**Explanation:**  
+- 2008: 10 * 500 = 5000  
+- 2009: 12 * 5000 = 60000  
+- 2011: 15 * 9000 = 135000
+
 ```sql
 ```
 
 # [1412. Find the Quiet Students in All Exams](https://leetcode.com/problems/find-the-quiet-students-in-all-exams/)
+#### Schema
+
+Table: Exam
+
+| Column Name | Type    |
+|-------------|---------|
+| exam_id     | int     |
+| student_id  | int     |
+| score       | int     |
+
+Primary key: (exam_id, student_id)
+
+#### Description
+
+A student is considered quiet in an exam if no other student scored less than them in that exam. Find the students who were quiet in every exam.
+
+#### Sample Input
+
+| exam_id | student_id | score |
+|---------|------------|-------|
+| 1       | 2          | 80    |
+| 1       | 3          | 70    |
+| 2       | 2          | 90    |
+| 2       | 3          | 88    |
+| 3       | 2          | 100   |
+| 3       | 3          | 76    |
+
+#### Sample Output
+
+| student_id |
+|------------|
+| 2          |
+
+**Explanation:**  
+- Student 2 was never the lowest scorer in any exam.
+
 ```sql
 ```
 
 # [1479. Sales by Day of the Week](https://leetcode.com/problems/sales-by-day-of-the-week/)
+#### Schema
+
+Table: Sales
+
+| Column Name | Type    |
+|-------------|---------|
+| sale_id     | int     |
+| sale_date   | date    |
+| amount      | int     |
+
+sale_id is the primary key for this table.
+
+#### Description
+
+Write an SQL query to report the total sales amount for each weekday (Monday, Tuesday, ..., Sunday).
+
+#### Sample Input
+
+| sale_id | sale_date   | amount |
+|---------|-------------|--------|
+| 1       | 2022-03-01  | 100    |
+| 2       | 2022-03-02  | 200    |
+| 3       | 2022-03-03  | 300    |
+| 4       | 2022-03-04  | 400    |
+| 5       | 2022-03-05  | 500    |
+| 6       | 2022-03-06  | 600    |
+| 7       | 2022-03-07  | 700    |
+
+#### Sample Output
+
+| weekday   | total_amount |
+|-----------|-------------|
+| Monday    | 700         |
+| Tuesday   | 100         |
+| Wednesday | 200         |
+| Thursday  | 300         |
+| Friday    | 400         |
+| Saturday  | 500         |
+| Sunday    | 600         |
+
+**Explanation:**  
+- The total sales amount for each weekday.
+
 ```sql
 ```
 
