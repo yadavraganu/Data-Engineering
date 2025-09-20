@@ -450,6 +450,29 @@ ORDER BY USER1;
 
 # [2793. Status of Flight Tickets](https://leetcode.com/problems/status-of-flight-tickets/)
 ```sql
+-- Step 1: Rank passengers by booking time within each flight
+WITH RANKEDPASSENGERS AS (
+  SELECT
+    P.PASSENGER_ID,
+    F.FLIGHT_ID,
+    F.CAPACITY,
+    RANK() OVER (
+      PARTITION BY P.FLIGHT_ID
+      ORDER BY P.BOOKING_TIME
+    ) AS RNK
+  FROM PASSENGERS P
+  INNER JOIN FLIGHTS F ON P.FLIGHT_ID = F.FLIGHT_ID
+)
+
+-- Step 2: Assign status based on rank vs. flight capacity
+SELECT
+  PASSENGER_ID,
+  CASE
+    WHEN RNK <= CAPACITY THEN 'Confirmed'
+    ELSE 'Waitlist'
+  END AS STATUS
+FROM RANKEDPASSENGERS
+ORDER BY PASSENGER_ID;
 ```
 
 # [2991. Top Three Wineries](https://leetcode.com/problems/top-three-wineries/)
@@ -1524,6 +1547,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
