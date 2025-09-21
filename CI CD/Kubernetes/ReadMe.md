@@ -114,3 +114,40 @@ spec:
 ```
 
 Run `kubectl apply -f simple-pod.yaml` to create this Pod directly on the cluster.
+
+# ReplicaSet
+
+A **ReplicaSet** in Kubernetes (often abbreviated as **RS**) is a controller that ensures a specified number of identical Pods are running at any given time. Think of it as Kubernetes’ way of saying, “I want _n_ copies of this Pod, no matter what.”
+
+### What Does a ReplicaSet Do?
+- **Maintains Availability**: If a Pod crashes or is deleted, the ReplicaSet automatically creates a new one to maintain the desired count.
+- **Scales Easily**: You can increase or decrease the number of replicas dynamically.
+- **Matches Pods by Labels**: It uses a selector to find and manage Pods with specific labels.
+
+### Anatomy of a ReplicaSet
+A ReplicaSet is defined using a YAML or JSON manifest. It includes:
+- `replicas`: Number of Pods to maintain.
+- `selector`: Criteria to identify which Pods it should manage.
+- `template`: Blueprint for creating new Pods.
+
+Here’s a simple example:
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp-container
+        image: myapp:1.0
+```
+You rarely use ReplicaSets directly. Instead, you use **Deployments**, which manage ReplicaSets behind the scenes and add features like rolling updates and rollbacks.
