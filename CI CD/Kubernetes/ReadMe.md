@@ -151,3 +151,60 @@ spec:
         image: myapp:1.0
 ```
 You rarely use ReplicaSets directly. Instead, you use **Deployments**, which manage ReplicaSets behind the scenes and add features like rolling updates and rollbacks.
+
+# Kubernetes Deployment
+A Deployment in Kubernetes is a higher-level controller that manages ReplicaSets and Pods to ensure your applications run in the desired state. You declare how many replicas you want, which container image to use, and Kubernetes takes care of creating, updating, and self-healing your Pods to match that specification.
+
+### Key Features
+
+- Declarative Updates: Define the desired state in a Deployment spec, and Kubernetes continuously works to match it.  
+- Self-Healing: Automatically replaces failed or terminated Pods to maintain availability.  
+- Rolling Updates & Rollbacks: Gradually roll out new versions and revert to earlier revisions if issues arise.  
+- Scaling: Increase or decrease the number of replicas on demand to handle varying workloads.  
+- Version Control: Each change creates a new revision, making it easy to track and audit updates.
+
+### Anatomy of a Deployment Spec
+
+A Deployment YAML manifest typically contains:
+
+- **metadata**: Name and labels for identifying the Deployment.  
+- **spec.replicas**: Desired number of Pod replicas.  
+- **spec.selector**: Label selector to identify which Pods the Deployment should manage.  
+- **spec.template**: Pod template including metadata (labels) and spec (containers, images, ports).  
+- **status**: Automatically maintained by Kubernetes to reflect the current state versus the desired state.
+
+### Example Deployment YAML
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+```
+
+This manifest creates a Deployment named `nginx-deployment` that maintains three replicas of an Nginx Pod, rolling out updates in a controlled fashion.
+
+### Common Use Cases
+
+- Roll out a new application version by updating the Pod template.  
+- Monitor rollout status and pause or resume updates as needed.  
+- Roll back to a previous revision if a new rollout fails.  
+- Scale the application up or down in response to traffic.  
+- Clean up obsolete ReplicaSets once they’re no longer needed.
