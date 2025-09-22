@@ -144,7 +144,7 @@ In **at-most-once** delivery, the producer sends a message and considers it succ
     2.  **Transactions**: Transactions group multiple message writes across various partitions into a single, atomic unit. All messages within a transaction are either committed successfully or aborted. This ensures that the messages are processed together.
 * **Use case**: This is essential for financial transactions, inventory management, or any application where data integrity is paramount and both data loss and duplication are unacceptable.
 
-# Compaction
+# How Kafka Log Compaction Works
 
 Kafka topics support two main ways of discarding old data: time-based deletion and key-based compaction. Time-based deletion removes messages older than a configured retention period, while compaction retains only the latest value for each unique key.
 
@@ -158,8 +158,6 @@ Kafka topics support two main ways of discarding old data: time-based deletion a
   First compacts by key, then deletes any remaining records older than the retention window.
 
 Common use cases for compaction include storing each customer’s most recent shipping address and maintaining an application’s latest state checkpoint for crash recovery. Compacted topics provide a space-efficient snapshot of current state without historical noise.
-
-# How Kafka Log Compaction Works
 
 Kafka compaction is a background process that shrinks each partition down to exactly one record per key—the latest value—by scanning only the “dirty” portion of the log and merging it with the already “clean” history.
 
@@ -219,3 +217,48 @@ After compaction finishes, the partition holds exactly one message per key—and
 - **Trade-offs**  
   - Very large keys or ultra-high update rates can bloat map requirements.  
   - Compaction still incurs I/O and CPU overhead—plan your cluster size accordingly.
+
+# What Is the Kafka Controller?
+
+- Kafka is a distributed system with multiple brokers.
+- One broker is elected as the **controller** to manage tasks that affect the entire cluster.
+- The controller is responsible for **partition leadership**, **broker failure handling**, and **metadata propagation**.
+
+### How Is the Kafka Controller Elected?
+
+#### In ZooKeeper-Based Kafka:
+1. **Election via ZooKeeper**:
+   - Brokers compete to create an ephemeral node in ZooKeeper (e.g., `/controller`).
+   - The broker that succeeds becomes the controller.
+   - If the controller fails, the node disappears, triggering a new election.
+
+2. **Ephemeral Node**:
+   - Ensures only one controller exists at a time.
+   - Automatically cleaned up if the broker disconnects or crashes.
+
+#### In KRaft Mode (Kafka Raft Metadata Mode):
+1. **Raft-Based Election**:
+   - Kafka uses its own internal Raft consensus protocol.
+   - One broker is elected as the **active controller**.
+   - Metadata is stored in a replicated log across controller quorum nodes.
+
+2. **No ZooKeeper Needed**:
+   - KRaft eliminates ZooKeeper, simplifying architecture and improving scalability.
+
+### Responsibilities of the Kafka Controller
+
+| Task | Description |
+|------|-------------|
+| **Partition Leader Election** | Assigns leaders for partitions across brokers |
+| **Broker Failure Detection** | Detects broker crashes and reassigns leadership |
+| **Topic Creation/Deletion** | Propagates metadata changes to all brokers |
+| **Replica Management** | Updates ISR (In-Sync Replicas) and handles replication |
+| **Controlled Shutdown** | Gracefully migrates leadership before broker shutdown |
+| **Cluster Metadata Management** | Maintains and distributes metadata across brokers |
+
+### Controller Failover
+
+- If the controller broker fails:
+  - A new controller is elected.
+  - The new controller reads metadata and resumes coordination.
+  - This process is fast but may cause brief delays in cluster operations.
