@@ -279,3 +279,70 @@ After compaction finishes, the partition holds exactly one message per key—and
   - A new controller is elected.
   - The new controller reads metadata and resumes coordination.
   - This process is fast but may cause brief delays in cluster operations.
+
+
+# Apache Kafka settings for high throughput and low latency
+
+### **Producer Optimization**
+
+Producers are the entry point for data into Kafka. Their configuration affects how efficiently data is batched, compressed, and transmitted.
+
+| Setting | Recommended Value | Description |
+|--------|-------------------|-------------|
+| `acks` | `1` or `0` | Controls how many acknowledgments the producer waits for. `0` offers lowest latency but risks data loss; `1` balances speed and reliability. |
+| `batch.size` | `32KB` – `64KB` | Defines how much data to batch before sending. Larger batches reduce network overhead and improve throughput. |
+| `linger.ms` | `5ms` – `10ms` | Adds a small delay to allow more records to batch together. Improves throughput with minimal latency impact. |
+| `compression.type` | `lz4` or `snappy` | Compresses messages to reduce payload size. These algorithms are fast and efficient for streaming. |
+| `max.in.flight.requests.per.connection` | `5` or more | Allows multiple requests to be sent without waiting for responses. Boosts throughput but may affect message ordering. |
+| `buffer.memory` | `64MB` or more | Total memory available for buffering unsent records. Prevents producer blocking under high load. |
+
+### **Broker Optimization**
+
+Kafka brokers handle message storage, replication, and coordination. Their performance is critical for both producers and consumers.
+
+| Setting | Recommended Value | Description |
+|--------|-------------------|-------------|
+| `num.network.threads` | `8+` | Threads for handling network I/O. More threads allow brokers to serve more clients concurrently. |
+| `num.io.threads` | `8+` | Threads for disk I/O operations. Helps with log writing and replication. |
+| `socket.send.buffer.bytes` | `128KB` | Buffer size for sending data over the network. Larger buffers reduce I/O overhead. |
+| `log.segment.bytes` | `1GB+` | Determines when Kafka rolls over to a new log segment. Larger segments reduce disk I/O frequency. |
+| `replica.fetch.max.bytes` | `1MB` – `5MB` | Controls how much data replicas fetch per request. Larger values improve replication speed and reduce lag. |
+
+### **Topic & Partition Design**
+
+Topic and partition design affects scalability, parallelism, and message ordering.
+
+| Strategy | Recommended Value | Description |
+|----------|-------------------|-------------|
+| Partition Count | 2× number of consumers | More partitions allow parallel processing and higher throughput. |
+| Key Design | Use meaningful keys (e.g., user ID) | Ensures messages with the same key go to the same partition, preserving order. |
+| Replication Factor | `2` or `3` | Ensures fault tolerance. More replicas improve durability but may slightly impact performance. |
+
+### **Consumer Optimization**
+
+Consumers read data from Kafka and must be tuned to process efficiently.
+
+| Setting | Recommended Value | Description |
+|--------|-------------------|-------------|
+| `fetch.min.bytes` | `1KB` – `10KB` | Minimum amount of data to fetch. Reduces round-trips and improves throughput. |
+| `fetch.max.bytes` | `1MB` – `5MB` | Maximum data fetched per request. Larger values allow more efficient batch processing. |
+| `max.poll.records` | `500` – `1000` | Number of records returned per poll. Higher values improve throughput but may increase processing time. |
+| `enable.auto.commit` | `false` | Manual offset management gives better control and avoids unnecessary commits. |
+
+### **System-Level Tuning**
+
+These optimizations improve Kafka’s performance at the infrastructure level.
+
+| Area | Recommendation | Description |
+|------|----------------|-------------|
+| Disk | Use SSDs | Kafka is disk-intensive. SSDs improve log write/read speed. |
+| OS Tuning | Increase file descriptors, socket buffers | Enhances Kafka’s ability to handle high I/O and many connections. |
+| JVM Tuning | Use G1GC or ZGC | Reduces garbage collection pauses, improving latency. |
+| Monitoring | Use Prometheus, Grafana | Helps detect bottlenecks and optimize performance in real time. |
+
+### Final Tips
+
+- **Batching and compression** are key for throughput.
+- **Low acknowledgment and fast disks** help reduce latency.
+- **Partition wisely** to scale horizontally.
+- **Monitor everything** to catch performance issues early.
