@@ -1,4 +1,28 @@
-## **Types of Attributes**
+# Python’s attribute access hierarchy
+
+1. **Instance Attributes**  
+   Looks in the object’s own `__dict__`.
+
+2. **Class Attributes**  
+   If not found, checks the class’s `__dict__`.
+
+3. **Parent Classes (MRO)**  
+   If still not found, follows the **Method Resolution Order** (MRO) through base classes.
+
+4. **Data Descriptors**  
+   If the attribute is a descriptor with `__get__`, `__set__`, or `__delete__`, it takes priority.
+
+5. **`__getattr__`**  
+   Called **only if** the attribute wasn’t found above.
+
+6. **`__getattribute__`**  
+   Called **first** for every attribute access (even before checking instance/class), unless overridden carefully.
+
+### Tip:
+- Use `__getattr__` for fallback behavior.
+- Use `__getattribute__` only if you need to intercept **all** attribute access (advanced use).
+
+# **Types of Attributes**
 
 Attributes are variables associated with a class or instance.
 
@@ -33,7 +57,7 @@ class Car:
         self._mileage = 10000
 ```
 
-## **Types of Methods**
+# **Types of Methods**
 
 Methods are functions defined inside a class.
 
