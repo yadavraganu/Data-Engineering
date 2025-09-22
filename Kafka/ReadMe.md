@@ -1,3 +1,20 @@
+# **What Is a Kafka Record?**
+
+A Kafka record is a **key-value pair** sent by a producer to a specific **topic-partition**, and later consumed by a consumer. It contains metadata that helps Kafka manage and route the message efficiently.
+
+### **Fields in a Kafka Record**
+
+| Field | Description |
+|-------|-------------|
+| **Key** | Optional. Used to determine the partition (via hashing). Ensures ordering for messages with the same key. |
+| **Value** | The actual payload or data (e.g., JSON, Avro, string, binary). |
+| **Topic** | The name of the Kafka topic the record belongs to. |
+| **Partition** | The partition number within the topic. If not specified, Kafka uses a partitioner. |
+| **Offset** | A unique, sequential ID assigned by Kafka within a partition. Used for tracking consumption. |
+| **Timestamp** | Time when the record was produced (or logged by the broker). |
+| **Headers** | Optional key-value metadata pairs (e.g., for tracing, content-type). |
+| **Checksum** | Used internally to verify data integrity. |
+
 # In Sync Replica
 In Kafka, **In-Sync Replicas (ISR)** are a critical part of the **replication mechanism** that ensures **data durability and consistency** across the cluster.
 
