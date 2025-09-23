@@ -17,7 +17,47 @@ Data modeling is the process of creating a visual representation of a system or 
 # Type of Keys
 [Go Here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Type%20of%20Keys.md)
 
-- **Data Types and Domains**
+# Data Types and Domains
+
+In data modeling, **Data Types** and **Domains** are essential concepts that define the **structure, constraints, and validity** of the data stored in a database.
+**Data types** define the kind of data that can be stored in a column. They help ensure **data integrity**, **optimize storage**, and **improve performance**.
+
+#### Common Categories of Data Types
+
+| **Category**     | **Examples**                          | **Purpose**                                      |
+|------------------|----------------------------------------|--------------------------------------------------|
+| **Numeric**       | `INT`, `BIGINT`, `FLOAT`, `DECIMAL`   | Store numbers (whole or decimal)                 |
+| **Character/String** | `CHAR`, `VARCHAR`, `TEXT`              | Store text data                                  |
+| **Date/Time**     | `DATE`, `TIME`, `DATETIME`, `TIMESTAMP` | Store temporal data                              |
+| **Boolean**       | `BOOLEAN`, `BIT`                      | Store true/false values                          |
+| **Binary**        | `BLOB`, `VARBINARY`                   | Store binary data (e.g., images, files)          |
+| **UUID**          | `UUID`                                | Store universally unique identifiers             |
+| **JSON/XML**      | `JSON`, `XML`                         | Store structured data in semi-structured format  |
+
+A **domain** defines the **permissible values** for a column. It can be thought of as a **constraint** or **rule** applied to a data type.
+
+### Why Use Domains?
+- Enforce **business rules**
+- Ensure **data consistency**
+- Simplify **validation logic**
+
+#### Domain Examples
+
+| **Domain Name**     | **Base Type** | **Constraint**                          | **Use Case**                        |
+|---------------------|---------------|------------------------------------------|-------------------------------------|
+| `EmailDomain`       | `VARCHAR(100)`| Must match email format                  | For `Email` column                  |
+| `SalaryDomain`      | `DECIMAL`     | Must be > 0                              | For `Salary` column                 |
+| `PhoneDomain`       | `VARCHAR(15)` | Must match phone number pattern          | For `Phone` column                  |
+| `GenderDomain`      | `CHAR(1)`     | Must be 'M', 'F', or 'O'                 | For `Gender` column                 |
+| `CountryCodeDomain` | `CHAR(2)`     | Must be in ISO country code list         | For `CountryCode` column           |
+
+### Summary Table
+
+| **Concept**   | **Definition**                                                                 | **Why Use It?**                                      | **Example**                        |
+|---------------|----------------------------------------------------------------------------------|------------------------------------------------------|------------------------------------|
+| **Data Type** | Defines the kind of data a column can store                                     | To ensure correct format and optimize storage        | `VARCHAR(100)`, `INT`, `DATE`      |
+| **Domain**    | Defines the valid set of values for a column (rules/constraints)                | To enforce business rules and maintain data quality  | `Salary > 0`, `Gender in ('M','F')`|
+
 - **Cardinality and Relationships**
 - **Data Integrity and Referential Integrity**
 
