@@ -703,38 +703,486 @@ Write an SQL query to report the total sales amount for each weekday (Monday, Tu
 ```
 
 # [1635. Hopper Company Queries I](https://leetcode.com/problems/hopper-company-queries-i/)
+
+#### Schema
+
+Table: Employees
+
+| Column Name   | Type    |
+|---------------|---------|
+| id            | int     |
+| name          | varchar |
+| department_id | int     |
+
+id is the primary key for this table.
+
+Table: Salaries
+
+| Column Name      | Type |
+|------------------|------|
+| employee_id      | int  |
+| salary           | int  |
+| effective_date   | date |
+
+(employee_id, effective_date) is the primary key.
+
+#### Description
+
+Given the Employees and Salaries tables, write an SQL query to find the current salary (i.e., the salary with the most recent effective_date) for each employee. Return the employee id, name, and current salary.
+
+#### Sample Input
+
+Employees table:
+
+| id | name   | department_id |
+|----|--------|---------------|
+| 1  | Alice  | 1             |
+| 2  | Bob    | 1             |
+| 3  | Carol  | 2             |
+
+Salaries table:
+
+| employee_id | salary | effective_date |
+|-------------|--------|---------------|
+| 1           | 1000   | 2022-01-01    |
+| 1           | 1100   | 2022-02-01    |
+| 2           | 800    | 2022-01-01    |
+| 3           | 950    | 2022-01-01    |
+| 3           | 1000   | 2022-03-01    |
+
+#### Sample Output
+
+| id | name  | current_salary |
+|----|-------|----------------|
+| 1  | Alice | 1100           |
+| 2  | Bob   | 800            |
+| 3  | Carol | 1000           |
+
+**Explanation:**  
+- For each employee, select the row with the latest effective_date.
+
 ```sql
 ```
 
 # [1645. Hopper Company Queries II](https://leetcode.com/problems/hopper-company-queries-ii/)
+
+#### Schema
+
+Table: Employees
+
+| Column Name   | Type    |
+|---------------|---------|
+| id            | int     |
+| name          | varchar |
+| department_id | int     |
+
+id is the primary key.
+
+Table: Salaries
+
+| Column Name      | Type |
+|------------------|------|
+| employee_id      | int  |
+| salary           | int  |
+| effective_date   | date |
+
+(employee_id, effective_date) is the primary key.
+
+#### Description
+
+Find the employees whose salary increased compared to their previous salary record. Return the id, name, previous_salary, and new_salary for each such record.
+
+#### Sample Input
+
+Employees table:
+
+| id | name   | department_id |
+|----|--------|---------------|
+| 1  | Alice  | 1             |
+| 2  | Bob    | 1             |
+
+Salaries table:
+
+| employee_id | salary | effective_date |
+|-------------|--------|---------------|
+| 1           | 1000   | 2022-01-01    |
+| 1           | 1100   | 2022-02-01    |
+| 2           | 800    | 2022-01-01    |
+
+#### Sample Output
+
+| id | name  | previous_salary | new_salary |
+|----|-------|-----------------|------------|
+| 1  | Alice | 1000            | 1100       |
+
+**Explanation:**  
+- Alice's salary increased from 1000 to 1100.
+
 ```sql
 ```
 
 # [1651. Hopper Company Queries III](https://leetcode.com/problems/hopper-company-queries-iii/)
+
+#### Schema
+
+Table: Employees
+
+| Column Name   | Type    |
+|---------------|---------|
+| id            | int     |
+| name          | varchar |
+| department_id | int     |
+
+id is the primary key.
+
+Table: Salaries
+
+| Column Name      | Type |
+|------------------|------|
+| employee_id      | int  |
+| salary           | int  |
+| effective_date   | date |
+
+(employee_id, effective_date) is the primary key.
+
+#### Description
+
+Find the average salary for each department as of the most recent effective_date for each employee.
+
+#### Sample Input
+
+Employees table:
+
+| id | name   | department_id |
+|----|--------|---------------|
+| 1  | Alice  | 1             |
+| 2  | Bob    | 1             |
+| 3  | Carol  | 2             |
+
+Salaries table:
+
+| employee_id | salary | effective_date |
+|-------------|--------|---------------|
+| 1           | 1000   | 2022-01-01    |
+| 1           | 1100   | 2022-02-01    |
+| 2           | 800    | 2022-01-01    |
+| 3           | 950    | 2022-01-01    |
+| 3           | 1000   | 2022-03-01    |
+
+#### Sample Output
+
+| department_id | avg_salary |
+|---------------|-----------|
+| 1             | 950.00    |
+| 2             | 1000.00   |
+
+**Explanation:**  
+- Use the latest salary for each employee.
+
 ```sql
 ```
 
 # [1767. Find the Subtasks That Did Not Execute](https://leetcode.com/problems/find-the-subtasks-that-did-not-execute/)
+
+#### Schema
+
+Table: Tasks
+
+| Column Name | Type    |
+|-------------|---------|
+| task_id     | int     |
+| subtask_id  | int     |
+
+primary key is (task_id, subtask_id).
+
+Table: Executed
+
+| Column Name | Type |
+|-------------|------|
+| task_id     | int  |
+| subtask_id  | int  |
+
+primary key is (task_id, subtask_id).
+
+#### Description
+
+Write an SQL query to find all (task_id, subtask_id) pairs in Tasks that did not execute, i.e., do not exist in Executed.
+
+#### Sample Input
+
+Tasks table:
+
+| task_id | subtask_id |
+|---------|------------|
+| 1       | 1          |
+| 1       | 2          |
+| 2       | 1          |
+
+Executed table:
+
+| task_id | subtask_id |
+|---------|------------|
+| 1       | 2          |
+
+#### Sample Output
+
+| task_id | subtask_id |
+|---------|------------|
+| 1       | 1          |
+| 2       | 1          |
+
+**Explanation:**  
+- Subtasks (1,1) and (2,1) were not executed.
+
 ```sql
 ```
 
 # [185. Department Top Three Salaries](https://leetcode.com/problems/department-top-three-salaries/)
+
+#### Schema
+
+Table: Employee
+
+| Column Name   | Type    |
+|---------------|---------|
+| id            | int     |
+| name          | varchar |
+| salary        | int     |
+| departmentId  | int     |
+
+id is the primary key for this table.
+
+Table: Department
+
+| Column Name   | Type    |
+|---------------|---------|
+| id            | int     |
+| name          | varchar |
+
+id is the primary key for this table.
+
+#### Description
+
+Write an SQL query to find the top three salaries for each department. If there are less than three salaries, return all of them.
+
+#### Sample Input
+
+Employee table:
+
+| id | name  | salary | departmentId |
+|----|-------|--------|--------------|
+| 1  | Joe   | 85000  | 1            |
+| 2  | Henry | 80000  | 2            |
+| 3  | Sam   | 60000  | 2            |
+| 4  | Max   | 90000  | 1            |
+| 5  | Janet | 69000  | 1            |
+| 6  | Randy | 85000  | 1            |
+| 7  | Will  | 70000  | 1            |
+
+Department table:
+
+| id | name      |
+|----|-----------|
+| 1  | IT        |
+| 2  | Sales     |
+
+#### Sample Output
+
+| Department | Employee | Salary |
+|------------|----------|--------|
+| IT         | Max      | 90000  |
+| IT         | Joe      | 85000  |
+| IT         | Randy    | 85000  |
+| IT         | Will     | 70000  |
+| IT         | Janet    | 69000  |
+| Sales      | Henry    | 80000  |
+| Sales      | Sam      | 60000  |
+
+**Explanation:**  
+- IT department's top three salaries: 90000, 85000, 85000.
+
 ```sql
 ```
 
 # [1892. Page Recommendations II](https://leetcode.com/problems/page-recommendations-ii/)
+
+#### Schema
+
+Table: Friendship
+
+| Column Name | Type |
+|-------------|------|
+| user1_id    | int  |
+| user2_id    | int  |
+
+(user1_id, user2_id) is the primary key.
+
+Table: Likes
+
+| Column Name | Type |
+|-------------|------|
+| user_id     | int  |
+| page_id     | int  |
+
+(user_id, page_id) is the primary key.
+
+#### Description
+
+For every user, recommend pages that are liked by their friends but not by themselves. Return user_id and recommended page_id.
+
+#### Sample Input
+
+Friendship table:
+
+| user1_id | user2_id |
+|----------|----------|
+| 1        | 2        |
+| 1        | 3        |
+
+Likes table:
+
+| user_id | page_id |
+|---------|---------|
+| 2       | 101     |
+| 3       | 102     |
+| 1       | 103     |
+
+#### Sample Output
+
+| user_id | page_id |
+|---------|---------|
+| 1       | 101     |
+| 1       | 102     |
+
+**Explanation:**  
+- User 1's friends are 2 and 3. They liked pages 101 and 102, which user 1 hasn't liked.
+
 ```sql
 ```
 
 # [1917. Leetcodify Friends Recommendations](https://leetcode.com/problems/leetcodify-friends-recommendations/)
+
+#### Schema
+
+Table: Friendship
+
+| Column Name | Type |
+|-------------|------|
+| user1_id    | int  |
+| user2_id    | int  |
+
+(user1_id, user2_id) is the primary key.
+
+#### Description
+
+For every user, recommend all friends of their friends who are not already friends with them and are not themselves.
+
+#### Sample Input
+
+Friendship table:
+
+| user1_id | user2_id |
+|----------|----------|
+| 1        | 2        |
+| 2        | 3        |
+| 3        | 4        |
+
+#### Sample Output
+
+| user_id | recommended_id |
+|---------|---------------|
+| 1       | 3             |
+| 2       | 4             |
+
+**Explanation:**  
+- User 1's friend is 2, friend of 2 is 3, not already a friend of 1 → recommend 3.
+
 ```sql
 ```
 
 # [1919. Leetcodify Similar Friends](https://leetcode.com/problems/leetcodify-similar-friends/)
+
+#### Schema
+
+Table: Friendship
+
+| Column Name | Type |
+|-------------|------|
+| user1_id    | int  |
+| user2_id    | int  |
+
+(user1_id, user2_id) is the primary key.
+
+#### Description
+
+For every pair of users, return if they have at least two friends in common.
+
+#### Sample Input
+
+Friendship table:
+
+| user1_id | user2_id |
+|----------|----------|
+| 1        | 2        |
+| 2        | 3        |
+| 1        | 3        |
+| 1        | 4        |
+| 2        | 4        |
+
+#### Sample Output
+
+| user1_id | user2_id | common_friends |
+|----------|----------|----------------|
+| 1        | 2        | 2              |
+| 1        | 3        | 2              |
+| 2        | 3        | 2              |
+| 1        | 4        | 2              |
+| 2        | 4        | 2              |
+
+**Explanation:**  
+- Users 1 & 2 common friends: 3, 4.
+
 ```sql
 ```
 
 # [1972. First and Last Call On the Same Day](https://leetcode.com/problems/first-and-last-call-on-the-same-day/)
+
+#### Schema
+
+Table: Calls
+
+| Column Name | Type |
+|-------------|------|
+| call_id     | int  |
+| user_id     | int  |
+| call_time   | datetime |
+
+call_id is primary key.
+
+#### Description
+
+Find the users who made their first and last call on the same day.
+
+#### Sample Input
+
+Calls table:
+
+| call_id | user_id | call_time           |
+|---------|---------|---------------------|
+| 1       | 1       | 2022-03-01 08:00:00 |
+| 2       | 1       | 2022-03-01 18:00:00 |
+| 3       | 2       | 2022-03-01 09:00:00 |
+| 4       | 2       | 2022-03-02 10:00:00 |
+
+#### Sample Output
+
+| user_id |
+|---------|
+| 1       |
+
+**Explanation:**  
+- User 1's first and last call are on 2022-03-01.
+
 ```sql
 ```
 
