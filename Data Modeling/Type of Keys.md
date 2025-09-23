@@ -1,57 +1,21 @@
-### Type of Keys : 
-- Super Keys
-- Candidate Keys
-- Primary Keys
-- Alternate Keys
-- Unique Key
-- Composite Key
-- Foreign Key
+# Comprehensive Table of Keys in Data Modeling
 
-Employee Table Columns - {Id,Name,Ssn,Salary,Phone,Email}
+| **Key Type**       | **What is it?**                                                                 | **Why Use It?**                                                                 | **When to Use It?**                                                                 | **Properties**                                                                 | **Example (Employee Table)**             |
+|--------------------|----------------------------------------------------------------------------------|----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|------------------------------------------|
+| **Super Key**      | Any set of attributes that uniquely identifies a record                         | To ensure uniqueness of records                                                  | When identifying all possible unique identifiers                                     | Can have NULLs, not minimal, may include extra attributes                         | `Id`, `Ssn`, `Email`, `(Name, Phone)`    |
+| **Candidate Key**  | Minimal super key (no extra attributes)                                          | To find the best options for primary key                                         | When choosing a primary key                                                         | Must be unique, no NULLs, minimal                                               | `Id`, `Ssn`, `Email`, `(Name, Phone)`    |
+| **Primary Key**    | Chosen candidate key to uniquely identify records                               | To uniquely identify each row in a table                                         | Always needed in every table                                                        | Unique, NOT NULL, only one per table                                            | `Id`                                      |
+| **Alternate Key**  | Candidate keys not chosen as primary key                                        | To maintain uniqueness for other important fields                                | When other candidate keys are still important                                        | Unique, NOT NULL                                                                | `Ssn`, `Email`, `(Name, Phone)`          |
+| **Composite Key**  | A key made of multiple attributes that together uniquely identify a record      | When no single attribute can uniquely identify a record                          | In many-to-many relationships or junction tables                                     | All parts together must be unique, parts not unique individually                | `(Name, Phone)`                          |
+| **Compound Key**   | Similar to composite key, often used interchangeably                             | Same as composite key                                                            | Same as composite key                                                               | Same as composite key                                                           | `(OrderId, ProductId)` in OrderDetails   |
+| **Foreign Key**    | Attribute(s) that refer to the primary key in another table                     | To establish relationships between tables                                        | When linking tables (e.g., Employee → Department)                                    | Can have NULLs, must match referenced PK                                        | `DeptId` referencing `Department(Id)`    |
+| **Unique Key**     | Ensures all values in a column/set are unique                                   | To enforce uniqueness without making it a primary key                            | When you want uniqueness but allow one NULL                                          | Unique, allows one NULL                                                        | `Email`, `(Name, Phone)`                 |
+| **Surrogate Key**  | System-generated key with no business meaning                                   | To simplify joins and indexing, avoid natural key issues                         | When natural keys are large, composite, or changeable                               | Auto-generated, unique, no business meaning                                     | `EmployeeId` (auto-incremented)          |
+| **Natural Key**    | Key derived from real-world data                                                | To use meaningful data as identifiers                                            | When data like `Ssn`, `Email` is stable and unique                                   | Business meaningful, may change, may be composite                               | `Ssn`, `Email`                           |
+| **Business Key**   | A key that has business meaning and is used in business logic                   | To align database design with business processes                                 | When business processes rely on specific identifiers                                 | Same as natural key                                                             | `EmployeeCode`, `Ssn`                    |
+| **Secondary Key**  | Non-primary key used for indexing/searching                                     | To improve query performance                                                     | When frequently filtering or sorting by a non-PK column                              | Not necessarily unique                                                         | `DepartmentId`, `Salary`                 |
 
-### Super Keys
-Super Key is defined as a set of attributes within a table that can uniquely identify each record within a table. Super Key is a superset of Candidate key.
-- Attributes in super keys can have null values
-  
-E.g. : Id, Ssn, Email, (Name, Phone), (Id,Name), (Id,Ssn), (Ssn,Id) ...etc 
-
-### Candidate Keys
-Candidate keys are defined as the minimal set of fields which can uniquely identify each record in a table. 
-It is an attribute or a set of attributes that can act as a Primary Key for a table to uniquely identify each record in that table. There can be more than one candidate key.
-- A candiate key can never be NULL or empty. And its value should be unique.
-- There can be more than one candidate keys for a table.
-- A candidate key can be a combination of more than one columns(attributes).
-  
-E.g. : Id, Ssn, Email, (Name, Phone)
-
-### Primary Keys
-Primary key is a candidate key that is most appropriate to become the main key for any table.
-- It is a key that can uniquely identify each record in a table.
-- It cant have nulls
-- There can be no room for duplicate rows when it comes to the case of Primary keys.
-- Just one primary key can be used when working with the table.
-- Primary keys can be formed from a single table or multiple fields of tables.
-  
-E.g. : Id
-
-### Composite Keys
-Key that consists of two or more attributes that uniquely identify any record in a table is called Composite key.
-But the attributes which together form the Composite key are not a key independentely or individually
-
-E.g. : (Name, Phone)
-
-### Alternative Keys
-The candidate key which are not selected as primary key are known as secondary keys or alternative keys.
-
-E.g. : Ssn, Email, (Name, Phone)
-
-### Foreign Keys
-Foreign Key is used to establish relationships between two tables.
-A foreign key will require each value in a column or set of columns to match the Primary Key of the referential table.
-Foreign keys help to maintain data and referential integrity
-
-### Unique Keys
-Unique Key is a column or set of columns that uniquely identify each record in a table. All values will have to be unique in this Key.
-A unique Key differs from a primary key because it can have only one null value, whereas a primary Key cannot have any null values.
-
-E.g. : Email, (Name, Phone)
+### Notes:
+- **Composite vs Compound Key**: Often used interchangeably, but technically, *composite* emphasizes uniqueness, while *compound* just means multiple columns.
+- **Surrogate vs Natural Key**: Surrogate keys are preferred in modern data warehousing for stability and performance.
+- **Foreign Keys** are crucial for **referential integrity** in relational databases.
