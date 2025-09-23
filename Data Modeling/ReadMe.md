@@ -7,7 +7,7 @@ Data modeling is the process of creating a visual representation of a system or 
 - Optimizes database performance and scalability
 
 # Types of Data Models
-[Go here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
+[Go Here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
 
 # Entity-Relationship (ER) Modeling
 
@@ -18,6 +18,8 @@ Data modeling is the process of creating a visual representation of a system or 
 [Go Here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Type%20of%20Keys.md)
 
 # Data Types and Domains
+
+### Data Types
 
 In data modeling, **Data Types** and **Domains** are essential concepts that define the **structure, constraints, and validity** of the data stored in a database.
 **Data types** define the kind of data that can be stored in a column. They help ensure **data integrity**, **optimize storage**, and **improve performance**.
@@ -34,9 +36,11 @@ In data modeling, **Data Types** and **Domains** are essential concepts that def
 | **UUID**          | `UUID`                                | Store universally unique identifiers             |
 | **JSON/XML**      | `JSON`, `XML`                         | Store structured data in semi-structured format  |
 
+### Domain
+
 A **domain** defines the **permissible values** for a column. It can be thought of as a **constraint** or **rule** applied to a data type.
 
-### Why Use Domains?
+#### Why Use Domains?
 - Enforce **business rules**
 - Ensure **data consistency**
 - Simplify **validation logic**
