@@ -573,46 +573,36 @@ Write an SQL query to find the second most recent activity of each user. If ther
 ```
 
 # [1384. Total Sales Amount by Year](https://leetcode.com/problems/total-sales-amount-by-year/)
-#### Schema
-
-Table: Sales
-
-| Column Name | Type    |
-|-------------|---------|
-| sale_id     | int     |
-| product_id  | int     |
-| year        | int     |
-| quantity    | int     |
-| price       | int     |
-
-sale_id is the primary key for this table.
-
-#### Description
-
-Write an SQL query to report the total sales amount for each year. The total sales amount is calculated as quantity * price for each sale.
-
-#### Sample Input
-
-| sale_id | product_id | year | quantity | price |
-|---------|------------|------|----------|-------|
-| 1       | 100        | 2008 | 10       | 500   |
-| 2       | 100        | 2009 | 12       | 5000  |
-| 7       | 200        | 2011 | 15       | 9000  |
-
-#### Sample Output
-
-| year | total |
-|------|-------|
-| 2008 | 5000  |
-| 2009 | 60000 |
-| 2011 | 135000|
-
-**Explanation:**  
-- 2008: 10 * 500 = 5000  
-- 2009: 12 * 5000 = 60000  
-- 2011: 15 * 9000 = 135000
-
 ```sql
+-- DEFINE CALENDAR YEARS WITH START AND END DATES
+WITH CALENDAR AS (
+    SELECT '2018' AS YEAR, CAST('2018-01-01' AS DATE) AS START_DATE, CAST('2018-12-31' AS DATE) AS END_DATE
+    UNION ALL
+    SELECT '2019', '2019-01-01', '2019-12-31'
+    UNION ALL
+    SELECT '2020', '2020-01-01', '2020-12-31'
+)
+
+-- CALCULATE TOTAL SALES PER PRODUCT PER YEAR BASED ON OVERLAPPING DAYS
+SELECT
+    P.PRODUCT_ID,
+    P.PRODUCT_NAME,
+    C.YEAR AS REPORT_YEAR,
+
+    -- OVERLAPPING DAYS × AVERAGE DAILY SALES
+    (DATEDIFF(
+        DAY,
+        CASE WHEN S.PERIOD_START > C.START_DATE THEN S.PERIOD_START ELSE C.START_DATE END,
+        CASE WHEN S.PERIOD_END < C.END_DATE THEN S.PERIOD_END ELSE C.END_DATE END
+    ) + 1) * S.AVERAGE_DAILY_SALES AS TOTAL_AMOUNT
+
+FROM SALES S
+INNER JOIN CALENDAR C
+    ON YEAR(S.PERIOD_START) <= CAST(C.YEAR AS INT)
+    AND YEAR(S.PERIOD_END) >= CAST(C.YEAR AS INT)
+INNER JOIN PRODUCT P
+    ON P.PRODUCT_ID = S.PRODUCT_ID
+ORDER BY P.PRODUCT_ID, C.YEAR;
 ```
 
 # [1412. Find the Quiet Students in All Exams](https://leetcode.com/problems/find-the-quiet-students-in-all-exams/)
@@ -2471,6 +2461,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
