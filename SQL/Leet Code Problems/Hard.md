@@ -930,58 +930,22 @@ Salaries table:
 ```
 
 # [1767. Find the Subtasks That Did Not Execute](https://leetcode.com/problems/find-the-subtasks-that-did-not-execute/)
-
-#### Schema
-
-Table: Tasks
-
-| Column Name | Type    |
-|-------------|---------|
-| task_id     | int     |
-| subtask_id  | int     |
-
-primary key is (task_id, subtask_id).
-
-Table: Executed
-
-| Column Name | Type |
-|-------------|------|
-| task_id     | int  |
-| subtask_id  | int  |
-
-primary key is (task_id, subtask_id).
-
-#### Description
-
-Write an SQL query to find all (task_id, subtask_id) pairs in Tasks that did not execute, i.e., do not exist in Executed.
-
-#### Sample Input
-
-Tasks table:
-
-| task_id | subtask_id |
-|---------|------------|
-| 1       | 1          |
-| 1       | 2          |
-| 2       | 1          |
-
-Executed table:
-
-| task_id | subtask_id |
-|---------|------------|
-| 1       | 2          |
-
-#### Sample Output
-
-| task_id | subtask_id |
-|---------|------------|
-| 1       | 1          |
-| 2       | 1          |
-
-**Explanation:**  
-- Subtasks (1,1) and (2,1) were not executed.
-
 ```sql
+-- GENERATE ALL POSSIBLE (TASK_ID, SUBTASK_ID) COMBINATIONS
+WITH TASKTOSUBTASK AS (
+    SELECT TASK_ID, 1 AS SUBTASK_ID
+    FROM TASKS
+    UNION ALL
+    SELECT TASK_ID, SUBTASK_ID + 1
+    FROM TASKTOSUBTASK
+    JOIN TASKS ON TASKTOSUBTASK.TASK_ID = TASKS.TASK_ID
+    WHERE SUBTASK_ID + 1 <= SUBTASKS_COUNT
+)
+-- GET SUBTASKS THAT WERE NOT EXECUTED
+SELECT TASK_ID, SUBTASK_ID
+FROM TASKTOSUBTASK
+EXCEPT
+SELECT TASK_ID, SUBTASK_ID FROM EXECUTED;
 ```
 
 # [185. Department Top Three Salaries](https://leetcode.com/problems/department-top-three-salaries/)
@@ -2505,6 +2469,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
