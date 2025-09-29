@@ -1013,6 +1013,22 @@ Department table:
 - IT department's top three salaries: 90000, 85000, 85000.
 
 ```sql
+SELECT DEPARTMENT, EMPLOYEE, SALARY
+FROM (
+    SELECT 
+        D.NAME AS DEPARTMENT,
+        E.NAME AS EMPLOYEE,
+        E.SALARY AS SALARY,
+        -- RANK EMPLOYEES BY SALARY WITHIN EACH DEPARTMENT
+        DENSE_RANK() OVER (
+            PARTITION BY D.NAME
+            ORDER BY E.SALARY DESC
+        ) AS RK
+    FROM EMPLOYEE E
+    JOIN DEPARTMENT D ON E.DEPARTMENTID = D.ID
+) AS TAB
+-- GET TOP 3 HIGHEST-PAID EMPLOYEES PER DEPARTMENT
+WHERE RK <= 3;
 ```
 
 # [1892. Page Recommendations II](https://leetcode.com/problems/page-recommendations-ii/)
@@ -2469,6 +2485,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
