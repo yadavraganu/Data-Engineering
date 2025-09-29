@@ -570,6 +570,29 @@ Write an SQL query to find the second most recent activity of each user. If ther
 
 
 ```sql
+SELECT
+    USERNAME,
+    ACTIVITY,
+    STARTDATE,
+    ENDDATE
+FROM
+(
+    SELECT
+        *,
+        -- RANK ACTIVITIES PER USER BY STARTDATE (LATEST FIRST)
+        RANK() OVER (
+            PARTITION BY USERNAME
+            ORDER BY STARTDATE DESC
+        ) AS RK,
+
+        -- COUNT TOTAL ACTIVITIES PER USER
+        COUNT(USERNAME) OVER (
+            PARTITION BY USERNAME
+        ) AS CNT
+    FROM USERACTIVITY
+) AS A
+-- GET SECOND LATEST ACTIVITY OR ONLY ACTIVITY IF USER HAS ONE
+WHERE A.RK = 2 OR A.CNT = 1;
 ```
 
 # [1384. Total Sales Amount by Year](https://leetcode.com/problems/total-sales-amount-by-year/)
@@ -2461,6 +2484,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
