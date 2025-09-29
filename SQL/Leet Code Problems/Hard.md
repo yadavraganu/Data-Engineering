@@ -1383,6 +1383,27 @@ ORDER BY USER1;
 
 # [2752. Customers with Maximum Number of Transactions on Consecutive Days](https://leetcode.com/problems/customers-with-maximum-number-of-transactions-on-consecutive-days/)
 ```sql
+WITH S AS (
+    SELECT
+        CUSTOMER_ID,
+        -- SHIFT DATE BACK BY ROW NUMBER TO GROUP SEQUENCES
+        DATEADD(DAY, -ROW_NUMBER() OVER (
+            PARTITION BY CUSTOMER_ID
+            ORDER BY TRANSACTION_DATE
+        ), TRANSACTION_DATE) AS SHIFTED_DATE
+    FROM TRANSACTIONS
+),
+T AS (
+    -- GROUP BY CUSTOMER AND SHIFTED DATE TO FIND SEQUENCES
+    SELECT CUSTOMER_ID, SHIFTED_DATE, COUNT(*) AS CNT
+    FROM S
+    GROUP BY CUSTOMER_ID, SHIFTED_DATE
+)
+-- GET CUSTOMER(S) WITH THE LONGEST SEQUENCE
+SELECT CUSTOMER_ID
+FROM T
+WHERE CNT = (SELECT MAX(CNT) FROM T)
+ORDER BY CUSTOMER_ID;
 ```
 
 # [2793. Status of Flight Tickets](https://leetcode.com/problems/status-of-flight-tickets/)
@@ -2484,6 +2505,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
