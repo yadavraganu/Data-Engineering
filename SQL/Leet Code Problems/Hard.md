@@ -629,43 +629,91 @@ ORDER BY P.PRODUCT_ID, C.YEAR;
 ```
 
 # [1412. Find the Quiet Students in All Exams](https://leetcode.com/problems/find-the-quiet-students-in-all-exams/)
-#### Schema
+A **"quiet" student** is the one who took **at least one exam** and **didn't score** neither the **high score** nor the **low score**.
 
-Table: Exam
+Write an SQL query to report the students (`student_id`, `student_name`) being **"quiet" in ALL exams**.
 
-| Column Name | Type    |
-|-------------|---------|
-| exam_id     | int     |
-| student_id  | int     |
-| score       | int     |
+- Don't return the student who has **never taken any exam**.  
+- Return the result table **ordered by student_id**.
 
-Primary key: (exam_id, student_id)
+#### Student table:
 
-#### Description
+```
++-------------+---------------+
+| student_id  | student_name  |
++-------------+---------------+
+| 1           | Daniel        |
+| 2           | Jade          |
+| 3           | Stella        |
+| 4           | Jonathan      |
+| 5           | Will          |
++-------------+---------------+
+```
+#### Exam table:
+```
++------------+--------------+-----------+
+| exam_id    | student_id   | score     |
++------------+--------------+-----------+
+| 10         |     1        |    70     |
+| 10         |     2        |    80     |
+| 10         |     3        |    90     |
+| 20         |     1        |    80     |
+| 30         |     1        |    70     |
+| 30         |     3        |    80     |
+| 30         |     4        |    90     |
+| 40         |     1        |    60     |
+| 40         |     2        |    70     |
+| 40         |     4        |    80     |
++------------+--------------+-----------+
+```
+#### Result table:
+```
++-------------+---------------+
+| student_id  | student_name  |
++-------------+---------------+
+| 2           | Jade          |
++-------------+---------------+
+```
 
-A student is considered quiet in an exam if no other student scored less than them in that exam. Find the students who were quiet in every exam.
-
-#### Sample Input
-
-| exam_id | student_id | score |
-|---------|------------|-------|
-| 1       | 2          | 80    |
-| 1       | 3          | 70    |
-| 2       | 2          | 90    |
-| 2       | 3          | 88    |
-| 3       | 2          | 100   |
-| 3       | 3          | 76    |
-
-#### Sample Output
-
-| student_id |
-|------------|
-| 2          |
-
-**Explanation:**  
-- Student 2 was never the lowest scorer in any exam.
+- For exam 1: Student 1 and 3 hold the lowest and high score respectively.  
+- For exam 2: Student 1 holds both highest and lowest score.  
+- For exam 3 and 4: Student 1 and 4 hold the lowest and high score respectively.  
+- Student 2 and 5 have never got the highest or lowest in any of the exams.  
+- Since student 5 has not taken any exam, he is excluded from the result.  
+- So, we only return the information of Student 2.
 
 ```sql
+-- Step 1: Create a Common Table Expression (CTE) to rank scores within each exam
+WITH T AS (
+    SELECT
+        STUDENT_ID,
+        
+        -- Rank scores in ascending order to identify lowest scores (rk1 = 1 means lowest)
+        RANK() OVER (
+            PARTITION BY EXAM_ID
+            ORDER BY SCORE ASC
+        ) AS RK1,
+        
+        -- Rank scores in descending order to identify highest scores (rk2 = 1 means highest)
+        RANK() OVER (
+            PARTITION BY EXAM_ID
+            ORDER BY SCORE DESC
+        ) AS RK2
+    FROM EXAM
+)
+
+-- Step 2: Select students who never had the highest or lowest score in any exam
+SELECT S.STUDENT_ID, S.STUDENT_NAME
+FROM T
+JOIN STUDENT S ON T.STUDENT_ID = S.STUDENT_ID
+GROUP BY S.STUDENT_ID, S.STUDENT_NAME
+HAVING 
+    -- Ensure the student never had the lowest score in any exam
+    SUM(CASE WHEN RK1 = 1 THEN 1 ELSE 0 END) = 0
+    AND
+    -- Ensure the student never had the highest score in any exam
+    SUM(CASE WHEN RK2 = 1 THEN 1 ELSE 0 END) = 0
+ORDER BY S.STUDENT_ID;
 ```
 
 # [1479. Sales by Day of the Week](https://leetcode.com/problems/sales-by-day-of-the-week/)
@@ -2485,6 +2533,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
