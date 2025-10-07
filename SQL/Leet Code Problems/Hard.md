@@ -717,50 +717,85 @@ ORDER BY S.STUDENT_ID;
 ```
 
 # [1479. Sales by Day of the Week](https://leetcode.com/problems/sales-by-day-of-the-week/)
-#### Schema
+You are the business owner and would like to obtain a **sales report** for:
+- **Category items**
+- **Day of the week**
 
-Table: Sales
+Write an SQL query to report **how many units** in each category have been ordered on **each day of the week**.
 
-| Column Name | Type    |
-|-------------|---------|
-| sale_id     | int     |
-| sale_date   | date    |
-| amount      | int     |
+- Return the result table **ordered by category**.
 
-sale_id is the primary key for this table.
+#### Orders table:
 
-#### Description
+```
++------------+--------------+-------------+--------------+-------------+
+| order_id   | customer_id  | order_date  | item_id      | quantity    |
++------------+--------------+-------------+--------------+-------------+
+| 1          | 1            | 2020-06-01  | 1            | 10          |
+| 2          | 1            | 2020-06-08  | 2            | 10          |
+| 3          | 2            | 2020-06-02  | 1            | 5           |
+| 4          | 3            | 2020-06-03  | 3            | 5           |
+| 5          | 4            | 2020-06-04  | 4            | 1           |
+| 6          | 4            | 2020-06-05  | 5            | 5           |
+| 7          | 5            | 2020-06-05  | 1            | 10          |
+| 8          | 5            | 2020-06-14  | 4            | 5           |
+| 9          | 5            | 2020-06-21  | 3            | 5           |
++------------+--------------+-------------+--------------+-------------+
+```
 
-Write an SQL query to report the total sales amount for each weekday (Monday, Tuesday, ..., Sunday).
+#### Items table:
 
-#### Sample Input
+```
++------------+----------------+---------------+
+| item_id    | item_name      | item_category |
++------------+----------------+---------------+
+| 1          | LC Alg. Book   | Book          |
+| 2          | LC DB. Book    | Book          |
+| 3          | LC SmarthPhone | Phone         |
+| 4          | LC Phone 2020  | Phone         |
+| 5          | LC SmartGlass  | Glasses       |
+| 6          | LC T-Shirt XL  | T-Shirt       |
++------------+----------------+---------------+
+```
 
-| sale_id | sale_date   | amount |
-|---------|-------------|--------|
-| 1       | 2022-03-01  | 100    |
-| 2       | 2022-03-02  | 200    |
-| 3       | 2022-03-03  | 300    |
-| 4       | 2022-03-04  | 400    |
-| 5       | 2022-03-05  | 500    |
-| 6       | 2022-03-06  | 600    |
-| 7       | 2022-03-07  | 700    |
+#### Result table:
 
-#### Sample Output
+```
++------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| Category   | Monday    | Tuesday   | Wednesday | Thursday  | Friday    | Saturday  | Sunday    |
++------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+| Book       | 20        | 5         | 0         | 0         | 10        | 0         | 0         |
+| Glasses    | 0         | 0         | 0         | 0         | 5         | 0         | 0         |
+| Phone      | 0         | 0         | 5         | 1         | 0         | 0         | 10        |
+| T-Shirt    | 0         | 0         | 0         | 0         | 0         | 0         | 0         |
++------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+```
 
-| weekday   | total_amount |
-|-----------|-------------|
-| Monday    | 700         |
-| Tuesday   | 100         |
-| Wednesday | 200         |
-| Thursday  | 300         |
-| Friday    | 400         |
-| Saturday  | 500         |
-| Sunday    | 600         |
+### Notes
 
-**Explanation:**  
-- The total sales amount for each weekday.
+- On **Monday** (2020-06-01, 2020-06-08): 20 units of **Book** sold (10 + 10).
+- On **Tuesday** (2020-06-02): 5 units of **Book** sold.
+- On **Wednesday** (2020-06-03): 5 units of **Phone** sold.
+- On **Thursday** (2020-06-04): 1 unit of **Phone** sold.
+- On **Friday** (2020-06-05): 10 units of **Book** and 5 units of **Glasses** sold.
+- On **Saturday**: No items sold.
+- On **Sunday** (2020-06-14, 2020-06-21): 10 units of **Phone** sold (5 + 5).
+- No sales for **T-Shirt** category.
 
 ```sql
+SELECT 
+    ITEM_CATEGORY AS CATEGORY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Monday' THEN QUANTITY ELSE 0 END) AS MONDAY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Tuesday' THEN QUANTITY ELSE 0 END) AS TUESDAY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Wednesday' THEN QUANTITY ELSE 0 END) AS WEDNESDAY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Thursday' THEN QUANTITY ELSE 0 END) AS THURSDAY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Friday' THEN QUANTITY ELSE 0 END) AS FRIDAY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Saturday' THEN QUANTITY ELSE 0 END) AS SATURDAY,
+    SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Sunday' THEN QUANTITY ELSE 0 END) AS SUNDAY
+FROM ORDERS O
+JOIN ITEMS I ON O.ITEM_ID = I.ITEM_ID
+GROUP BY ITEM_CATEGORY
+ORDER BY ITEM_CATEGORY;
 ```
 
 # [1635. Hopper Company Queries I](https://leetcode.com/problems/hopper-company-queries-i/)
@@ -2533,6 +2568,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
