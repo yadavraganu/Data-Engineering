@@ -1305,7 +1305,101 @@ Calls table:
 ```
 
 # [2118. Build the Equation](https://leetcode.com/problems/build-the-equation/)
+### Table: Terms
+
+| Column Name | Type |
+|-------------|------|
+| `power`     | int  |
+| `factor`    | int  |
+
+- `power` is the **primary key** for this table.
+- Each row represents one term of a polynomial equation.
+- `power` is an integer in the range **[0, 100]**.
+- `factor` is a non-zero integer in the range **[-100, 100]**.
+
+You have a powerful program that can solve any equation of one variable. To use it, the equation must be formatted as follows:
+
+- The **left-hand side (LHS)** should contain all the terms.
+- The **right-hand side (RHS)** should be `= 0`.
+- Each term in the LHS must follow the format:  
+  `"<sign><fact>X^<pow>"` where:
+  - `<sign>` is either `+` or `-`
+  - `<fact>` is the **absolute value** of the factor
+  - `<pow>` is the **power** value
+
+- If `power = 1`, omit `^<pow>` → e.g., `+3X`
+- If `power = 0`, omit both `X` and `^<pow>` → e.g., `-3`
+- Terms must be ordered by **descending power**
+- The final equation must end with `=0`
+
+### Example 1
+
+**Input:**
+
+```text
+Terms table:
++-------+--------+
+| power | factor |
++-------+--------+
+|   2   |   1    |
+|   1   |  -4    |
+|   0   |   2    |
++-------+--------+
+```
+
+**Output:**
+
+```text
++--------------+
+| equation     |
++--------------+
+| +1X^2-4X+2=0 |
++--------------+
+```
+
+### Example 2
+
+**Input:**
+
+```text
+Terms table:
++-------+--------+
+| power | factor |
++-------+--------+
+|   4   |  -4    |
+|   2   |   1    |
+|   1   |  -1    |
++-------+--------+
+```
+
+**Output:**
+
+```text
++-----------------+
+| equation        |
++-----------------+
+| -4X^4+1X^2-1X=0 |
++-----------------+
+```
+
 ```sql
+SELECT 
+  STRING_AGG(
+    CASE 
+      WHEN FACTOR > 0 THEN '+' ELSE ''
+    END +
+    CAST(FACTOR AS VARCHAR) +
+    CASE 
+      WHEN POWER = 0 THEN ''
+      ELSE 'X'
+    END +
+    CASE 
+      WHEN POWER IN (0, 1) THEN ''
+      ELSE '^' + CAST(POWER AS VARCHAR)
+    END,
+    ''
+  ) WITHIN GROUP (ORDER BY POWER DESC) + '=0' AS EQUATION
+FROM TERMS;
 ```
 
 # [2153. The Number of Passengers in Each Bus II](https://leetcode.com/problems/the-number-of-passengers-in-each-bus-ii/)
@@ -2568,6 +2662,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
