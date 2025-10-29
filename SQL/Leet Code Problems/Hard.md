@@ -1505,7 +1505,85 @@ GROUP BY PLAYER_ID;
 ```
 
 # [2362. Generate the Invoice](https://leetcode.com/problems/generate-the-invoice/)
+### Table: Products
+
+| Column Name | Type |
+|-------------|------|
+| product_id  | int  |
+| price       | int  |
+
+`product_id` is the primary key for this table.  
+Each row in this table shows the ID of a product and the price of one unit.
+
+### Table: Purchases
+
+| Column Name | Type |
+|-------------|------|
+| invoice_id  | int  |
+| product_id  | int  |
+| quantity    | int  |
+
+(`invoice_id`, `product_id`) is the primary key for this table.  
+Each row in this table shows the quantity ordered from one product in an invoice.
+
+Write an SQL query to show the details of the invoice with the highest price. If two or more invoices have the same price, return the details of the one with the smallest invoice_id.
+
+Return the result table in any order.
+
+The query result format is shown in the following example.
+
+### Example 1:
+
+**Input:**  
+**Products table:**
+
+| product_id | price |
+|------------|-------|
+| 1          | 100   |
+| 2          | 200   |
+
+**Purchases table:**
+
+| invoice_id | product_id | quantity |
+|------------|------------|----------|
+| 1          | 1          | 2        |
+| 3          | 2          | 1        |
+| 2          | 2          | 3        |
+| 2          | 1          | 4        |
+| 4          | 1          | 10       |
+
+**Output:**
+
+| product_id | quantity | price |
+|------------|----------|-------|
+| 2          | 3        | 600   |
+| 1          | 4        | 400   |
+
+**Explanation:**  
+Invoice 1: price = (2 * 100) = $200  
+Invoice 2: price = (4 * 100) + (3 * 200) = $1000  
+Invoice 3: price = (1 * 200) = $200  
+Invoice 4: price = (10 * 100) = $1000
+
+The highest price is $1000, and the invoices with the highest prices are 2 and 4. We return the details of the
 ```sql
+-- CTE to combine purchase and product details
+WITH PURCHASEDETAILS AS (
+    SELECT P.INVOICE_ID, P.PRODUCT_ID, P.QUANTITY, PR.PRICE
+    FROM PURCHASES P
+    INNER JOIN PRODUCTS PR ON P.PRODUCT_ID = PR.PRODUCT_ID
+),
+-- CTE to find the invoice with the highest total amount
+TOPINVOICE AS (
+    SELECT TOP 1 INVOICE_ID, SUM(PRICE * QUANTITY) AS TOTAL_AMOUNT
+    FROM PURCHASEDETAILS
+    GROUP BY INVOICE_ID
+    ORDER BY TOTAL_AMOUNT DESC, INVOICE_ID
+)
+-- Final query to list products from the top invoice
+SELECT PD.PRODUCT_ID, PD.QUANTITY, (PD.QUANTITY * PD.PRICE) AS TOTAL_PRICE
+FROM PURCHASEDETAILS PD
+INNER JOIN TOPINVOICE TI ON PD.INVOICE_ID = TI.INVOICE_ID;
 ```
 
 # [2474. Customers With Strictly Increasing Purchases](https://leetcode.com/problems/customers-with-strictly-increasing-purchases/)
@@ -2744,6 +2822,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
