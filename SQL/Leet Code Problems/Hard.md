@@ -1634,6 +1634,32 @@ INNER JOIN TOPINVOICE TI ON PD.INVOICE_ID = TI.INVOICE_ID;
 
 # [2474. Customers With Strictly Increasing Purchases](https://leetcode.com/problems/customers-with-strictly-increasing-purchases/)
 ```sql
+-- Select customers with consistent yearly spending pattern
+SELECT
+    CUSTOMER_ID
+FROM
+    (
+        -- Calculate yearly total and rank for each customer
+        SELECT
+            CUSTOMER_ID,
+            YEAR(ORDER_DATE) AS ORDER_YEAR,
+            SUM(PRICE) AS TOTAL,
+            -- Compute difference between year and rank of spending
+            YEAR(ORDER_DATE) - RANK() OVER (
+                PARTITION BY CUSTOMER_ID
+                ORDER BY SUM(PRICE)
+            ) AS RK
+        FROM
+            ORDERS
+        GROUP BY
+            CUSTOMER_ID,
+            YEAR(ORDER_DATE)
+    ) AS T
+GROUP BY
+    CUSTOMER_ID
+-- Keep only those with a single distinct rk value
+HAVING
+    COUNT(DISTINCT RK) = 1;
 ```
 
 # [2494. Merge Overlapping Events in the Same Hall](https://leetcode.com/problems/merge-overlapping-events-in-the-same-hall/)
@@ -2868,6 +2894,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
