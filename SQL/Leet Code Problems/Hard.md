@@ -1298,6 +1298,40 @@ Calls table:
 
 # [2004. The Number of Seniors and Juniors to Join the Company](https://leetcode.com/problems/the-number-of-seniors-and-juniors-to-join-the-company/)
 ```sql
+WITH ACCUMULATEDCANDIDATES AS (
+  SELECT
+    EMPLOYEE_ID,
+    EXPERIENCE,
+    ROW_NUMBER() OVER (
+      PARTITION BY EXPERIENCE
+      ORDER BY SALARY, EMPLOYEE_ID
+    ) AS CANDIDATE_COUNT, -- Rank candidates by salary within experience level
+    SUM(SALARY) OVER (
+      PARTITION BY EXPERIENCE
+      ORDER BY SALARY, EMPLOYEE_ID
+    ) AS ACCUMULATED_SALARY -- Running total of salary within experience level
+  FROM CANDIDATES
+),
+MAXHIREDSENIORS AS (
+  SELECT
+    ISNULL(MAX(CANDIDATE_COUNT), 0) AS ACCEPTED_CANDIDATES, -- Max seniors hired under budget
+    ISNULL(MAX(ACCUMULATED_SALARY), 0) AS ACCUMULATED_SALARY -- Total salary of hired seniors
+  FROM ACCUMULATEDCANDIDATES
+  WHERE EXPERIENCE = 'Senior' AND ACCUMULATED_SALARY < 70000
+)
+SELECT
+  'Senior' AS EXPERIENCE,
+  ACCEPTED_CANDIDATES
+FROM MAXHIREDSENIORS
+UNION ALL
+SELECT
+  'Junior' AS EXPERIENCE,
+  COUNT(*) AS ACCEPTED_CANDIDATES
+FROM ACCUMULATEDCANDIDATES AS JUNIORS
+WHERE EXPERIENCE = 'JUNIOR'
+  AND JUNIORS.ACCUMULATED_SALARY < (
+    SELECT 70000 - ACCUMULATED_SALARY FROM MAXHIREDSENIORS
+  ); -- Hire juniors within remaining budget
 ```
 
 # [2010. The Number of Seniors and Juniors to Join the Company II](https://leetcode.com/problems/the-number-of-seniors-and-juniors-to-join-the-company-ii/)
@@ -2834,6 +2868,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
