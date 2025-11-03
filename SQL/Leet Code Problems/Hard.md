@@ -1494,6 +1494,18 @@ GROUP BY PLAYER_ID;
 
 # [2199. Finding the Topic of Each Post](https://leetcode.com/problems/finding-the-topic-of-each-post/)
 ```sql
+SELECT
+  POSTS.POST_ID,
+  ISNULL(
+    STRING_AGG(DISTINCT CAST(KEYWORDS.TOPIC_ID AS VARCHAR), ',' 
+      ) WITHIN GROUP (ORDER BY KEYWORDS.TOPIC_ID),
+    'Ambiguous!' -- If no match, label as Ambiguous
+  ) AS TOPIC
+FROM POSTS
+LEFT JOIN KEYWORDS
+  ON CHARINDEX(' ' + LOWER(KEYWORDS.WORD) + ' ', ' ' + LOWER(POSTS.CONTENT) + ' ') > 0
+  -- Match whole word using space padding and case-insensitive comparison
+GROUP BY POSTS.POST_ID; -- GROUP BY POST ID
 ```
 
 # [2252. Dynamic Pivoting of a Table](https://leetcode.com/problems/dynamic-pivoting-of-a-table/)
@@ -2822,6 +2834,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
