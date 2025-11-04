@@ -1336,6 +1336,38 @@ WHERE EXPERIENCE = 'JUNIOR'
 
 # [2010. The Number of Seniors and Juniors to Join the Company II](https://leetcode.com/problems/the-number-of-seniors-and-juniors-to-join-the-company-ii/)
 ```sql
+WITH ACCUMULATEDCANDIDATES AS (
+  SELECT
+    EMPLOYEE_ID,
+    EXPERIENCE,
+    ROW_NUMBER() OVER (
+      PARTITION BY EXPERIENCE
+      ORDER BY SALARY, EMPLOYEE_ID
+    ) AS CANDIDATE_COUNT, -- Rank candidates by salary within experience
+    SUM(SALARY) OVER (
+      PARTITION BY EXPERIENCE
+      ORDER BY SALARY, EMPLOYEE_ID
+    ) AS ACCUMULATED_SALARY -- Running total of salary
+  FROM CANDIDATES
+),
+HIREDSENIORS AS (
+  SELECT
+    EMPLOYEE_ID,
+    ACCUMULATED_SALARY
+  FROM ACCUMULATEDCANDIDATES
+  WHERE EXPERIENCE = 'Senior' AND ACCUMULATED_SALARY < 70000
+)
+SELECT EMPLOYEE_ID
+FROM HIREDSENIORS
+UNION ALL
+SELECT EMPLOYEE_ID
+FROM ACCUMULATEDCANDIDATES AS JUNIORS
+WHERE EXPERIENCE = 'Junior'
+  AND JUNIORS.ACCUMULATED_SALARY < (
+    SELECT 70000 - ISNULL(MAX(ACCUMULATED_SALARY), 0)
+    FROM ACCUMULATEDCANDIDATES
+    WHERE EXPERIENCE = 'SENIOR' AND ACCUMULATED_SALARY < 70000
+  ); -- Hire juniors within remaining budget
 ```
 
 # [2118. Build the Equation](https://leetcode.com/problems/build-the-equation/)
@@ -2894,6 +2926,7 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
+
 
 
 
