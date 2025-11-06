@@ -7,7 +7,8 @@ Data modeling is the process of creating a visual representation of a system or 
 - Optimizes database performance and scalability
 
 # Types of Data Models
-[Go Here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
+1. [Data Modeling by Abstraction Level](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
+2. [Data Modeling by Structure/Purpose](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
 
 # Entity-Relationship (ER) Modeling
 

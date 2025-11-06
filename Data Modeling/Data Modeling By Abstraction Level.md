@@ -49,3 +49,10 @@ The process of **data modeling** typically involves several structured stages, e
 | Physical Modeling      | DBMS-specific implementation   | Physical schema               |
 | Implementation         | Database creation              | Live database                 |
 | Maintenance            | Updates and optimization       | Revised schema, documentation |
+
+## Commonly Used
+| Model Type | Focus | Purpose & Audience |
+| :--- | :--- | :--- |
+| **Conceptual Model** | **WHAT** the system contains. | **High-level view** of business entities, their attributes, and relationships. It is **platform-agnostic** (no technical details) and is used for communication with **Business Stakeholders**. |
+| **Logical Model** | **HOW** the system is structured. | **Detailed map** that defines all data elements, **Primary/Foreign Keys**, and cardinalities, but still **independent of a specific DBMS** (e.g., not tied to Oracle or SQL Server). Used by **Data Architects** and **Analysts**. |
+| **Physical Model** | **HOW** the system is implemented. | **Concrete design** that translates the logical model into a specific database structure. It includes **tables, columns, data types, indexes, and performance constraints** for a chosen database technology. Used by **DBAs** and **Developers**. |
