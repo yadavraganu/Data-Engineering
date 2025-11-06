@@ -7,16 +7,18 @@ Data modeling is the process of creating a visual representation of a system or 
 - Optimizes database performance and scalability
 
 # Types of Data Models
-1. [Data Modeling by Abstraction Level](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
-2. [Data Modeling by Structure/Purpose](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Stages%20of%20Data%20Modeling.md)
+1. [Data Modeling by Abstraction Level](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Data%20Modeling%20By%20Abstraction%20Level.md)
+2. [Data Modeling by Structure/Purpose](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Data%20Modeling%20By%20Abstraction%20Level.md)
 
-# Entity-Relationship (ER) Modeling
+# Methods Of Data Modelling
+1. [Relational Modeling Methods]()
+2. [Dimensional Modeling Methods]()
 
 # Normalization & Denormalization
 [Go Here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Normalization.md)
 
-# Type of Keys
-[Go Here](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Type%20of%20Keys.md)
+# What are different keys used in OLTP/OLAP systems
+[Type of Keys](https://github.com/yadavraganu/Data-Engineering/blob/main/Data%20Modeling/Type%20of%20Keys.md)
 
 # Data Types and Domains
 
@@ -120,15 +122,3 @@ A **domain** defines the **permissible values** for a column. It can be thought 
 - **Access Control Models**
 - **GDPR/CCPA-Compliant Modeling**
 - **Audit Trail Modeling**
-
----
-
-## 🧰 **Tools & Techniques**
-- **Modeling Tools**: ER/Studio, dbt, Lucidchart, SQL DBM, PowerDesigner
-- **Version Control for Data Models**
-- **Modeling in Cloud Data Warehouses**: Snowflake, BigQuery, Redshift
-- **CI/CD for Data Models**
-
----
-
-Would you like this list as a **mind map**, **PDF**, or broken down into a **learning roadmap** for self-study or team training?
