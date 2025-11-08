@@ -183,3 +183,86 @@ FROM
 WHERE 
   RNK = 1
 ```
+## Pivot Unpivot Fixed
+```sql
+CREATE TABLE EMP_COMPENSATION (
+  EMP_ID INT, 
+  SALARY_COMPONENT_TYPE VARCHAR(20), 
+  VAL INT
+);
+INSERT INTO EMP_COMPENSATION 
+VALUES 
+  (1, 'salary', 10000), 
+  (1, 'bonus', 5000), 
+  (1, 'hike_percent', 10), 
+  (2, 'salary', 15000), 
+  (2, 'bonus', 7000), 
+  (2, 'hike_percent', 8), 
+  (3, 'salary', 12000), 
+  (3, 'bonus', 6000), 
+  (3, 'hike_percent', 7);
+SELECT 
+  * 
+FROM 
+  EMP_COMPENSATION;
+  
+WITH PIVOT_DATA AS (
+  SELECT 
+    EMP_ID, 
+    MAX(CASE WHEN SALARY_COMPONENT_TYPE = 'salary' THEN VAL END) AS SALARY, 
+    MAX(CASE WHEN SALARY_COMPONENT_TYPE = 'bonus' THEN VAL END) AS BONUS, 
+    MAX(CASE WHEN SALARY_COMPONENT_TYPE = 'hike_percent' THEN VAL END) AS HIKE_PERCENT 
+  FROM 
+    EMP_COMPENSATION 
+  GROUP BY 
+    EMP_ID
+), 
+UNPIVOT_DATA AS (
+  SELECT 
+    EMP_ID, 
+    'salary' AS SALARY_COMPONENT_TYPE, 
+    SALARY AS VAL 
+  FROM 
+    PIVOT_DATA 
+  UNION 
+  SELECT 
+    EMP_ID, 
+    'bonus' AS SALARY_COMPONENT_TYPE, 
+    BONUS AS VAL 
+  FROM 
+    PIVOT_DATA 
+  UNION 
+  SELECT 
+    EMP_ID, 
+    'hike_percent' AS SALARY_COMPONENT_TYPE, 
+    HIKE_PERCENT AS VAL 
+  FROM 
+    PIVOT_DATA
+) 
+SELECT 
+  * 
+FROM 
+  PIVOT_DATA;
+```
+## Nth Sunday Date from current data
+```sql
+SET 
+  DATEFIRST 1;
+-- Sets Monday as the first day of the week
+WITH TODAY_DT AS (
+  SELECT 
+    CAST(GETDATE() AS DATE) AS DT
+), 
+FIRST_SUNDAY AS (
+  SELECT 
+    DT AS CURR_DT, 
+    DATENAME(WEEKDAY, DT) AS CURR_DAY, 
+    DATEADD(DAY, 7 - DATEPART(WEEKDAY, GETDATE()), DT) AS FIRST_SUNDAY 
+  FROM 
+    TODAY_DT
+) 
+SELECT 
+   DATEADD(DAY,1*7,FIRST_SUNDAY) AS NTH_SUNDAY
+FROM 
+  FIRST_SUNDAY
+```
