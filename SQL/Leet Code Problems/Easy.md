@@ -11,7 +11,7 @@ SELECT
     S.PRICE
 FROM
     SALES AS S
-INNER JOIN,n.lkh   
+INNER JOIN
     PRODUCT AS P
 ON
     S.PRODUCT_ID = P.PRODUCT_ID;
@@ -1528,4 +1528,5 @@ FROM
 # [620. Not Boring Movies](https://leetcode.com/problems/not-boring-movies/)
 ```sql
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
+
 ```
