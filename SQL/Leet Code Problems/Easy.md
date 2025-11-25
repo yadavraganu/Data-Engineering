@@ -1497,14 +1497,29 @@ FROM
 ```
 
 # [613. Shortest Distance in a Line](https://leetcode.com/problems/shortest-distance-in-a-line/)
+```
+Table point holds the x coordinate of some points on x-axis in a plane, which are all integers.
+Write a query to find the shortest distance between two points in these points.
+
+| x   |
+|-----|
+| -1  |
+| 0   |
+| 2   |
+ 
+The shortest distance is '1' obviously, which is from point '-1' to '0'. So the output is as below:
+
+| shortest|
+|---------|
+| 1       |
+
+Note: Every point is unique, which means there is no duplicates in table point.
+```
 ```sql
 SELECT MIN(P2.X - P1.X) AS SHORTEST
 FROM
     POINT AS P1
-    JOIN POINT AS P2 ON P1.X < P2.X;SELECT MIN(P2.X - P1.X) AS SHORTEST
-FROM
-    POINT AS P1
-    JOIN POINT AS P2 ON P1.X < P2.X;
+    JOIN POINT AS P2 ON P1.X < P2.X
 ```
 
 # [619. Biggest Single Number](https://leetcode.com/problems/biggest-single-number/)
@@ -1517,7 +1532,6 @@ Table: MyNumbers
 +-------------+------+
 This table may contain duplicates (In other words, there is no primary key for this table in SQL).
 Each row of this table contains an integer.
- 
 
 A single number is a number that appeared only once in the MyNumbers table.
 Find the largest single number. If there is no single number, report null.
@@ -1634,4 +1648,5 @@ We have three movies with odd-numbered IDs: 1, 3, and 5. The movie with ID = 3 i
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 
 ```
+
 
