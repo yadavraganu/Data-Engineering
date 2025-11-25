@@ -2949,6 +2949,14 @@ ORDER BY
 ```sql
 ```
 
+# [3705. Find Golden Hour Customers](https://leetcode.com/problems/find-golden-hour-customers/)
+```sql
+```
+
+# [3716. Find Churn Risk Customers](https://leetcode.com/problems/find-churn-risk-customers/)
+```sql
+```
+
 # [534. Game Play Analysis III](https://leetcode.com/problems/game-play-analysis-iii/)
 ```sql
 SELECT  
@@ -3131,4 +3139,5 @@ ORDER BY
 # [627. Swap Salary](https://leetcode.com/problems/swap-salary/)
 ```sql
 UPDATE SALARY SET SEX = CASE WHEN SEX = 'm' THEN 'f' ELSE 'm' END;
+
 ```

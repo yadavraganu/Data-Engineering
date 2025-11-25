@@ -2776,7 +2776,9 @@ FROM STUDENT_WHO_STUDYSPIRAL_PATTERN
 WHERE UNIQUE_STUDENT_ID_SHOULDATLEAST_MORETHAN_1_STUDENTS_IS_THE_KEY > 1
 ORDER BY CYCLE_LENGTH DESC, TOTAL_STUDY_HOURS DESC;
 ```
-
+# [3673. Find Zombie Sessions](https://leetcode.com/problems/find-zombie-sessions/)
+```sql
+```
 # [569. Median Employee Salary](https://leetcode.com/problems/median-employee-salary/)
 ```sql
 WITH T AS (
@@ -2926,8 +2928,6 @@ GROUP BY RK
 ORDER BY RK;
 
 ```
-
-
 
 
 
