@@ -1286,6 +1286,53 @@ ORDER BY POINTS DESC, TEAM_NAME;
 ```
 
 # [3358. Books with NULL Ratings](https://leetcode.com/problems/books-with-null-ratings/)
+```
+Table: books
+
+| Column Name    | Type    |
+| book_id        | int     |
+| title          | varchar |
+| author         | varchar |
+| published_year | int     |
+| rating         | decimal |
+
+book_id is the unique key for this table.
+Each row of this table contains information about a book including its unique ID, title, author, publication year, and rating.
+rating can be NULL, indicating that the book hasn't been rated yet.
+Write a solution to find all  books that have not been rated yet (i.e., have a NULL rating).
+
+Return the result table ordered by book_id in ascending order.
+The result format is in the following example.
+
+Example:
+
+Input:
+
+books table:
+
+| book_id | title                  | author           | published_year | rating |
+| 1       | The Great Gatsby       | F. Scott         | 1925           | 4.5    |
+| 2       | To Kill a Mockingbird  | Harper Lee       | 1960           | NULL   |
+| 3       | Pride and Prejudice    | Jane Austen      | 1813           | 4.8    |
+| 4       | The Catcher in the Rye | J.D. Salinger    | 1951           | NULL   |
+| 5       | Animal Farm            | George Orwell    | 1945           | 4.2    |
+| 6       | Lord of the Flies      | William Golding  | 1954           | NULL   |
+
+Output:
+
+| book_id | title                  | author           | published_year |
+| 2       | To Kill a Mockingbird  | Harper Lee       | 1960           |
+| 4       | The Catcher in the Rye | J.D. Salinger    | 1951           |
+| 6       | Lord of the Flies      | William Golding  | 1954           |
+
+Explanation:
+
+The books with book_id 2, 4, and 6 have NULL ratings.
+These books are included in the result table.
+The other books (book_id 1, 3, and 5) have ratings and are not included.
+Bookshelves
+The result is ordered by book_id in ascending order
+```
 ```sql
 SELECT BOOK_ID, TITLE, AUTHOR, PUBLISHED_YEAR
 FROM BOOKS
@@ -1294,6 +1341,22 @@ ORDER BY 1;
 ```
 
 # [3415. Find Products with Three Consecutive Digits](https://leetcode.com/problems/find-products-with-three-consecutive-digits/)
+```
+Table: Products
+| product_id  | int     |
+| name        | varchar |
+
+Explanation:
+
+Product 1: ABC123XYZ contains the digits 123.
+Product 5: 789Product contains the digits 789.
+Product 6: Item003Description contains 003, which is exactly three digits.
+
+Note:
+
+Results are ordered by product_id in ascending order.
+Only products with exactly three consecutive digits in their names are included in the result.
+```
 ```sql
 SELECT PRODUCT_ID, NAME
 FROM PRODUCTS
@@ -2060,6 +2123,7 @@ We have three movies with odd-numbered IDs: 1, 3, and 5. The movie with ID = 3 i
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 
 ```
+
 
 
 
