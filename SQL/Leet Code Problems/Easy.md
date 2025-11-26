@@ -1306,13 +1306,124 @@ ORDER BY PRODUCT_ID;
 ```
 
 # [3436. Find Valid Emails](https://leetcode.com/problems/find-valid-emails/)
+```
+Table: Users
++-----------------+---------+
+| Column Name     | Type    |
++-----------------+---------+
+| user_id         | int     |
+| email           | varchar |
++-----------------+---------+
+(user_id) is the unique key for this table.
+Each row contains a user's unique ID and email address.
+Write a solution to find all the valid email addresses. A valid email address meets the following criteria:
+
+It contains exactly one @ symbol.
+It ends with .com.
+The part before the @ symbol contains only alphanumeric characters and underscores.
+The part after the @ symbol and before .com contains a domain name that contains only letters.
+Return the result table ordered by user_id in ascending order.
+
+Example:
+
+Input:
+Users table:
++---------+---------------------+
+| user_id | email               |
++---------+---------------------+
+| 1       | alice@example.com   |
+| 2       | bob_at_example.com  |
+| 3       | charlie@example.net |
+| 4       | david@domain.com    |
+| 5       | eve@invalid         |
++---------+---------------------+
+Output:
++---------+-------------------+
+| user_id | email             |
++---------+-------------------+
+| 1       | alice@example.com |
+| 4       | david@domain.com  |
++---------+-------------------+
+
+Explanation:
+
+alice@example.com is valid because it contains one @, alice is alphanumeric, and example.com starts with a letter and ends with .com.
+bob_at_example.com is invalid because it contains an underscore instead of an @.
+charlie@example.net is invalid because the domain does not end with .com.
+david@domain.com is valid because it meets all criteria.
+eve@invalid is invalid because the domain does not end with .com.
+Result table is ordered by user_id in ascending order.
+```
 ```sql
 SELECT * FROM USERS
 WHERE UPPER(EMAIL) LIKE '%@%.COM' AND UPPER(EMAIL) NOT LIKE '%[^0-9A-Z_]%@%.COM' AND UPPER(EMAIL) NOT LIKE '%@%[^A-Z]%.COM'
 ORDER BY USER_ID
+---
+SELECT *
+FROM USERS
+WHERE UPPER(EMAIL) LIKE '%@%.COM'
+  AND PATINDEX('%[^0-9A-Z_]%@%.COM', UPPER(EMAIL)) = 0
+  AND PATINDEX('%@%[^A-Z]%.COM%', UPPER(EMAIL)) = 0
+ORDER BY USER_ID;
 ```
 
 # [3465. Find Products with Valid Serial Numbers](https://leetcode.com/problems/find-products-with-valid-serial-numbers/)
+```
+Table: products
++--------------+------------+
+| Column Name  | Type       |
++--------------+------------+
+| product_id   | int        |
+| product_name | varchar    |
+| description  | varchar    |
++--------------+------------+
+(product_id) is the unique key for this table.
+Each row in the table represents a product with its unique ID, name, and description.
+Write a solution to find all products whose description contains a valid serial number pattern. A valid serial number follows these rules:
+
+It starts with the letters SN (case-sensitive).
+Followed by exactly 4 digits.
+It must have a hyphen (-) followed by exactly 4 digits.
+The serial number must be within the description (it may not necessarily start at the beginning).
+Return the result table ordered by product_id in ascending order.
+
+The result format is in the following example.
+
+Example:
+
+Input:
+
+products table:
+
++------------+--------------+------------------------------------------------------+
+| product_id | product_name | description                                          |
++------------+--------------+------------------------------------------------------+
+| 1          | Widget A     | This is a sample product with SN1234-5678            |
+| 2          | Widget B     | A product with serial SN9876-1234 in the description |
+| 3          | Widget C     | Product SN1234-56789 is available now                |
+| 4          | Widget D     | No serial number here                                |
+| 5          | Widget E     | Check out SN4321-8765 in this description            |
++------------+--------------+------------------------------------------------------+
+    
+Output:
+
++------------+--------------+------------------------------------------------------+
+| product_id | product_name | description                                          |
++------------+--------------+------------------------------------------------------+
+| 1          | Widget A     | This is a sample product with SN1234-5678            |
+| 2          | Widget B     | A product with serial SN9876-1234 in the description |
+| 5          | Widget E     | Check out SN4321-8765 in this description            |
++------------+--------------+------------------------------------------------------+
+    
+Explanation:
+
+Product 1: Valid serial number SN1234-5678
+Product 2: Valid serial number SN9876-1234
+Product 3: Invalid serial number SN1234-56789 (contains 5 digits after the hyphen)
+Product 4: No serial number in the description
+Product 5: Valid serial number SN4321-8765
+The result table is ordered by product_id in ascending order.
+```
 ```sql
 SELECT *
 FROM PRODUCTS
@@ -1949,6 +2060,7 @@ We have three movies with odd-numbered IDs: 1, 3, and 5. The movie with ID = 3 i
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 
 ```
+
 
 
 
