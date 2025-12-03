@@ -1078,6 +1078,63 @@ WHERE ID NOT IN (
 ```
 
 # [1965. Employees With Missing Information](https://leetcode.com/problems/employees-with-missing-information/)
+```
+Table: Employees
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| employee_id | int     |
+| name        | varchar |
++-------------+---------+
+employee_id is the column with unique values for this table.
+Each row of this table indicates the name of the employee whose ID is employee_id.
+
+Table: Salaries
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| employee_id | int     |
+| salary      | int     |
++-------------+---------+
+employee_id is the column with unique values for this table.
+Each row of this table indicates the salary of the employee whose ID is employee_id.
+
+Write a solution to report the IDs of all the employees with missing information. The information of an employee is missing if:
+- The employee's name is missing, or
+- The employee's salary is missing.
+Return the result table ordered by employee_id in ascending order.
+The result format is in the following example.
+Example 1:
+
+Input: 
+Employees table:
++-------------+----------+
+| employee_id | name     |
++-------------+----------+
+| 2           | Crew     |
+| 4           | Haven    |
+| 5           | Kristian |
++-------------+----------+
+Salaries table:
++-------------+--------+
+| employee_id | salary |
++-------------+--------+
+| 5           | 76071  |
+| 1           | 22517  |
+| 4           | 63539  |
++-------------+--------+
+Output: 
++-------------+
+| employee_id |
++-------------+
+| 1           |
+| 2           |
++-------------+
+Explanation: 
+Employees 1, 2, 4, and 5 are working at this company.
+The name of employee 1 is missing.
+The salary of employee 2 is missing.
+```
 ```sql
 SELECT EMPLOYEE_ID 
 FROM EMPLOYEES 
@@ -1090,7 +1147,7 @@ ORDER BY EMPLOYEE_ID ASC
 -----------------------------------------------
 SELECT ISNULL(E.EMPLOYEE_ID,S.EMPLOYEE_ID) AS EMPLOYEE_ID
 FROM EMPLOYEES E FULL JOIN SALARIES S
-ON E.EMPLOYEE_ID  =S.EMPLOYEE_ID 
+ON E.EMPLOYEE_ID = S.EMPLOYEE_ID 
 WHERE S.EMPLOYEE_ID IS NULL OR E.EMPLOYEE_ID IS NULL 
 ORDER BY  EMPLOYEE_ID ASC 
 ```
@@ -2521,6 +2578,7 @@ We have three movies with odd-numbered IDs: 1, 3, and 5. The movie with ID = 3 i
 SELECT ID, MOVIE, DESCRIPTION, RATING FROM CINEMA WHERE DESCRIPTION <> 'boring' AND ID % 2 = 1 ORDER BY RATING DESC
 
 ```
+
 
 
 
