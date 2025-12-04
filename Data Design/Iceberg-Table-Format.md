@@ -1,2 +1,2 @@
 ## Architecture
-<img width="1047" height="911" alt="image" src="./.images/Iceberg-Arch.png" />
+<img align="center" width="697" height="800" alt="image" src="./.images/Iceberg-Arch.png" />
