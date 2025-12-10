@@ -147,7 +147,7 @@ Dimensional modeling is the **preferred technique** for presenting analytic data
 - Provide a **centralized repository** so all business users access consistent data.  
 - Represent **business measures (facts)** such as sales units or dollar amounts.  
 
-### 🧩 Core Principles
+### Core Principles
 - **Grain**: Each row represents a single measurement event at a specific level of detail (e.g., one row per product sold in a transaction).  
 - **Consistency**: All rows must be at the same grain to avoid double-counting.  
 - **One-to-One Mapping**: Each real-world measurement event corresponds to one fact table row.  
@@ -212,3 +212,62 @@ Fact tables are the **foundation of dimensional modeling**: they capture the mea
 - Dimensional modeling emerged as a natural approach to make analytic data **simple and understandable**.  
 
 Dimension tables are the **entry points** into the data warehouse. Their attributes provide the labels, filters, and groupings that make BI analysis intuitive. The richer and more user-friendly the attributes, the more powerful the DW/BI system becomes.
+
+# Chapter 2
+## Fundamental Concepts in Dimensional Modeling
+
+### 1. Gather Business Requirements
+- Engage with **business representatives** to understand:  
+  - Their **objectives** and **key performance indicators (KPIs)**.  
+  - The **business issues** they want to solve.  
+  - The **decisions** they need to make.  
+  - The **analytic needs** that support decision-making.  
+
+### 2. Assess Data Realities
+- Work with **source system experts** to understand the available data.  
+- Conduct **high-level data profiling** to evaluate:  
+  - Data quality.  
+  - Completeness.  
+  - Feasibility of using the data for DW/BI purposes.  
+
+Dimensional modeling must balance **business needs** (what users want to analyze) with **data realities** (what is actually available and usable). This dual focus ensures the design is both **practical** and **valuable**.
+
+### 3. Collaborative Dimensional Modeling Workshops
+#### Purpose
+- Ensure dimensional models reflect **real business needs**.  
+- Provide a forum to **clarify requirements** and align IT with business priorities.  
+
+#### Key Elements
+- **Collaboration**: Involve subject matter experts (SMEs) and data governance representatives.  
+- **Leadership**: The data modeler facilitates and guides the process.  
+- **Interactive Workshops**: Models evolve through **highly participatory sessions** with business representatives.  
+- **Requirement Refinement**: Workshops serve as opportunities to flesh out and validate business requirements.  
+- **Avoid Isolation**: Models should not be designed solely by technical teams without business input.  
+
+Collaboration is **critical**—dimensional models succeed only when they are co-created with business stakeholders who understand the processes, goals, and decision-making needs.  
+
+## Four-Step Dimensional Design Process
+### 1. **Select the Business Process**
+- Identify the **core business activity** to model (e.g., sales, inventory, customer service).  
+- Focus on processes that generate measurable events and are critical to decision-making.  
+- Ensures the model aligns with **real business priorities**.  
+
+### 2. **Declare the Grain**
+- Define the **level of detail** for each row in the fact table.  
+- Examples:  
+  - One row per product sold in a transaction.  
+  - One row per daily inventory snapshot.  
+- Consistency in grain prevents double-counting and ensures clarity.  
+
+### 3. **Identify the Dimensions**
+- Determine the **descriptive context** (the “who, what, where, when, how, why”).  
+- Examples: Product, Customer, Date, Store, Promotion.  
+- Dimensions provide the **labels, filters, and groupings** for analysis.  
+
+### 4. **Identify the Facts**
+- Select the **measurable numeric values** (e.g., sales dollars, units sold, profit).  
+- Facts should be **additive or semi-additive** to support aggregation.  
+- Ensure facts are consistent with the declared grain.  
+
+This process ensures dimensional models are **business-driven, consistent, and usable**. By grounding design in both **business needs** and **data realities**, organizations create models that deliver **understandability and performance**.
+
