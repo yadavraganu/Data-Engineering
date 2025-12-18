@@ -1588,6 +1588,44 @@ WHERE
 ```
 
 # [1527. Patients With a Condition](https://leetcode.com/problems/patients-with-a-condition/)
+```
+Table: Patients
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| patient_id   | int     |
+| patient_name | varchar |
+| conditions   | varchar |
++--------------+---------+
+patient_id is the primary key (column with unique values) for this table.
+'conditions' contains 0 or more code separated by spaces. 
+This table contains information of the patients in the hospital.
+ 
+Write a solution to find the patient_id, patient_name, and conditions of the patients who have Type I Diabetes. Type I Diabetes always starts with DIAB1 prefix.
+Return the result table in any order.
+The result format is in the following example.
+Example 1:
+
+Input: 
+Patients table:
++------------+--------------+--------------+
+| patient_id | patient_name | conditions   |
++------------+--------------+--------------+
+| 1          | Daniel       | YFEV COUGH   |
+| 2          | Alice        |              |
+| 3          | Bob          | DIAB100 MYOP |
+| 4          | George       | ACNE DIAB100 |
+| 5          | Alain        | DIAB201      |
++------------+--------------+--------------+
+Output: 
++------------+--------------+--------------+
+| patient_id | patient_name | conditions   |
++------------+--------------+--------------+
+| 3          | Bob          | DIAB100 MYOP |
+| 4          | George       | ACNE DIAB100 | 
++------------+--------------+--------------+
+Explanation: Bob and George both have a condition that starts with DIAB1.
+```
 ```sql
 SELECT *
 FROM PATIENTS
@@ -1597,6 +1635,53 @@ WHERE
 ```
 
 # [1543. Fix Product Name Format](https://leetcode.com/problems/fix-product-name-format/)
+```
+Table: Sales
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| sale_id      | int     |
+| product_name | varchar |
+| sale_date    | date    |
++--------------+---------+
+sale_id is the column with unique values for this table.
+Each row of this table contains the product name and the date it was sold.
+Since table Sales was filled manually in the year 2000, product_name may contain leading and/or trailing white spaces, also they are case-insensitive.
+
+Write a solution to report
+- product_name in lowercase without leading or trailing white spaces.
+- sale_date in the format ('YYYY-MM').
+- total the number of times the product was sold in this month.
+Return the result table ordered by product_name in ascending order. In case of a tie, order it by sale_date in ascending order.
+The result format is in the following example.
+Example 1:
+
+Input: 
+Sales table:
++---------+--------------+------------+
+| sale_id | product_name | sale_date  |
++---------+--------------+------------+
+| 1       | LCPHONE      | 2000-01-16 |
+| 2       | LCPhone      | 2000-01-17 |
+| 3       | LcPhOnE      | 2000-02-18 |
+| 4       | LCKeyCHAiN   | 2000-02-19 |
+| 5       | LCKeyChain   | 2000-02-28 |
+| 6       | Matryoshka   | 2000-03-31 |
++---------+--------------+------------+
+Output: 
++--------------+-----------+-------+
+| product_name | sale_date | total |
++--------------+-----------+-------+
+| lckeychain   | 2000-02   | 2     |
+| lcphone      | 2000-01   | 2     |
+| lcphone      | 2000-02   | 1     |
+| matryoshka   | 2000-03   | 1     |
++--------------+-----------+-------+
+Explanation: 
+In January, 2 LcPhones were sold. Please note that the product names are not case sensitive and may contain spaces.
+In February, 2 LCKeychains and 1 LCPhone were sold.
+In March, one matryoshka was sold.
+```
 ```sql
 WITH
     T AS (
