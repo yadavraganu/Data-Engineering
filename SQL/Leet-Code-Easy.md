@@ -404,15 +404,67 @@ WHERE PRICE = (
 ```
 
 # [1083. Sales Analysis II](https://leetcode.com/problems/sales-analysis-ii/)
+```
+Table: Product
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
+| unit_price   | int     |
++--------------+---------+
+product_id is the primary key of this table.
+Table: Sales
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| seller_id   | int     |
+| product_id  | int     |
+| buyer_id    | int     |
+| sale_date   | date    |
+| quantity    | int     |
+| price       | int     |
++------ ------+---------+
+This table has no primary key, it can have repeated rows.
+product_id is a foreign key to Product table.
+
+Write an SQL query that reports the buyers who have bought S8 but not iPhone. Note that S8 and iPhone are products present in the Product table.
+
+The query result format is in the following example:
+Product table:
++------------+--------------+------------+
+| product_id | product_name | unit_price |
++------------+--------------+------------+
+| 1          | S8           | 1000       |
+| 2          | G4           | 800        |
+| 3          | iPhone       | 1400       |
++------------+--------------+------------+
+Sales table:
++-----------+------------+----------+------------+----------+-------+
+| seller_id | product_id | buyer_id | sale_date  | quantity | price |
++-----------+------------+----------+------------+----------+-------+
+| 1         | 1          | 1        | 2019-01-21 | 2        | 2000  |
+| 1         | 2          | 2        | 2019-02-17 | 1        | 800   |
+| 2         | 1          | 3        | 2019-06-02 | 1        | 800   |
+| 3         | 3          | 3        | 2019-05-13 | 2        | 2800  |
++-----------+------------+----------+------------+----------+-------+
+Result table:
++-------------+
+| buyer_id    |
++-------------+
+| 1           |
++-------------+
+The buyer with id 1 bought an S8 but didn't buy an iPhone. The buyer with id 3 bought both.
+```
 ```sql
-SELECT SALES.BUYER_ID
-FROM SALES
-INNER JOIN PRODUCT
-  USING (PRODUCT_ID)
-GROUP BY 1
-HAVING
-  SUM(PRODUCT.PRODUCT_NAME = 's8') > 0
-  AND SUM(PRODUCT.PRODUCT_NAME = 'iphone') = 0;
+SELECT S.BUYER_ID
+FROM SALES AS S
+INNER JOIN PRODUCT AS P
+    ON S.PRODUCT_ID = P.PRODUCT_ID
+GROUP BY S.BUYER_ID
+HAVING 
+    SUM(CASE WHEN P.PRODUCT_NAME = 'S8' THEN 1 ELSE 0 END) > 0
+    AND SUM(CASE WHEN P.PRODUCT_NAME = 'iPhone' THEN 1 ELSE 0 END) = 0;
 ```
 
 # [1084. Sales Analysis III](https://leetcode.com/problems/sales-analysis-iii/)
@@ -483,6 +535,51 @@ HAVING
 ```
 
 # [1113. Reported Posts](https://leetcode.com/problems/reported-posts/)
+```
+Table: Actions
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| user_id       | int     |
+| post_id       | int     |
+| action_date   | date    |
+| action        | enum    |
+| extra         | varchar |
++---------------+---------+
+There is no primary key for this table, it may have duplicate rows.
+The action column is an ENUM type of ('view', 'like', 'reaction', 'comment', 'report', 'share').
+The extra column has optional information about the action such as a reason for report or a type of reaction. 
+
+Write an SQL query that reports the number of posts reported yesterday for each report reason. Assume today is 2019-07-05.
+The query result format is in the following example:
+
+Actions table:
++---------+---------+-------------+--------+--------+
+| user_id | post_id | action_date | action | extra  |
++---------+---------+-------------+--------+--------+
+| 1       | 1       | 2019-07-01  | view   | null   |
+| 1       | 1       | 2019-07-01  | like   | null   |
+| 1       | 1       | 2019-07-01  | share  | null   |
+| 2       | 4       | 2019-07-04  | view   | null   |
+| 2       | 4       | 2019-07-04  | report | spam   |
+| 3       | 4       | 2019-07-04  | view   | null   |
+| 3       | 4       | 2019-07-04  | report | spam   |
+| 4       | 3       | 2019-07-02  | view   | null   |
+| 4       | 3       | 2019-07-02  | report | spam   |
+| 5       | 2       | 2019-07-04  | view   | null   |
+| 5       | 2       | 2019-07-04  | report | racism |
+| 5       | 5       | 2019-07-04  | view   | null   |
+| 5       | 5       | 2019-07-04  | report | racism |
++---------+---------+-------------+--------+--------+
+Result table:
++---------------+--------------+
+| report_reason | report_count |
++---------------+--------------+
+| spam          | 1            |
+| racism        | 2            |
++---------------+--------------+
+Note that we only care about report reasons with non zero number of reports.
+```
 ```sql
 SELECT
   EXTRA AS REPORT_REASON,
@@ -495,6 +592,53 @@ GROUP BY 1;
 ```
 
 # [1141. User Activity for the Past 30 Days I](https://leetcode.com/problems/user-activity-for-the-past-30-days-i/)
+```
+Table: Activity
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| user_id       | int     |
+| session_id    | int     |
+| activity_date | date    |
+| activity_type | enum    |
++---------------+---------+
+This table may have duplicate rows.
+The activity_type column is an ENUM (category) of type ('open_session', 'end_session', 'scroll_down', 'send_message').
+The table shows the user activities for a social media website. 
+Note that each session belongs to exactly one user.
+
+Write a solution to find the daily active user count for a period of 30 days ending 2019-07-27 inclusively. A user was active on someday if they made at least one activity on that day.
+Return the result table in any order.
+The result format is in the following example.
+Note: Any activity from ('open_session', 'end_session', 'scroll_down', 'send_message') will be considered valid activity for a user to be considered active on a day.
+Example 1:
+
+Input: 
+Activity table:
++---------+------------+---------------+---------------+
+| user_id | session_id | activity_date | activity_type |
++---------+------------+---------------+---------------+
+| 1       | 1          | 2019-07-20    | open_session  |
+| 1       | 1          | 2019-07-20    | scroll_down   |
+| 1       | 1          | 2019-07-20    | end_session   |
+| 2       | 4          | 2019-07-20    | open_session  |
+| 2       | 4          | 2019-07-21    | send_message  |
+| 2       | 4          | 2019-07-21    | end_session   |
+| 3       | 2          | 2019-07-21    | open_session  |
+| 3       | 2          | 2019-07-21    | send_message  |
+| 3       | 2          | 2019-07-21    | end_session   |
+| 4       | 3          | 2019-06-25    | open_session  |
+| 4       | 3          | 2019-06-25    | end_session   |
++---------+------------+---------------+---------------+
+Output: 
++------------+--------------+ 
+| day        | active_users |
++------------+--------------+ 
+| 2019-07-20 | 2            |
+| 2019-07-21 | 2            |
++------------+--------------+ 
+Explanation: Note that we do not care about days with zero active users.
+```
 ```sql
 SELECT
     ACTIVITY_DATE AS DAY,
