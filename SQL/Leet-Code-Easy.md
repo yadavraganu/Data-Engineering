@@ -763,6 +763,42 @@ ORDER BY ID ASC;
 ```
 
 # [1173. Immediate Food Delivery I](https://leetcode.com/problems/immediate-food-delivery-i/)
+```
+Table: Delivery
++-----------------------------+---------+
+| Column Name                 | Type    |
++-----------------------------+---------+
+| delivery_id                 | int     |
+| customer_id                 | int     |
+| order_date                  | date    |
+| customer_pref_delivery_date | date    |
++-----------------------------+---------+
+delivery_id is the primary key of this table.
+The table holds information about food delivery to customers that make orders at some date and specify a preferred delivery date (on the same order date or after it).
+If the preferred delivery date of the customer is the same as the order date then the order is called immediate otherwise it's called scheduled.
+
+Write an SQL query to find the percentage of immediate orders in the table, rounded to 2 decimal places.
+The query result format is in the following example:
+
+Delivery table:
++-------------+-------------+------------+-----------------------------+
+| delivery_id | customer_id | order_date | customer_pref_delivery_date |
++-------------+-------------+------------+-----------------------------+
+| 1           | 1           | 2019-08-01 | 2019-08-02                  |
+| 2           | 5           | 2019-08-02 | 2019-08-02                  |
+| 3           | 1           | 2019-08-11 | 2019-08-11                  |
+| 4           | 3           | 2019-08-24 | 2019-08-26                  |
+| 5           | 4           | 2019-08-21 | 2019-08-22                  |
+| 6           | 2           | 2019-08-11 | 2019-08-13                  |
++-------------+-------------+------------+-----------------------------+
+Result table:
++----------------------+
+| immediate_percentage |
++----------------------+
+| 33.33                |
++----------------------+
+The orders with delivery id 2 and 3 are immediate while the others are scheduled.
+```
 ```sql
 SELECT 
   CAST(
@@ -775,6 +811,47 @@ FROM
 ```
 
 # [1179. Reformat Department Table](https://leetcode.com/problems/reformat-department-table/)
+```
+Table: Department
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| revenue     | int     |
+| month       | varchar |
++-------------+---------+
+In SQL,(id, month) is the primary key of this table.
+The table has information about the revenue of each department per month.
+The month has values in ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].
+ 
+Reformat the table such that there is a department id column and a revenue column for each month.
+Return the result table in any order.
+The result format is in the following example.
+
+Example 1:
+
+Input: 
+Department table:
++------+---------+-------+
+| id   | revenue | month |
++------+---------+-------+
+| 1    | 8000    | Jan   |
+| 2    | 9000    | Jan   |
+| 3    | 10000   | Feb   |
+| 1    | 7000    | Feb   |
+| 1    | 6000    | Mar   |
++------+---------+-------+
+Output: 
++------+-------------+-------------+-------------+-----+-------------+
+| id   | Jan_Revenue | Feb_Revenue | Mar_Revenue | ... | Dec_Revenue |
++------+-------------+-------------+-------------+-----+-------------+
+| 1    | 8000        | 7000        | 6000        | ... | null        |
+| 2    | 9000        | null        | null        | ... | null        |
+| 3    | null        | 10000       | null        | ... | null        |
++------+-------------+-------------+-------------+-----+-------------+
+Explanation: The revenue from Apr to Dec is null.
+Note that the result table has 13 columns (1 for the department id + 12 for the months).
+```
 ```sql
 SELECT
     ID,
@@ -791,6 +868,7 @@ SELECT
     SUM(CASE WHEN MONTH = 'Nov' THEN REVENUE ELSE NULL END) AS NOV_REVENUE,
     SUM(CASE WHEN MONTH = 'Dec' THEN REVENUE ELSE NULL END) AS DEC_REVENUE
 FROM DEPARTMENT
+GROUP BY ID
 --------------------------------
 SELECT
     ID,
