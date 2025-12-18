@@ -1110,6 +1110,102 @@ GROUP BY
 ```
 
 # [1280. Students and Examinations](https://leetcode.com/problems/students-and-examinations/)
+```
+Table: Students
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| student_id    | int     |
+| student_name  | varchar |
++---------------+---------+
+student_id is the primary key (column with unique values) for this table.
+Each row of this table contains the ID and the name of one student in the school.
+ 
+Table: Subjects
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| subject_name | varchar |
++--------------+---------+
+subject_name is the primary key (column with unique values) for this table.
+Each row of this table contains the name of one subject in the school.
+
+Table: Examinations
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| student_id   | int     |
+| subject_name | varchar |
++--------------+---------+
+There is no primary key (column with unique values) for this table. It may contain duplicates.
+Each student from the Students table takes every course from the Subjects table.
+Each row of this table indicates that a student with ID student_id attended the exam of subject_name.
+ 
+
+Write a solution to find the number of times each student attended each exam.
+Return the result table ordered by student_id and subject_name.
+The result format is in the following example.
+
+Example 1:
+
+Input: 
+Students table:
++------------+--------------+
+| student_id | student_name |
++------------+--------------+
+| 1          | Alice        |
+| 2          | Bob          |
+| 13         | John         |
+| 6          | Alex         |
++------------+--------------+
+Subjects table:
++--------------+
+| subject_name |
++--------------+
+| Math         |
+| Physics      |
+| Programming  |
++--------------+
+Examinations table:
++------------+--------------+
+| student_id | subject_name |
++------------+--------------+
+| 1          | Math         |
+| 1          | Physics      |
+| 1          | Programming  |
+| 2          | Programming  |
+| 1          | Physics      |
+| 1          | Math         |
+| 13         | Math         |
+| 13         | Programming  |
+| 13         | Physics      |
+| 2          | Math         |
+| 1          | Math         |
++------------+--------------+
+Output: 
++------------+--------------+--------------+----------------+
+| student_id | student_name | subject_name | attended_exams |
++------------+--------------+--------------+----------------+
+| 1          | Alice        | Math         | 3              |
+| 1          | Alice        | Physics      | 2              |
+| 1          | Alice        | Programming  | 1              |
+| 2          | Bob          | Math         | 1              |
+| 2          | Bob          | Physics      | 0              |
+| 2          | Bob          | Programming  | 1              |
+| 6          | Alex         | Math         | 0              |
+| 6          | Alex         | Physics      | 0              |
+| 6          | Alex         | Programming  | 0              |
+| 13         | John         | Math         | 1              |
+| 13         | John         | Physics      | 1              |
+| 13         | John         | Programming  | 1              |
++------------+--------------+--------------+----------------+
+Explanation: 
+The result table should contain all students and all subjects.
+Alice attended the Math exam 3 times, the Physics exam 2 times, and the Programming exam 1 time.
+Bob attended the Math exam 1 time, the Programming exam 1 time, and did not attend the Physics exam.
+Alex did not attend any exams.
+John attended the Math exam 1 time, the Physics exam 1 time, and the Programming exam 1 time.
+```
 ```sql
 SELECT 
   STUDENTS.STUDENT_ID, 
@@ -1130,6 +1226,90 @@ ORDER BY
 ```
 
 # [1294. Weather Type in Each Country](https://leetcode.com/problems/weather-type-in-each-country/)
+```
+Table: Countries
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| country_id    | int     |
+| country_name  | varchar |
++---------------+---------+
+country_id is the primary key (column with unique values) for this table.
+Each row of this table contains the ID and the name of one country.
+
+Table: Weather
++---------------+------+
+| Column Name   | Type |
++---------------+------+
+| country_id    | int  |
+| weather_state | int  |
+| day           | date |
++---------------+------+
+(country_id, day) is the primary key (combination of columns with unique values) for this table.
+Each row of this table indicates the weather state in a country for one day.
+
+Write a solution to find the type of weather in each country for November 2019.
+The type of weather is:
+- Cold if the average weather_state is less than or equal 15,
+- Hot if the average weather_state is greater than or equal to 25, and
+- Warm otherwise.
+Return the result table in any order.
+The result format is in the following example.
+
+Example 1:
+
+Input: 
+Countries table:
++------------+--------------+
+| country_id | country_name |
++------------+--------------+
+| 2          | USA          |
+| 3          | Australia    |
+| 7          | Peru         |
+| 5          | China        |
+| 8          | Morocco      |
+| 9          | Spain        |
++------------+--------------+
+Weather table:
++------------+---------------+------------+
+| country_id | weather_state | day        |
++------------+---------------+------------+
+| 2          | 15            | 2019-11-01 |
+| 2          | 12            | 2019-10-28 |
+| 2          | 12            | 2019-10-27 |
+| 3          | -2            | 2019-11-10 |
+| 3          | 0             | 2019-11-11 |
+| 3          | 3             | 2019-11-12 |
+| 5          | 16            | 2019-11-07 |
+| 5          | 18            | 2019-11-09 |
+| 5          | 21            | 2019-11-23 |
+| 7          | 25            | 2019-11-28 |
+| 7          | 22            | 2019-12-01 |
+| 7          | 20            | 2019-12-02 |
+| 8          | 25            | 2019-11-05 |
+| 8          | 27            | 2019-11-15 |
+| 8          | 31            | 2019-11-25 |
+| 9          | 7             | 2019-10-23 |
+| 9          | 3             | 2019-12-23 |
++------------+---------------+------------+
+Output: 
++--------------+--------------+
+| country_name | weather_type |
++--------------+--------------+
+| USA          | Cold         |
+| Australia    | Cold         |
+| Peru         | Hot          |
+| Morocco      | Hot          |
+| China        | Warm         |
++--------------+--------------+
+Explanation: 
+Average weather_state in USA in November is (15) / 1 = 15 so weather type is Cold.
+Average weather_state in Austraila in November is (-2 + 0 + 3) / 3 = 0.333 so weather type is Cold.
+Average weather_state in Peru in November is (25) / 1 = 25 so the weather type is Hot.
+Average weather_state in China in November is (16 + 18 + 21) / 3 = 18.333 so weather type is Warm.
+Average weather_state in Morocco in November is (25 + 27 + 31) / 3 = 27.667 so weather type is Hot.
+We know nothing about the average weather_state in Spain in November so we do not include it in the result
+```
 ```sql
 SELECT
   COUNTRY_NAME,
@@ -1148,6 +1328,47 @@ GROUP BY 1;
 ```
 
 # [1303. Find the Team Size](https://leetcode.com/problems/find-the-team-size/)
+```
+Table: Employee
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| employee_id   | int     |
+| team_id       | int     |
++---------------+---------+
+employee_id is the primary key for this table.
+Each row of this table contains the ID of each employee and their respective team.
+
+Write an SQL query to find the team size of each of the employees.
+Return result table in any order.
+
+The query result format is in the following example:
+Employee Table:
++-------------+------------+
+| employee_id | team_id    |
++-------------+------------+
+|     1       |     8      |
+|     2       |     8      |
+|     3       |     8      |
+|     4       |     7      |
+|     5       |     9      |
+|     6       |     9      |
++-------------+------------+
+Result table:
++-------------+------------+
+| employee_id | team_size  |
++-------------+------------+
+|     1       |     3      |
+|     2       |     3      |
+|     3       |     3      |
+|     4       |     1      |
+|     5       |     2      |
+|     6       |     2      |
++-------------+------------+
+Employees with Id 1,2,3 are part of a team with team_id = 8.
+Employees with Id 4 is part of a team with team_id = 7.
+Employees with Id 5,6 are part of a team with team_id = 9.
+```
 ```sql
 SELECT
   EMPLOYEE_ID,
@@ -1156,6 +1377,58 @@ FROM EMPLOYEE;
 ```
 
 # [1322. Ads Performance](https://leetcode.com/problems/ads-performance/)
+```
+Table: Ads
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| ad_id         | int     |
+| user_id       | int     |
+| action        | enum    |
++---------------+---------+
+(ad_id, user_id) is the primary key for this table.
+Each row of this table contains the ID of an Ad, the ID of a user and the action taken by this user regarding this Ad.
+The action column is an ENUM type of ('Clicked', 'Viewed', 'Ignored').
+ 
+A company is running Ads and wants to calculate the performance of each Ad.
+
+Performance of the Ad is measured using Click-Through Rate (CTR) where:
+![img.png](img.png)
+Write an SQL query to find the ctr of each Ad.
+Round ctr to 2 decimal points. Order the result table by ctr in descending order and by ad_id in ascending order in case of a tie.
+The query result format is in the following example:
+
+Ads table:
++-------+---------+---------+
+| ad_id | user_id | action  |
++-------+---------+---------+
+| 1     | 1       | Clicked |
+| 2     | 2       | Clicked |
+| 3     | 3       | Viewed  |
+| 5     | 5       | Ignored |
+| 1     | 7       | Ignored |
+| 2     | 7       | Viewed  |
+| 3     | 5       | Clicked |
+| 1     | 4       | Viewed  |
+| 2     | 11      | Viewed  |
+| 1     | 2       | Clicked |
++-------+---------+---------+
+Result table:
++-------+-------+
+| ad_id | ctr   |
++-------+-------+
+| 1     | 66.67 |
+| 3     | 50.00 |
+| 2     | 33.33 |
+| 5     | 0.00  |
++-------+-------+
+for ad_id = 1, ctr = (2/(2+1)) * 100 = 66.67
+for ad_id = 2, ctr = (1/(1+2)) * 100 = 33.33
+for ad_id = 3, ctr = (1/(1+1)) * 100 = 50.00
+for ad_id = 5, ctr = 0.00, Note that ad_id = 5 has no clicks or views.
+Note that we don't care about Ignored Ads.
+Result table is ordered by the ctr. in case of a tie we order them by ad_id
+```
 ```sql
 SELECT
     AD_ID,
