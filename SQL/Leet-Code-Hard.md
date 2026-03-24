@@ -532,7 +532,7 @@ ORDER BY S.N;
 ```
 
 # [1369. Get the Second Most Recent Activity](https://leetcode.com/problems/get-the-second-most-recent-activity/)
-
+```
 Table: UserActivity
 +---------------+---------+
 | Column Name   | Type    |
@@ -571,7 +571,7 @@ Result table:
 
 The most recent activity of Alice is Travel from 2020-02-24 to 2020-02-28, before that she was dancing from 2020-02-21 to 2020-02-23.
 Bob only has one record, we just take that one.
-
+```
 ```sql
 SELECT
     USERNAME,
