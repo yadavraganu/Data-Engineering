@@ -83,3 +83,17 @@ Finally, a module object is created and inserted into sys.modules, making it ava
 
 ### Extensibility:
 The import system is extensible, allowing developers to register custom finders and loaders to handle specialized module loading scenarios, such as importing modules from databases, network locations, or other non-standard sources.
+
+# Python Code Execution
+Python code is executed through a sequence of steps involving a compiler and an interpreter (specifically the Python Virtual Machine), which bridge the gap between human-readable code and machine-executable instructions. The standard implementation is called CPython. [1, 2]  
+The process generally follows these stages: 
+
+1. __Source Code Creation:__ A programmer writes human-readable code in a text editor or IDE and saves it in a file with a  extension. 
+2. __Compilation to Bytecode:__ When the script is run, the Python interpreter's compiler first translates the source code into an intermediate, low-level format called bytecode. During this stage, Python also performs lexical and syntax analysis to check for errors. This bytecode is a platform-independent set of instructions. 
+3. __Caching:__ To speed up subsequent executions, the bytecode is often saved in a file with a  extension within a  directory. If the source code hasn't changed, Python loads the cached  file the next time, skipping the compilation step. 
+4. __Execution by the Python Virtual Machine (PVM):__ The bytecode is then fed to the  Python Virtual Machine (PVM) 
+, which is the runtime engine of Python. The PVM acts as an interpreter, reading and executing the bytecode instructions one by one. 
+5. __Machine Code Generation:__ Inside the PVM, each bytecode instruction is translated into specific machine-level code (binary 0s and 1s) that the computer's CPU can directly understand and execute. 
+6. __Output:__ The CPU executes the machine code to perform the specified tasks and produce the program's output. [1, 2, 3, 4, 5, 6]  
+
+This multi-step approach is why Python is often referred to as an "interpreted language," even though it involves an initial compilation step to bytecode. The use of bytecode and the PVM ensures Python's high portability across different operating systems and hardware. [1, 5, 6]  
