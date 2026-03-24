@@ -532,42 +532,45 @@ ORDER BY S.N;
 ```
 
 # [1369. Get the Second Most Recent Activity](https://leetcode.com/problems/get-the-second-most-recent-activity/)
-#### Schema
 
 Table: UserActivity
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| username      | varchar |
+| activity      | varchar |
+| startDate     | Date    |
+| endDate       | Date    |
++---------------+---------+
+This table does not contain primary key.
+This table contain information about the activity performed of each user in a period of time.
+A person with username performed a activity from startDate to endDate.
 
-| Column Name  | Type    |
-|--------------|---------|
-| username     | varchar |
-| activity     | varchar |
-| startDate    | date    |
-| endDate      | date    |
+Write an SQL query to show the second most recent activity of each user.Programming
+If the user only has one activity, return that one. 
+A user can't perform more than one activity at the same time. Return the result table in any order.
+The query result format is in the following example:
 
-Primary key: (username, startDate)
+UserActivity table:
++------------+--------------+-------------+-------------+
+| username   | activity     | startDate   | endDate     |
++------------+--------------+-------------+-------------+
+| Alice      | Travel       | 2020-02-12  | 2020-02-20  |
+| Alice      | Dancing      | 2020-02-21  | 2020-02-23  |
+| Alice      | Travel       | 2020-02-24  | 2020-02-28  |
+| Bob        | Travel       | 2020-02-11  | 2020-02-18  |
++------------+--------------+-------------+-------------+
 
-#### Description
+Result table:
++------------+--------------+-------------+-------------+
+| username   | activity     | startDate   | endDate     |
++------------+--------------+-------------+-------------+
+| Alice      | Dancing      | 2020-02-21  | 2020-02-23  |
+| Bob        | Travel       | 2020-02-11  | 2020-02-18  |
++------------+--------------+-------------+-------------+
 
-Write an SQL query to find the second most recent activity of each user. If there is only one activity for a user, return that activity.
-
-#### Sample Input
-
-| username | activity    | startDate  | endDate    |
-|----------|-------------|------------|------------|
-| Alice    | Travel      | 2020-02-12 | 2020-02-20 |
-| Alice    | Dancing     | 2020-02-21 | 2020-02-23 |
-| Bob      | Travel      | 2020-02-12 | 2020-02-20 |
-
-#### Sample Output
-
-| username | activity | startDate  | endDate    |
-|----------|----------|------------|------------|
-| Alice    | Travel   | 2020-02-12 | 2020-02-20 |
-| Bob      | Travel   | 2020-02-12 | 2020-02-20 |
-
-**Explanation:**  
-- Alice has two activities, the second most recent is "Travel".
-- Bob only has one activity, so it is returned.
-
+The most recent activity of Alice is Travel from 2020-02-24 to 2020-02-28, before that she was dancing from 2020-02-21 to 2020-02-23.
+Bob only has one record, we just take that one.
 
 ```sql
 SELECT
