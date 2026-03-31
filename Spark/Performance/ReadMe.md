@@ -286,8 +286,16 @@ consolidated_df.write \
     .mode("overwrite") \
     .save(output_path)
 ```
-
 Your subsequent analytical jobs should read from this `output_path`, not the original path with small files.
+
+### 4\. spark.sql.files.openCostInBytes
+
+The Spark configuration property spark.sql.files.openCostInBytes is a hint that helps Spark determine how to group multiple small files into fewer partitions for more efficient processing. Its default value is 4 MB.  
+The "cost" here refers to the estimated CPU time and overhead required to open and begin reading a file, measured in the number of bytes that could be scanned in the same amount of time.
+
+You can adjust this value to optimize performance based on your data characteristics. 
+- For a large number of small files: Increase  to encourage Spark to group more small files into a single, larger partition. This reduces the total number of tasks and the associated overhead.
+- For large files that need maximum parallelism: The default value of 4MB often works well. Decreasing it might force Spark to split large files into smaller chunks more aggressively (though this is less common)
 
 ### Other Mitigation Techniques
 
