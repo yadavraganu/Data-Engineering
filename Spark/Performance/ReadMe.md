@@ -406,9 +406,62 @@ Common GC algorithms:
 
 - **Increase executor memory** or reduce cores per executor.
 - Use `persist(StorageLevel.MEMORY_AND_DISK)` instead of `.cache()` to avoid memory-only storage.
-- **Repartition** large datasets to balance load.
-- **Avoid wide transformations** that cause large shuffles.
-- **Use Spark SQL**: Catalyst optimizer can reduce memory usage.
-- **Monitor and tune GC settings**:
+
+# Understanding Data Skew in Spark and Databricks
+Data skew occurs when data is not distributed evenly across the partitions of a cluster. In distributed systems like Spark, operations like joins and aggregations require shuffling data based on a key. If certain keys are much more frequent than others, the partitions processing those keys will have significantly more data than other partitions. 
+
+Because a stage in Spark is only as fast as its slowest task (often referred to as a "straggler"), data skew severely degrades query performance. It can also lead to Out Of Memory (OOM) errors or heavy disk spilling on the specific executors handling the skewed keys.
+
+### How to Identify Data Skew
+1. **The Spark UI**: 
+   - Navigate to the **Stages** tab in the Spark UI and look at the summary metrics for the tasks within a specific stage.
+   - Compare the **Median** task duration with the **Max** task duration. If the median task takes a few seconds but the max task takes 30 minutes, you are dealing with skew.
+   - Look at the **Shuffle Read Size / Records** column. If a few tasks are reading gigabytes of data while the rest read only a few megabytes, the data is heavily skewed.
+2. **Spill Metrics**: Look for "Spill (Memory)" or "Spill (Disk)" in the task metrics. This indicates that the skewed partition exceeded the allocated memory for that task and had to write temporary data to the local disk, slowing down processing dramatically.
+
+### How to Fix Data Skew
+
+Here are the primary strategies to handle skew, depending on your Spark version and the nature of the data:
+
+#### 1. Adaptive Query Execution (AQE) Skew Join (Spark 3.x+)
+Spark 3.0+ introduced AQE, which can automatically detect skew during shuffle joins and split the skewed partitions into smaller sub-partitions. This should be your first line of defense.
+```python
+# Enable Adaptive Query Execution and Skew Join handling
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
+```
+#### 2. Broadcast Join (For Skewed Table joined with a Small Table)
+If you are joining a massive, skewed table with a smaller table that can comfortably fit in the memory of an executor, broadcasting the smaller table avoids a shuffle entirely. Since there is no shuffle, the skew on the large table won't cause straggler tasks.
+```python
+from pyspark.sql.functions import broadcast
+
+# Assuming small_df fits in memory (< several GBs depending on cluster sizing)
+result_df = large_df.join(broadcast(small_df), "join_key")
+```
+#### 3. Salting the Key (For Large-on-Large Joins)
+If both tables are too large to broadcast and AQE cannot resolve the skew, you can manually "salt" the join key. This involves appending a random integer to the join key on the skewed table to force Spark to redistribute the data across more partitions. You then replicate the rows in the non-skewed table to match the random integers.
+```python
+from pyspark.sql.functions import col, concat, lit, rand, floor, explode, array
+
+salt_bins = 10  # Number of ways to split the skewed key
+
+# 1. Add a random salt to the skewed DataFrame
+salted_large_df = large_df.withColumn(
+    "salted_key",
+    concat(col("join_key"), lit("_"), floor(rand() * salt_bins).cast("string"))
+)
+
+# 2. Replicate rows in the dimension/smaller DataFrame to match the salts
+salts = [lit(str(i)) for i in range(salt_bins)]
+
+replicated_df = small_df.withColumn("salt", explode(array(salts))) \
+                        .withColumn("salted_key", concat(col("join_key"), lit("_"), col("salt")))
+
+# 3. Perform the join on the salted key
+result_df = salted_large_df.join(replicated_df, "salted_key") \
+                           .drop("salted_key", "salt")
+```
+#### 4. Isolating and Filtering Nulls
+Skew is frequently caused by null values or default placeholder strings (like `"UNKNOWN"` or `"-1"`) accumulating on a single partition. If these values are not needed for the join operation, filter them out before applying the join.
   - Choose appropriate GC algorithm (e.g., G1GC).
   - Tune JVM flags if needed.
