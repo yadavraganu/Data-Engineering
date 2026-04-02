@@ -88,3 +88,60 @@ class Car:
     def honk():
         print("Beep!")
 ```
+# Python Properties
+Python's `@property` decorator is used to define methods in a class that can be accessed like regular attributes. This provides a clean interface while maintaining control over data access, validation, and deletion.
+
+### Core Concepts
+- **Getter (`@property`)**: Defines a method that behaves like a read-only attribute. It runs when you read the property.
+- **Setter (`@<property_name>.setter`)**: Defines a method that runs when you assign a value to the property. It is best used for data validation.
+- **Deleter (`@<property_name>.deleter`)**: Defines a method that runs when the attribute is deleted using the `del` keyword. Great for cleanup or resetting data safely.
+
+### Code Example
+```python
+class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self._salary = salary  # The underscore indicates this is a "protected" variable
+
+    # 1. GETTER
+    @property
+    def salary(self):
+        """Triggers when you do `print(emp.salary)`"""
+        return f"${self._salary:,.2f}"
+
+    # 2. SETTER
+    @salary.setter
+    def salary(self, value):
+        """Triggers when you do `emp.salary = value`"""
+        if value < 0:
+            raise ValueError("Salary cannot be negative!")
+        self._salary = value
+
+    # 3. DELETER
+    @salary.deleter
+    def salary(self):
+        """Triggers when you do `del emp.salary`"""
+        print(f"Resetting salary record for {self.name}...")
+        self._salary = 0
+
+
+# --- Usage ---
+emp = Employee("Bob", 50000)
+
+# Reading the property (Triggers the Getter)
+print(emp.salary)  
+# Output: $50,000.00
+
+# Modifying the property (Triggers the Setter)
+emp.salary = 65000
+print(emp.salary)  
+# Output: $65,000.00
+
+# Deleting the property (Triggers the Deleter)
+del emp.salary     
+# Output: Resetting salary record for Bob...
+
+# Verifying the deleted/reset state
+print(emp.salary)  
+# Output: $0.00
+```
