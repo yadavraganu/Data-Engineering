@@ -473,3 +473,50 @@ result_df = salted_large_df.join(replicated_df, "salted_key") \
 Skew is frequently caused by null values or default placeholder strings (like `"UNKNOWN"` or `"-1"`) accumulating on a single partition. If these values are not needed for the join operation, filter them out before applying the join.
   - Choose appropriate GC algorithm (e.g., G1GC).
   - Tune JVM flags if needed.
+
+# Disk Cache
+
+The Databricks **Disk Cache** (formerly known as the *Delta cache* or *DBIO cache*) is a performance optimization feature that accelerates data reads by storing copies of remote Parquet data files on a worker node's local storage (such as fast local SSDs). 
+
+Whenever a file is fetched from a remote location (like AWS S3), it is automatically cached. Subsequent reads of the same data are executed locally, which dramatically improves reading speeds. This is a proprietary Databricks feature and handles data consistency automatically, meaning it updates or invalidates itself as remote source files change without requiring manual intervention.
+
+#### **1. Key Characteristics**
+* **Automatic Operation:** Data is cached automatically on the first read if the feature is enabled.
+* **Compatibility:** Works for all Parquet data files, including Delta Lake tables.
+* **Consistency:** The cache is self-managed. It automatically detects when files are created, deleted, or modified. There is no need to manually clear or invalidate the cache when source data changes.
+* **Naming History:** It was previously referred to as the "Delta cache" and "DBIO cache." It was renamed to "disk cache" to avoid confusion with the open-source Delta Lake protocol.
+
+#### **2. Disk Cache vs. Apache Spark Cache**
+Databricks recommends using the automatic disk cache over standard Spark caching for most workloads. Here is how they compare:
+
+| Feature | Disk Cache | Apache Spark Cache |
+| :--- | :--- | :--- |
+| **Stored as** | Local files on a worker node's storage (SSD). | In-memory blocks (though depends on storage level). |
+| **Applied to** | Any Parquet table stored on cloud storage (e.g., S3). | Any DataFrame or RDD. |
+| **Triggered** | Automatically on the first read. | Manually (requires code changes like `.cache()`). |
+| **Evaluation** | Lazily. | Lazily. |
+| **Availability** | Enabled by default on specific node types. | Always available on any cluster. |
+| **Eviction** | Automatically via Least Recently Used (LRU) or on file change. | Automatically via LRU or manually using `.unpersist()`. |
+
+#### **3. Best Practices & Hardware Selection**
+* **Instance Types:** The best way to utilize the disk cache is to select worker instance types that come equipped with local SSD volumes. Databricks will automatically configure the disk cache on these machines.
+* **Space Allocation:** By default, the disk cache is configured to use up to **50% of the available space** on the worker node's local SSDs.
+* **Autoscaling Caution:** If cluster autoscaling is enabled and a worker node is decommissioned, any cache stored on that specific worker is lost, requiring Spark to read that data back from the remote source if needed later.
+
+#### **4. Configuration Commands**
+You can view, modify, and limit the disk cache behavior using Spark configurations:
+
+* **To check status:**
+  ```scala
+  spark.conf.get("spark.databricks.io.cache.enabled")
+  ```
+* **To enable/disable:**
+  ```scala
+  spark.conf.set("spark.databricks.io.cache.enabled", "[true | false]")
+  ```
+  *(Note: Disabling the cache does not delete existing cached data; it simply stops future queries from using or adding to the cache.)*
+
+* **Custom Disk & Compression Settings (set during cluster creation):**
+  * `spark.databricks.io.cache.maxDiskUsage`: Reserved disk space per node for cached data (in bytes).
+  * `spark.databricks.io.cache.maxMetaDataCache`: Reserved disk space per node for cached metadata.
+  * `spark.databricks.io.cache.compression.enabled`: Boolean determining if the cached data should be stored in a compressed format.
