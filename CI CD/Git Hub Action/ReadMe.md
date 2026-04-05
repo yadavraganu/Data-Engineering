@@ -120,3 +120,74 @@ jobs:
 * **Wildcards:** You can use patterns like `path: dist/**/*.js` to upload specific file types.
 * **Storage Management:** If an artifact is only needed for the workflow duration, use `retention-days: 1` or the `delete-artifact` action in your final job.
 * **Zip Efficiency:** For directories with thousands of small files, zip them manually before uploading to significantly increase upload speeds.
+
+# Job/Step Outputs
+Outputs are essentially the return values of your GitHub Actions. They allow you to capture data generated in one step or job and pass it along to subsequent steps or jobs in your workflow. 
+If you have stumbled upon older tutorials referencing `::set-output`, just know that it is heavily deprecated. Today, we use the `$GITHUB_OUTPUT` environment file. Let's break down how this works!
+## 1. Step Outputs (Sharing Data Within the Same Job)
+To pass information between steps in the **same job**, you save a key-value pair to the `$GITHUB_OUTPUT` file.
+### How to set it:
+Give your step a unique `id` and append your custom variable to `$GITHUB_OUTPUT`.
+```yaml
+- name: Generate a value
+  id: generator # Highly important! You need an ID to reference this step later.
+  run: |
+    echo "MY_VALUE=awesome-sauce" >> "$GITHUB_OUTPUT"
+```
+### How to use it:
+Access it in a later step within the same job using the `steps` context: `${{ steps.<step_id>.outputs.<key_name> }}`.
+```yaml
+- name: Consume the value
+  run: |
+    echo "The value generated was ${{ steps.generator.outputs.MY_VALUE }}"
+```
+## 2. Job Outputs (Sharing Data Between Different Jobs)
+By default, jobs run in entirely separate isolated environments on different runners. This means steps in `job2` cannot natively see what happened in `job1`. To solve this, you can expose that data as a **job output**.
+To pass information between jobs, you must follow this sequence:
+1. Set the output at the **step** level in the first job.
+2. Map that step output to a **job** level output.
+3. Use the `needs` context in the second job to pull it down.
+### Example Workflow:
+```yaml
+name: Job Outputs Demo
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # 2. Map the step output to the job output
+    outputs:
+      artifact_id: ${{ steps.create_build.outputs.build_id }}
+    steps:
+      - name: Create Build
+        id: create_build
+        # 1. Set the output at the step level
+        run: echo "build_id=45678" >> "$GITHUB_OUTPUT"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build # Required to wait for the first job and inherit its outputs
+    steps:
+      - name: Deploy Build
+        # 3. Pull the output using the needs context
+        run: |
+          echo "Deploying artifact with ID: ${{ needs.build.outputs.artifact_id }}"
+```
+## 3. Handling Multi-line Outputs
+If you've ever tried to shove multi-line text (like the contents of a file or a JSON payload) into `$GITHUB_OUTPUT` using standard `echo`, you probably received an error or truncated data. 
+To resolve this, you must use a unique delimiter (like `EOF`).
+### Example:
+```yaml
+- name: Generate Multi-line Output
+  id: multiline_step
+  run: |
+    {
+      echo "MY_TEXT<<EOF"
+      echo "Line 1 of the output"
+      echo "Line 2 of the output"
+      echo "EOF"
+    } >> "$GITHUB_OUTPUT"
+
+- name: Read Multi-line Output
+  run: |
+    echo "${{ steps.multiline_step.outputs.MY_TEXT }}"
+```
+Make sure your delimiter text (like `EOF`) doesn't accidentally appear inside the body of the text you are outputting, or the parsing will break!
