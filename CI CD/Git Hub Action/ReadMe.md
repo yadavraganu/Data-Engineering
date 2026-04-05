@@ -44,81 +44,79 @@
 
 An **Event** occurs (e.g., a code `push`). This triggers a **Workflow** (defined in a YAML file). The workflow then executes one or more **Jobs**. Each job runs on a dedicated **Runner** and consists of a sequence of **Steps**. These steps either run shell commands (`run`) or leverage pre-built, reusable **Actions** (`uses`).
 
-# What Are Artifacts?
-**Artifacts** in GitHub Actions are files or data generated during a workflow that you want to **persist**, **share between jobs**, or **download** after the workflow completes. Common use cases include:
-- Test results
-- Build outputs (e.g., binaries, logs)
-- Coverage reports
-- Deployment packages
-## Uploading Artifacts
-Use the official action: `actions/upload-artifact`
-### Example:
+# GitHub Actions Artifacts Guide
+**Artifacts** are the files generated during a workflow run (e.g., binaries, test reports) that allow you to **persist data** after a run finishes or **bridge the gap** between isolated jobs.
+## 1. Uploading Artifacts
+Use `actions/upload-artifact@v4` to move data from the runner to GitHub’s cloud storage.
+### Implementation
 ```yaml
-- name: Upload test results
+- name: Upload Build Output
   uses: actions/upload-artifact@v4
   with:
-    name: test-results
-    path: results/
+    name: release-assets  # Unique reference name
+    path: dist/           # Directory or specific file
+    retention-days: 30    # Optional: How long to keep it (Default 90)
 ```
-### Parameters:
-- `name`: A name for the artifact (used for reference and download).
-- `path`: Path to the file(s) or directory to upload.
-You can upload multiple artifacts by repeating the step with different names and paths.
-## Downloading Artifacts
-Use: `actions/download-artifact`
-### Example:
+## 2. Downloading Artifacts
+Use `actions/download-artifact@v4` to retrieve files in a later job or for manual inspection after the workflow completes.
+### Implementation
 ```yaml
-- name: Download test results
+- name: Download Assets
   uses: actions/download-artifact@v4
   with:
-    name: test-results
-    path: ./downloaded-results
+    name: release-assets
+    path: ./target-dir    # Local path to place files
 ```
-### Parameters:
-- `name`: Name of the artifact to download.
-- `path`: Destination directory for the downloaded files.
-
-## Sharing Artifacts Between Jobs
-To share data between jobs:
-1. Upload the artifact in one job.
-2. Use `needs:` to ensure the dependent job runs after.
-3. Download the artifact in the dependent job.
-
-### Example:
+## 3. Deleting Artifacts
+Use `actions/delete-artifact@v5` to manually remove artifacts. This is perfect for cleaning up temporary "bridge" files to save storage space and keep your UI clean.
+### Implementation
+```yaml
+- name: Remove Temporary Logs
+  uses: actions/delete-artifact@v5
+  with:
+    name: temp-build-logs
+```
+## 4. Sharing Between Jobs (The Workflow)
+Since jobs run on **isolated runners**, they do not share a filesystem. You must upload in Job A and download in Job B.
+### Example: Build, Test, and Cleanup
 ```yaml
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Build output" > output.txt
+      - run: echo "v1.0.0-build" > build_id.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: build-output
-          path: output.txt
+          name: bridge-data
+          path: build_id.txt
 
   test:
-    needs: build
+    needs: build # Ensures jobs run in sequence
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: build-output
-          path: ./build
-      - run: cat ./build/output.txt
+          name: bridge-data
+      - run: cat build_id.txt
+      
+  cleanup:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/delete-artifact@v5
+        with:
+          name: bridge-data
 ```
-## Artifact Retention & Limits
-- **Default retention**: 90 days
-- **Max size per artifact**: 5 GB
-- **Max total size per workflow run**: 20 GB
-- You can configure retention:
-
-```yaml
-with:
-  retention-days: 30
-```
-## Best Practices
-
-- Use clear, descriptive names for artifacts.
-- Clean up unnecessary files before uploading.
-- Use artifacts to decouple jobs and improve modularity.
-- Avoid uploading sensitive data unless encrypted.
+## Limits & Best Practices
+### Storage & Retention
+| Feature | Limit / Default |
+| :--- | :--- |
+| **Default Retention** | 90 Days |
+| **Max File Size** | 5 GB per artifact |
+| **Total Run Limit** | 20 GB per workflow |
+| **Performance** | v4 is up to 10x faster than v3 |
+### Pro-Tips
+* **Security:** Never upload `.env` files, SSH keys, or secrets. Artifacts are accessible to anyone with "Read" access to the repository.
+* **Wildcards:** You can use patterns like `path: dist/**/*.js` to upload specific file types.
+* **Storage Management:** If an artifact is only needed for the workflow duration, use `retention-days: 1` or the `delete-artifact` action in your final job.
+* **Zip Efficiency:** For directories with thousands of small files, zip them manually before uploading to significantly increase upload speeds.
