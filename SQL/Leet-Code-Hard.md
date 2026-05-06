@@ -1886,34 +1886,26 @@ FROM TERMS;
 ```
 
 # [2173. Longest Winning Streak](https://leetcode.com/problems/longest-winning-streak/)
-### Table: Matches
-
-```markdown
+```
+Table: Matches
 | Column Name | Type |
 |-------------|------|
 | player_id   | int  |
 | match_day   | date |
 | result      | enum |
-```
 
 - (player_id, match_day) is the primary key for this table.  
 - Each row of this table contains the ID of a player, the day of the match they played, and the result of that match.  
 - The result column is an ENUM type of ('Win', 'Draw', 'Lose').
 
 The winning streak of a player is the number of consecutive wins uninterrupted by draws or losses.
-
 Write an SQL query to count the longest winning streak for each player.
-
 Return the result table in any order.
-
 The query result format is in the following example.
 
 ### Example 1:
-
 **Input:**  
 Matches table:
-
-```markdown
 | player_id | match_day  | result |
 |-----------|------------|--------|
 | 1         | 2022-01-17 | Win    |
@@ -1924,17 +1916,13 @@ Matches table:
 | 2         | 2022-02-06 | Lose   |
 | 2         | 2022-02-08 | Lose   |
 | 3         | 2022-03-30 | Win    |
-```
 
 **Output:**
-
-```markdown
 | player_id | longest_streak |
 |-----------|----------------|
 | 1         | 3              |
 | 2         | 0              |
 | 3         | 1              |
-```
 
 **Explanation:**  
 **Player 1:**  
@@ -1950,25 +1938,74 @@ The longest winning streak was 0 matches.
 **Player 3:**  
 On 2022-03-30, player 3 won a match.  
 The longest winning streak was 1 match.
-
+```
 ```sql
-WITH S AS (
-    SELECT *,
-        -- Calculate a group identifier 'rk' for consecutive results
-        ROW_NUMBER() OVER (PARTITION BY PLAYER_ID ORDER BY MATCH_DAY)
-        - ROW_NUMBER() OVER (PARTITION BY PLAYER_ID, RESULT ORDER BY MATCH_DAY) AS RK
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLE
+*******************************************************************************/
+DROP TABLE IF EXISTS MATCHES;
+GO
+
+CREATE TABLE MATCHES (
+    PLAYER_ID  INT,
+    MATCH_DAY  DATE,
+    RESULT     VARCHAR(10)
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT MATCH RESULTS
+*******************************************************************************/
+INSERT INTO MATCHES (PLAYER_ID, MATCH_DAY, RESULT)
+VALUES 
+    (1, '2022-01-17', 'WIN'),
+    (1, '2022-01-18', 'WIN'),
+    (1, '2022-01-25', 'WIN'),
+    (1, '2022-01-31', 'DRAW'),
+    (1, '2022-02-08', 'WIN'),
+    (2, '2022-02-06', 'LOSE'),
+    (2, '2022-02-08', 'LOSE'),
+    (3, '2022-03-30', 'WIN');
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM MATCHES;
+
+/*******************************************************************************
+4. SOLUTION: LONGEST WINNING STREAK (GAPS & ISLANDS)
+*******************************************************************************/
+WITH CALCULATED_GROUPS AS (
+    SELECT 
+        PLAYER_ID,
+        MATCH_DAY,
+        RESULT,
+        /* 
+           SUBTRACTING THE RESULT-SPECIFIC ROW NUMBER FROM THE OVERALL ROW NUMBER 
+           CREATES A CONSTANT 'STREAK_ID' FOR CONSECUTIVE IDENTICAL RESULTS.
+        */
+        ROW_NUMBER() OVER(PARTITION BY PLAYER_ID ORDER BY MATCH_DAY) - 
+        ROW_NUMBER() OVER(PARTITION BY PLAYER_ID, RESULT ORDER BY MATCH_DAY) AS STREAK_ID
     FROM MATCHES
 ),
-T AS (
-    -- Count wins within each streak group
-    SELECT PLAYER_ID, SUM(CASE WHEN RESULT = 'Win' THEN 1 ELSE 0 END) AS S
-    FROM S
-    GROUP BY PLAYER_ID, RK
+STREAK_COUNTS AS (
+    SELECT 
+        PLAYER_ID, 
+        COUNT(*) AS WIN_COUNT
+    FROM CALCULATED_GROUPS
+    WHERE RESULT = 'WIN'
+    GROUP BY PLAYER_ID, STREAK_ID
 )
--- Select the maximum win streak per player
-SELECT PLAYER_ID, MAX(S) AS LONGEST_STREAK
-FROM T
-GROUP BY PLAYER_ID;
+SELECT 
+    'RESULT' AS DATA_TYPE,
+    P.PLAYER_ID, 
+    ISNULL(MAX(S.WIN_COUNT), 0) AS LONGEST_STREAK
+FROM (SELECT DISTINCT PLAYER_ID FROM MATCHES) AS P
+LEFT JOIN STREAK_COUNTS AS S 
+    ON P.PLAYER_ID = S.PLAYER_ID
+GROUP BY P.PLAYER_ID
+ORDER BY LONGEST_STREAK DESC, PLAYER_ID ASC;
 ```
 
 # [2199. Finding the Topic of Each Post](https://leetcode.com/problems/finding-the-topic-of-each-post/)
