@@ -57,7 +57,3 @@ def my_func(a, b=5): pass
 sig = inspect.signature(my_func)
 print(sig.parameters) # OrderedDict([('a', <Parameter "a">), ('b', <Parameter "b=5">)])
 ```
-
-```
-
-Are you interested in a specific area, like optimizing function performance with `numba` or deep-diving into how `async` functions handle the event loop?
