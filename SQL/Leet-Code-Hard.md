@@ -1953,6 +1953,115 @@ Explanation:
 - Bus 3 arrives at time 7 and collects passengers 12 and 13 as it has two empty seats.
 ```
 ```sql
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS BUSES;
+DROP TABLE IF EXISTS PASSENGERS;
+GO
+
+CREATE TABLE BUSES (
+    BUS_ID INT PRIMARY KEY,
+    ARRIVAL_TIME INT NOT NULL,
+    CAPACITY INT NOT NULL
+);
+GO
+
+CREATE TABLE PASSENGERS (
+    PASSENGER_ID INT PRIMARY KEY,
+    ARRIVAL_TIME INT NOT NULL
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO BUSES (BUS_ID, ARRIVAL_TIME, CAPACITY) VALUES
+(1, 2, 1),
+(2, 4, 10),
+(3, 7, 2);
+GO
+
+INSERT INTO PASSENGERS (PASSENGER_ID, ARRIVAL_TIME) VALUES
+(11, 1),
+(12, 1),
+(13, 5),
+(14, 6),
+(15, 7);
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM BUSES;
+SELECT * FROM PASSENGERS;
+/*******************************************************************************
+4. SOLUTION:
+*******************************************************************************/
+-- STEP 1: Calculate how many passengers could potentially board each bus
+WITH POSSIBLE_PAQS AS (
+    SELECT 
+        B.BUS_ID,
+        B.CAPACITY,
+        B.ARRIVAL_TIME,
+        COUNT(P.PASSENGER_ID) AS PAQS_COUNT_AT_TIME,
+        ROW_NUMBER() OVER (ORDER BY B.ARRIVAL_TIME ASC) AS BUS_ARRIVAL_ORDER
+    FROM BUSES B
+    LEFT JOIN PASSENGERS P 
+        ON P.ARRIVAL_TIME <= B.ARRIVAL_TIME
+    GROUP BY B.BUS_ID, B.CAPACITY, B.ARRIVAL_TIME
+),
+
+-- STEP 2: Process boarding bus by bus using recursion
+PROCESS AS (
+    -- FIRST BUS: handle initial boarding
+    SELECT 
+        BUS_ID,
+        CAPACITY,
+        CASE 
+            WHEN PAQS_COUNT_AT_TIME > CAPACITY 
+            THEN CAPACITY 
+            ELSE PAQS_COUNT_AT_TIME 
+        END AS BOARDER_PAQS,
+        CASE 
+            WHEN PAQS_COUNT_AT_TIME > CAPACITY 
+            THEN PAQS_COUNT_AT_TIME - CAPACITY 
+            ELSE 0 
+        END AS LEFT_OVER_PAQS,
+        PAQS_COUNT_AT_TIME,
+        BUS_ARRIVAL_ORDER
+    FROM POSSIBLE_PAQS
+    WHERE BUS_ARRIVAL_ORDER = 1
+
+    UNION ALL
+
+    -- SUBSEQUENT BUSES: carry forward leftover passengers + new arrivals
+    SELECT 
+        CB.BUS_ID,
+        CB.CAPACITY,
+        CASE 
+            WHEN (CB.PAQS_COUNT_AT_TIME - PB.PAQS_COUNT_AT_TIME + PB.LEFT_OVER_PAQS) > CB.CAPACITY 
+            THEN CB.CAPACITY 
+            ELSE (CB.PAQS_COUNT_AT_TIME - PB.PAQS_COUNT_AT_TIME + PB.LEFT_OVER_PAQS) 
+        END AS BOARDER_PAQS,
+        CASE 
+            WHEN (CB.PAQS_COUNT_AT_TIME - PB.PAQS_COUNT_AT_TIME + PB.LEFT_OVER_PAQS) > CB.CAPACITY 
+            THEN (CB.PAQS_COUNT_AT_TIME - PB.PAQS_COUNT_AT_TIME + PB.LEFT_OVER_PAQS) - CB.CAPACITY 
+            ELSE 0 
+        END AS LEFT_OVER_PAQS,
+        CB.PAQS_COUNT_AT_TIME,
+        CB.BUS_ARRIVAL_ORDER
+    FROM POSSIBLE_PAQS CB
+    INNER JOIN PROCESS PB 
+        ON CB.BUS_ARRIVAL_ORDER = PB.BUS_ARRIVAL_ORDER + 1
+)
+
+-- STEP 3: Final result showing how many passengers boarded each bus
+SELECT 
+    BUS_ID, 
+    BOARDER_PAQS AS PASSENGERS_CNT
+FROM PROCESS
+ORDER BY BUS_ID;
 ```
 
 # [2173. Longest Winning Streak](https://leetcode.com/problems/longest-winning-streak/)
