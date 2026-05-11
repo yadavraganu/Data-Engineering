@@ -1584,46 +1584,6 @@ GROUP BY F.USER1_ID, L.PAGE_ID;
 ```
 
 # [1917. Leetcodify Friends Recommendations](https://leetcode.com/problems/leetcodify-friends-recommendations/)
-
-#### Schema
-
-Table: Friendship
-
-| Column Name | Type |
-|-------------|------|
-| user1_id    | int  |
-| user2_id    | int  |
-
-(user1_id, user2_id) is the primary key.
-
-#### Description
-
-For every user, recommend all friends of their friends who are not already friends with them and are not themselves.
-
-#### Sample Input
-
-Friendship table:
-
-| user1_id | user2_id |
-|----------|----------|
-| 1        | 2        |
-| 2        | 3        |
-| 3        | 4        |
-
-#### Sample Output
-
-| user_id | recommended_id |
-|---------|---------------|
-| 1       | 3             |
-| 2       | 4             |
-
-**Explanation:**  
-- User 1's friend is 2, friend of 2 is 3, not already a friend of 1 → recommend 3.
-
-```sql
-```
-
-# [1919. Leetcodify Similar Friends](https://leetcode.com/problems/leetcodify-similar-friends/)
 ```
 Table: Listens
 +-------------+---------+
@@ -1645,13 +1605,15 @@ Table: Friendship
 (user1_id, user2_id) is the primary key for this table.
 Each row of this table indicates that the users user1_id and user2_id are friends.
 Note that user1_id < user2_id.
-Write an SQL query to report the similar friends of Leetcodify users. A user x and user y are similar friends if:Programming
 
-Users x and y are friends, and
+Write an SQL query to recommend friends to Leetcodify users. We recommend user x to user y if:
+Users x and y are not friends, and
 Users x and y listened to the same three or more different songs on the same day.
-Return the result table in any order. Note that you must return the similar pairs of friends the same way they were represented in the input (i.e., always user1_id < user2_id).
 
+Note that friend recommendations are unidirectional, meaning if user x and user y should be recommended to each other, the result table should have both user x recommended to user y and user y recommended to user x. Also, note that the result table should not contain duplicates (i.e., user y should not be recommended to user x multiple times.).Programming
+Return the result table in any order.
 The query result format is in the following example:
+
 Listens table:
 +---------+---------+------------+
 | user_id | song_id | day        |
@@ -1677,21 +1639,109 @@ Friendship table:
 | user1_id | user2_id |
 +----------+----------+
 | 1        | 2        |
-| 2        | 4        |
-| 2        | 5        |
 +----------+----------+
-
 Result table:
-+----------+----------+
-| user1_id | user2_id |
-+----------+----------+
-| 1        | 2        |
-+----------+----------+
-Users 1 and 2 are friends, and they listened to songs 10, 11, and 12 on the same day. They are similar friends.
-Users 1 and 3 listened to songs 10, 11, and 12 on the same day, but they are not friends.
-Users 2 and 4 are friends, but they did not listen to the same three different songs.
-Users 2 and 5 are friends and listened to songs 10, 11, and 12, but they did not listen to them on the same day.
++---------+----------------+
+| user_id | recommended_id |
++---------+----------------+
+| 1       | 3              |
+| 2       | 3              |
+| 3       | 1              |
+| 3       | 2              |
++---------+----------------+
+Users 1 and 2 listened to songs 10, 11, and 12 on the same day, but they are already friends.
+Users 1 and 3 listened to songs 10, 11, and 12 on the same day. Since they are not friends, we recommend them to each other.
+Users 1 and 4 did not listen to the same three songs.
+Users 1 and 5 listened to songs 10, 11, and 12, but on different days.
+
+Similarly, we can see that users 2 and 3 listened to songs 10, 11, and 12 on the same day and are not friends, so we recommend them to each other.
 ```
+```
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS LISTENS;
+DROP TABLE IF EXISTS FRIENDSHIP;
+GO
+
+CREATE TABLE LISTENS (
+    USER_ID INT,
+    SONG_ID INT,
+    DAY DATE
+);;
+GO
+
+CREATE TABLE FRIENDSHIP (
+    USER1_ID INT,
+    USER2_ID INT
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO FRIENDSHIP (USER1_ID, USER2_ID) VALUES
+(1, 2)
+GO
+
+INSERT INTO LISTENS (USER_ID, SONG_ID, DAY) VALUES
+(1, 10, '2021-03-15'),
+(1, 11, '2021-03-15'),
+(1, 12, '2021-03-15'),
+(2, 10, '2021-03-15'),
+(2, 11, '2021-03-15'),
+(2, 12, '2021-03-15'),
+(3, 10, '2021-03-15'),
+(3, 11, '2021-03-15'),
+(3, 12, '2021-03-15'),
+(4, 10, '2021-03-15'),
+(4, 11, '2021-03-15'),
+(4, 13, '2021-03-15'),
+(5, 10, '2021-03-16'),
+(5, 11, '2021-03-16'),
+(5, 12, '2021-03-16');
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM LISTENS;
+SELECT * FROM FRIENDSHIP;
+/*******************************************************************************
+4. SOLUTION:
+*******************************************************************************/
+-- Create a symmetric friendship table (both directions)
+WITH FRIENDS_PAIR AS (
+    SELECT USER1_ID, USER2_ID 
+    FROM FRIENDSHIP
+    UNION
+    SELECT USER2_ID, USER1_ID 
+    FROM FRIENDSHIP
+)
+
+SELECT 
+    L1.USER_ID AS USER_ID, 
+    L2.USER_ID AS RECOMMENDED_ID
+FROM LISTENS L1
+-- Join LISTENS table to itself to find users listening to the same song on the same day
+LEFT JOIN LISTENS L2 
+    ON L1.USER_ID != L2.USER_ID
+    AND L1.DAY = L2.DAY
+    AND L1.SONG_ID = L2.SONG_ID
+
+-- Exclude pairs that are already friends
+LEFT JOIN FRIENDS_PAIR FP 
+    ON FP.USER1_ID = L1.USER_ID 
+    AND FP.USER2_ID = L2.USER_ID 
+
+WHERE FP.USER1_ID IS NULL 
+  AND FP.USER2_ID IS NULL   -- ensures they are not friends
+
+-- Group by user pairs
+GROUP BY L1.USER_ID, L2.USER_ID
+
+-- Keep only pairs who share at least 3 distinct songs listened to on the same day
+HAVING COUNT(DISTINCT L2.SONG_ID) >= 3;
 ```sql
 /*******************************************************************************
 1. SETUP: CLEAN UP AND RECREATE TABLES
