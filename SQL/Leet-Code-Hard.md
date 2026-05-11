@@ -1656,7 +1656,7 @@ Users 1 and 5 listened to songs 10, 11, and 12, but on different days.
 
 Similarly, we can see that users 2 and 3 listened to songs 10, 11, and 12 on the same day and are not friends, so we recommend them to each other.
 ```
-```
+```sql
 /*******************************************************************************
 1. SETUP: CLEAN UP AND RECREATE TABLES
 *******************************************************************************/
