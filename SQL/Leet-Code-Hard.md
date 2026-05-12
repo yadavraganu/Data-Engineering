@@ -4032,59 +4032,68 @@ FROM T;
 ```
 
 # [618. Students Report By Geography](https://leetcode.com/problems/students-report-by-geography/)
-
-#### Schema
-
-Table: Student
-
-| Column Name | Type    |
-|-------------|---------|
-| name        | varchar |
-| continent   | varchar |
-
-This table may contain duplicate rows.
-
-#### Description
-
-Each row in the Student table indicates a student’s name and the continent they came from (America, Asia or Europe). Pivot the continent column into three output columns—America, Asia and Europe—so that each student’s name appears under its corresponding continent. Within each continent, sort names alphabetically, and align them by their rank (first, second, etc.), showing `null` when a continent has no student at a given position. It is guaranteed that America has at least as many students as Asia or Europe.
-
-#### Sample Input
-
-Student table:
+```
+A U.S graduate school has students from Asia, Europe and America. The students' location information are stored in table student as below.
 
 | name   | continent |
 |--------|-----------|
-| Jane   | America   |
+| Jack   | America   |
 | Pascal | Europe    |
 | Xi     | Asia      |
-| Jack   | America   |
-
-#### Sample Output
+| Jane   | America   |
+ 
+Pivot the continent column in this table so that each name is sorted alphabetically and displayed underneath its corresponding continent. The output headers should be America, Asia and Europe respectively. It is guaranteed that the student number from America is no less than either Asia or Europe.
+For the sample input, the output is:
 
 | America | Asia | Europe |
 |---------|------|--------|
 | Jack    | Xi   | Pascal |
-| Jane    | null | null   |
-
+| Jane    |      |        |
+```
 ```sql
-WITH
-    T AS (
-        SELECT
-            *,
-            ROW_NUMBER() OVER (
-                PARTITION BY CONTINENT
-                ORDER BY NAME
-            ) AS RK
-        FROM STUDENT
-    )
-SELECT
-    MAX(CASE WHEN CONTINENT = 'america' THEN NAME ELSE NULL END) AS 'AMERICA',
-    MAX(CASE WHEN CONTINENT = 'asia' THEN NAME ELSE NULL END) AS 'ASIA',
-    MAX(CASE WHEN CONTINENT = 'europe' THEN NAME ELSE NULL END) AS 'EUROPE'
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS STUDENT;
+GO
+
+CREATE TABLE STUDENT (
+    NAME VARCHAR(50),
+    CONTINENT VARCHAR(50)
+);
+
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO STUDENT (NAME, CONTINENT) VALUES
+('Jack', 'America'),
+('Pascal', 'Europe'),
+('Xi', 'Asia'),
+('Jane', 'America');
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM STUDENT;
+/*******************************************************************************
+4. SOLUTION:
+*******************************************************************************/
+-- CREATE RANKED LIST PER CONTINENT
+WITH T AS (
+    SELECT NAME, CONTINENT,
+           ROW_NUMBER() OVER (PARTITION BY CONTINENT ORDER BY NAME) AS RK
+    FROM STUDENT
+)
+-- PIVOT NAMES INTO CONTINENT COLUMNS
+SELECT MAX(CASE WHEN UPPER(CONTINENT) = 'AMERICA' THEN NAME END) AS AMERICA,
+       MAX(CASE WHEN UPPER(CONTINENT) = 'ASIA' THEN NAME END) AS ASIA,
+       MAX(CASE WHEN UPPER(CONTINENT) = 'EUROPE' THEN NAME END) AS EUROPE
 FROM T
 GROUP BY RK
 ORDER BY RK;
-
 ```
 
 
