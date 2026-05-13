@@ -783,17 +783,39 @@ ORDER BY S.STUDENT_ID;
 ```
 
 # [1479. Sales by Day of the Week](https://leetcode.com/problems/sales-by-day-of-the-week/)
-You are the business owner and would like to obtain a **sales report** for:
-- **Category items**
-- **Day of the week**
-
-Write an SQL query to report **how many units** in each category have been ordered on **each day of the week**.
-
-- Return the result table **ordered by category**.
-
-#### Orders table:
-
 ```
+Table: Orders
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| order_id      | int     |
+| customer_id   | int     |
+| order_date    | date    |
+| item_id       | varchar |
+| quantity      | int     |
++---------------+---------+
+(ordered_id, item_id) is the primary key for this table.
+This table contains information of the orders placed.
+order_date is the date when item_id was ordered by the customer with id customer_id.
+Table: Items
++---------------------+---------+
+| Column Name         | Type    |
++---------------------+---------+
+| item_id             | varchar |
+| item_name           | varchar |
+| item_category       | varchar |
++---------------------+---------+
+item_id is the primary key for this table.
+item_name is the name of the item.
+item_category is the category of the item.
+ 
+You are the business owner and would like to obtain a sales report for category items and day of the week
+
+Write an SQL query to report how many units in each category have been ordered on each day of the week.
+
+Return the result table ordered by category.Programming
+The query result format is in the following example:
+Orders table:
 +------------+--------------+-------------+--------------+-------------+
 | order_id   | customer_id  | order_date  | item_id      | quantity    |
 +------------+--------------+-------------+--------------+-------------+
@@ -807,11 +829,7 @@ Write an SQL query to report **how many units** in each category have been order
 | 8          | 5            | 2020-06-14  | 4            | 5           |
 | 9          | 5            | 2020-06-21  | 3            | 5           |
 +------------+--------------+-------------+--------------+-------------+
-```
-
-#### Items table:
-
-```
+Items table:
 +------------+----------------+---------------+
 | item_id    | item_name      | item_category |
 +------------+----------------+---------------+
@@ -822,11 +840,8 @@ Write an SQL query to report **how many units** in each category have been order
 | 5          | LC SmartGlass  | Glasses       |
 | 6          | LC T-Shirt XL  | T-Shirt       |
 +------------+----------------+---------------+
-```
 
-#### Result table:
-
-```
+Result table:
 +------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
 | Category   | Monday    | Tuesday   | Wednesday | Thursday  | Friday    | Saturday  | Sunday    |
 +------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
@@ -835,20 +850,70 @@ Write an SQL query to report **how many units** in each category have been order
 | Phone      | 0         | 0         | 5         | 1         | 0         | 0         | 10        |
 | T-Shirt    | 0         | 0         | 0         | 0         | 0         | 0         | 0         |
 +------------+-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+On Monday (2020-06-01, 2020-06-08) were sold a total of 20 units (10 + 10) in the category Book (ids: 1, 2).
+On Tuesday (2020-06-02) were sold a total of 5 units  in the category Book (ids: 1, 2).
+On Wednesday (2020-06-03) were sold a total of 5 units in the category Phone (ids: 3, 4).
+On Thursday (2020-06-04) were sold a total of 1 unit in the category Phone (ids: 3, 4).
+On Friday (2020-06-05) were sold 10 units in the category Book (ids: 1, 2) and 5 units in Glasses (ids: 5).
+On Saturday there are no items sold.
+On Sunday (2020-06-14, 2020-06-21) were sold a total of 10 units (5 +5) in the category Phone (ids: 3, 4).
+There are no sales of T-Shirt.
 ```
-
-### Notes
-
-- On **Monday** (2020-06-01, 2020-06-08): 20 units of **Book** sold (10 + 10).
-- On **Tuesday** (2020-06-02): 5 units of **Book** sold.
-- On **Wednesday** (2020-06-03): 5 units of **Phone** sold.
-- On **Thursday** (2020-06-04): 1 unit of **Phone** sold.
-- On **Friday** (2020-06-05): 10 units of **Book** and 5 units of **Glasses** sold.
-- On **Saturday**: No items sold.
-- On **Sunday** (2020-06-14, 2020-06-21): 10 units of **Phone** sold (5 + 5).
-- No sales for **T-Shirt** category.
-
 ```sql
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS ITEMS;
+DROP TABLE IF EXISTS ORDERS;
+GO
+
+CREATE TABLE ITEMS (
+    ITEM_ID INT PRIMARY KEY,
+    ITEM_NAME VARCHAR(50),
+    ITEM_CATEGORY VARCHAR(20)
+);
+
+CREATE TABLE ORDERS (
+    ORDER_ID INT PRIMARY KEY,
+    CUSTOMER_ID INT,
+    ORDER_DATE DATE,
+    ITEM_ID INT,
+    QUANTITY INT,
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO ITEMS (ITEM_ID, ITEM_NAME, ITEM_CATEGORY) VALUES
+(1, 'LC Alg. Book', 'Book'),
+(2, 'LC DB. Book', 'Book'),
+(3, 'LC SmarthPhone', 'Phone'),
+(4, 'LC Phone 2020', 'Phone'),
+(5, 'LC SmartGlass', 'Glasses'),
+(6, 'LC T-Shirt XL', 'T-Shirt');
+GO
+
+INSERT INTO ORDERS (ORDER_ID, CUSTOMER_ID, ORDER_DATE, ITEM_ID, QUANTITY) VALUES
+(1, 1, '2020-06-01', 1, 10),
+(2, 1, '2020-06-08', 2, 10),
+(3, 2, '2020-06-02', 1, 5),
+(4, 3, '2020-06-03', 3, 5),
+(5, 4, '2020-06-04', 4, 1),
+(6, 4, '2020-06-05', 5, 5),
+(7, 5, '2020-06-05', 1, 10),
+(8, 5, '2020-06-14', 4, 5),
+(9, 5, '2020-06-21', 3, 5);
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM ITEMS;
+SELECT * FROM ORDERS;
+/*******************************************************************************
+4. SOLUTION:
+*******************************************************************************/
 SELECT 
     ITEM_CATEGORY AS CATEGORY,
     SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Monday' THEN QUANTITY ELSE 0 END) AS MONDAY,
@@ -858,8 +923,8 @@ SELECT
     SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Friday' THEN QUANTITY ELSE 0 END) AS FRIDAY,
     SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Saturday' THEN QUANTITY ELSE 0 END) AS SATURDAY,
     SUM(CASE WHEN DATENAME(WEEKDAY, ORDER_DATE) = 'Sunday' THEN QUANTITY ELSE 0 END) AS SUNDAY
-FROM ORDERS O
-JOIN ITEMS I ON O.ITEM_ID = I.ITEM_ID
+FROM ITEMS I
+LEFT JOIN ORDERS O ON O.ITEM_ID = I.ITEM_ID
 GROUP BY ITEM_CATEGORY
 ORDER BY ITEM_CATEGORY;
 ```
@@ -1668,7 +1733,7 @@ CREATE TABLE LISTENS (
     USER_ID INT,
     SONG_ID INT,
     DAY DATE
-);;
+);
 GO
 
 CREATE TABLE FRIENDSHIP (
@@ -1742,76 +1807,7 @@ GROUP BY L1.USER_ID, L2.USER_ID
 
 -- Keep only pairs who share at least 3 distinct songs listened to on the same day
 HAVING COUNT(DISTINCT L2.SONG_ID) >= 3;
-```sql
-/*******************************************************************************
-1. SETUP: CLEAN UP AND RECREATE TABLES
-*******************************************************************************/
-DROP TABLE IF EXISTS LISTENS;
-DROP TABLE IF EXISTS FRIENDSHIP;
-GO
-
-CREATE TABLE LISTENS (
-    USER_ID INT,
-    SONG_ID INT,
-    DAY DATE
-);;
-GO
-
-CREATE TABLE FRIENDSHIP (
-    USER1_ID INT,
-    USER2_ID INT
-);
-GO
-
-/*******************************************************************************
-2. DATA ENTRY: INSERT SAMPLE DATA
-*******************************************************************************/
-INSERT INTO FRIENDSHIP (USER1_ID, USER2_ID) VALUES
-(1, 2),
-(2, 4),
-(2, 5);
-GO
-
-INSERT INTO LISTENS (USER_ID, SONG_ID, DAY) VALUES
-(1, 10, '2021-03-15'),
-(1, 11, '2021-03-15'),
-(1, 12, '2021-03-15'),
-(2, 10, '2021-03-15'),
-(2, 11, '2021-03-15'),
-(2, 12, '2021-03-15'),
-(3, 10, '2021-03-15'),
-(3, 11, '2021-03-15'),
-(3, 12, '2021-03-15'),
-(4, 10, '2021-03-15'),
-(4, 11, '2021-03-15'),
-(4, 13, '2021-03-15'),
-(5, 10, '2021-03-16'),
-(5, 11, '2021-03-16'),
-(5, 12, '2021-03-16');
-GO
-
-/*******************************************************************************
-3. DISPLAY INPUT DATA
-*******************************************************************************/
-SELECT * FROM LISTENS;
-SELECT * FROM FRIENDSHIP;
-/*******************************************************************************
-4. SOLUTION:
-*******************************************************************************/
-WITH FRIENDS_PAIR AS (
-SELECT USER1_ID,USER2_ID FROM FRIENDSHIP
-UNION
-SELECT USER2_ID,USER1_ID FROM FRIENDSHIP
-),
-FINAL_RESULT AS (
-SELECT USER1_ID,USER2_ID FROM FRIENDS_PAIR FP 
-INNER JOIN LISTENS L1 ON FP.USER1_ID = L1.USER_ID
-INNER JOIN LISTENS L2 ON FP.USER2_ID = L2.USER_ID AND L1.DAY = L2.DAY AND L1.SONG_ID = L2.SONG_ID AND L1.USER_ID <> L2.USER_ID
-GROUP BY USER1_ID,USER2_ID HAVING COUNT(DISTINCT L2.SONG_ID) >= 3
-)
-SELECT DISTINCT LEAST(USER1_ID, USER2_ID) AS USER1_ID, GREATEST(USER1_ID, USER2_ID) AS USER2_ID FROM FINAL_RESULT
 ```
-
 # [2004. The Number of Seniors and Juniors to Join the Company](https://leetcode.com/problems/the-number-of-seniors-and-juniors-to-join-the-company/)
 ```
 Table: Candidates
