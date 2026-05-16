@@ -67,7 +67,10 @@ Each step up doubles the compute capacity and credit cost per hour.
 | **LARGE** | 8 | 8 | Moderate-to-heavy analytics |
 | **XLARGE** | 16 | 16 | Complex processing / deep nested joins |
 | **2XLARGE** to **6XLARGE** | 32 to 512 | 32 to 512 | Massive enterprise workloads, deep data science |
-
+### Billing Nuances
+- Warehouses are billed per-second, rounded up to the nearest minute.
+- Each active cluster in a multi-cluster warehouse accrues credits independently.
+- Cloud services credits (metadata, caching, result set handling) accrue separately from warehouse compute.
 ## 3. Multi-Cluster Architecture & Auto-Scaling
 
 Multi-cluster warehouses scale horizontally to handle highly concurrent workloads (many users querying simultaneously).
@@ -125,6 +128,8 @@ ALTER WAREHOUSE dev_wh SET STATEMENT_QUEUED_TIMEOUT_IN_SECONDS = 300; -- 5 minut
 -- Disable query caching for accurate execution performance benchmarking
 ALTER SESSION SET USE_CACHED_RESULTS = FALSE;
 
+-- Retry interval for queued queries (default 10 seconds)
+ALTER WAREHOUSE dev_wh SET STATEMENT_QUEUED_RETRY_INTERVAL_IN_SECONDS = 15;
 ```
 ## 6. Metadata, Auditing, and Monitoring
 
@@ -171,6 +176,10 @@ WHERE START_TIME >= DATEADD('day', -30, CURRENT_DATE())
 GROUP BY WAREHOUSE_NAME
 ORDER BY TOTAL_CREDITS_BURNED DESC;
 
+-- Organization-level warehouse metering (cross-account view)
+SELECT *
+FROM SNOWFLAKE.ORGANIZATION_USAGE.WAREHOUSE_METERING_HISTORY
+WHERE START_TIME >= DATEADD('day', -7, CURRENT_DATE());
 ```
 ## 7. Privileges & Access Control (RBAC)
 
