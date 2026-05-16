@@ -3080,30 +3080,149 @@ ORDER BY CUSTOMER_ID;
 ```
 
 # [2793. Status of Flight Tickets](https://leetcode.com/problems/status-of-flight-tickets/)
-```sql
--- Step 1: Rank passengers by booking time within each flight
-WITH RANKEDPASSENGERS AS (
-  SELECT
-    P.PASSENGER_ID,
-    F.FLIGHT_ID,
-    F.CAPACITY,
-    RANK() OVER (
-      PARTITION BY P.FLIGHT_ID
-      ORDER BY P.BOOKING_TIME
-    ) AS RNK
-  FROM PASSENGERS P
-  INNER JOIN FLIGHTS F ON P.FLIGHT_ID = F.FLIGHT_ID
-)
+```
+Table: Flights
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| flight_id   | int  |
+| capacity    | int  |
++-------------+------+
+flight_id column contains distinct values.
+Each row of this table contains flight id and capacity.
+Table: Passengers
++--------------+----------+
+| Column Name  | Type     |
++--------------+----------+
+| passenger_id | int      |
+| flight_id    | int      |
+| booking_time | datetime |
++--------------+----------+
+passenger_id column contains distinct values.
+booking_time column contains distinct values.
+Each row of this table contains passenger id, booking time, and their flight id.
+Passengers book tickets for flights in advance. If a passenger books a ticket for a flight and there are still empty seats available on the flight, the passenger's ticket will be confirmed. However, the passenger will be on a waitlist if the flight is already at full capacity.
 
--- Step 2: Assign status based on rank vs. flight capacity
+Write a solution to determine the current status of flight tickets for each passenger.
+Return the result table ordered by passenger_id in ascending order.
+
+The result format is in the following example.
+Example 1:
+
+Input: 
+Flights table:
++-----------+----------+
+| flight_id | capacity |
++-----------+----------+
+| 1         | 2        |
+| 2         | 2        |
+| 3         | 1        |
++-----------+----------+
+Passengers table:
++--------------+-----------+---------------------+
+| passenger_id | flight_id | booking_time        |
++--------------+-----------+---------------------+
+| 101          | 1         | 2023-07-10 16:30:00 |
+| 102          | 1         | 2023-07-10 17:45:00 |
+| 103          | 1         | 2023-07-10 12:00:00 |
+| 104          | 2         | 2023-07-05 13:23:00 |
+| 105          | 2         | 2023-07-05 09:00:00 |
+| 106          | 3         | 2023-07-08 11:10:00 |
+| 107          | 3         | 2023-07-08 09:10:00 |
++--------------+-----------+---------------------+
+Output: 
++--------------+-----------+
+| passenger_id | Status    |
++--------------+-----------+
+| 101          | Confirmed | 
+| 102          | Waitlist  | 
+| 103          | Confirmed | 
+| 104          | Confirmed | 
+| 105          | Confirmed | 
+| 106          | Waitlist  | 
+| 107          | Confirmed | 
++--------------+-----------+
+Explanation: 
+- Flight 1 has a capacity of 2 passengers. Passenger 101 and Passenger 103 were the first to book tickets, securing the available seats. Therefore, their bookings are confirmed. However, Passenger 102 was the third person to book a ticket for this flight, which means there are no more available seats. Passenger 102 is now placed on the waitlist, 
+- Flight 2 has a capacity of 2 passengers, Flight 2 has exactly two passengers who booked tickets,  Passenger 104 and Passenger 105. Since the number of passengers who booked tickets matches the available seats, both bookings are confirmed.
+- Flight 3 has a capacity of 1 passenger. Passenger 107 booked earlier and secured the only available seat, confirming their booking. Passenger 106, who booked after Passenger 107, is on the waitlist.
+```
+```sql
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS PASSENGERS;
+DROP TABLE IF EXISTS FLIGHTS;
+GO
+
+-- CREATE FLIGHTS TABLE
+CREATE TABLE FLIGHTS (
+    FLIGHT_ID INT PRIMARY KEY,
+    CAPACITY INT NOT NULL
+);
+GO
+
+-- CREATE PASSENGERS TABLE
+CREATE TABLE PASSENGERS (
+    PASSENGER_ID INT PRIMARY KEY,
+    FLIGHT_ID INT NOT NULL,
+    BOOKING_TIME DATETIME NOT NULL,
+    FOREIGN KEY (FLIGHT_ID) REFERENCES FLIGHTS(FLIGHT_ID)
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+-- INSERT INTO FLIGHTS
+INSERT INTO FLIGHTS (FLIGHT_ID, CAPACITY) VALUES
+(1, 2),
+(2, 2),
+(3, 1);
+
+-- INSERT INTO PASSENGERS
+INSERT INTO PASSENGERS (PASSENGER_ID, FLIGHT_ID, BOOKING_TIME) VALUES
+(101, 1, '2023-07-10 16:30:00'),
+(102, 1, '2023-07-10 17:45:00'),
+(103, 1, '2023-07-10 12:00:00'),
+(104, 2, '2023-07-05 13:23:00'),
+(105, 2, '2023-07-05 09:00:00'),
+(106, 3, '2023-07-08 11:10:00'),
+(107, 3, '2023-07-08 09:10:00');
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM FLIGHTS;
+SELECT * FROM PASSENGERS;
+/*******************************************************************************
+4. SOLUTION: Identify passengers exceeding flight capacity
+*******************************************************************************/
+/*******************************************************************************
+4. SOLUTION: Identify passengers exceeding flight capacity
+*******************************************************************************/
+WITH BOOKING_ORDER AS (
+    SELECT 
+        F.FLIGHT_ID,
+        PASSENGER_ID,
+        CAPACITY,
+        ROW_NUMBER() OVER (PARTITION BY P.FLIGHT_ID ORDER BY BOOKING_TIME ASC) AS BOOKING_ORDER 
+        -- Assigns a sequential number to each passenger per flight
+        -- Ordered by booking_time (earliest = 1, next = 2, etc.)
+    FROM PASSENGERS P 
+    LEFT JOIN FLIGHTS F 
+      ON F.FLIGHT_ID = P.FLIGHT_ID
+)
 SELECT
-  PASSENGER_ID,
-  CASE
-    WHEN RNK <= CAPACITY THEN 'Confirmed'
-    ELSE 'Waitlist'
-  END AS STATUS
-FROM RANKEDPASSENGERS
-ORDER BY PASSENGER_ID;
+    PASSENGER_ID,
+    CASE 
+        WHEN BOOKING_ORDER <= CAPACITY 
+            THEN 'Confirmed'   -- Passenger fits within flight capacity
+        ELSE 'Waitlist'        -- Passenger exceeds capacity, placed on waitlist
+    END AS STATUS 
+FROM BOOKING_ORDER 
+ORDER BY PASSENGER_ID ASC;
 ```
 
 # [2991. Top Three Wineries](https://leetcode.com/problems/top-three-wineries/)
