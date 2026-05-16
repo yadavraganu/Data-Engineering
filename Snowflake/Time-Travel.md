@@ -6,7 +6,7 @@ Snowflake physical data storage relies on immutable micro-partitions. When data 
 
 ### The Storage Lifecycle
 
-Once data is modified or dropped, it moves through a strict chronologic lifecycle before being permanently deleted:
+Once data is modified or dropped, it moves through a strict chronological lifecycle before being permanently deleted:
 
 ```
 [ Active State ] ---> [ Time Travel Window ] ---> [ Fail-Safe Window ] ---> [ Purged ]
@@ -32,6 +32,7 @@ Account Level (Global defaults)
                    └── Table Level (Overrides Schema)
 
 ```
+
 ### Setting Retention Windows at Higher Levels
 
 ```sql
@@ -86,6 +87,19 @@ FROM prod_db.sales.orders
   BEFORE(STATEMENT => '01b45cd6-0000-1234-0000-000012345678');
 
 ```
+
+### Method 4: Harmonizing Multi-Table Queries
+
+When joining multiple tables, you must apply the `AT` or `BEFORE` clause to **each individual table** to guarantee a transactionally consistent snapshot across your schema.
+
+```sql
+-- Querying a consistent cross-table snapshot from 1 hour ago
+SELECT o.order_id, c.customer_name
+FROM prod_db.sales.orders AT(OFFSET => -3600) o
+JOIN prod_db.sales.customers AT(OFFSET => -3600) c 
+  ON o.customer_id = c.customer_id;
+
+```
 ## 4. Disaster Recovery & Restoration (Cloning & Undrop)
 
 ### Restoring Errant Subsets of Data
@@ -98,6 +112,7 @@ CREATE OR REPLACE TABLE prod_db.sales.orders AS
 SELECT * FROM prod_db.sales.orders BEFORE(STATEMENT => '01b45cd6-0000-1234-0000-000012345678');
 
 ```
+
 ### Restoring Dropped Objects (`UNDROP`)
 
 As long as the object was dropped within its retention window, it can be recovered completely intact with its underlying metadata.
@@ -108,6 +123,7 @@ UNDROP SCHEMA prod_db.sales;       -- Recover an entire dropped schema
 UNDROP DATABASE prod_db;           -- Recover an entire dropped database
 
 ```
+
 ### Historical Snapshots via Zero-Copy Cloning
 
 ```sql
@@ -117,6 +133,7 @@ CREATE DATABASE dev_db_snapshot
   AT(OFFSET => -86400);
 
 ```
+
 ## 5. Advanced Metadata Functions & Tracking
 
 When managing complex objects or troubleshooting dropped objects, explicit tracking is essential.
@@ -126,7 +143,7 @@ When managing complex objects or troubleshooting dropped objects, explicit track
 If an object has been dropped and recreated multiple times, `UNDROP` recovers the most recent instance. To view all past historical instances still residing within the Time Travel buffer, use:
 
 ```sql
--- View all history of tables including dropped instances and their unique IDs
+-- View all history of tables including dropped instances, their drop timestamps, and unique IDs
 SHOW TABLES HISTORY LIKE 'orders';
 
 ```
@@ -145,6 +162,7 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE = 'BASE TABLE';
 
 ```
+
 ## 6. Storage Metrics & Monitoring
 
 Time Travel and Fail-Safe both contribute directly to physical storage costs. You can monitor the exact storage footprint split via system tables.
@@ -165,8 +183,44 @@ WHERE DELETED = 'FALSE'
 ORDER BY TIME_TRAVEL_STORAGE_GB DESC;
 
 ```
-## 7. Critical Operational Guardrails
 
-- **The Fail-Safe Point of No Return:** Once configured `DATA_RETENTION_TIME_IN_DAYS` expires on a permanent table, historical data moves permanently to the **Fail-Safe** phase. Data in Fail-Safe *cannot* be queried via SQL statements or restored via `UNDROP`. Recovery out of Fail-Safe requires contacting Snowflake Support and can take several days.
-- **Overwriting Objects (`CREATE OR REPLACE`):** Running a `CREATE OR REPLACE TABLE` command on an existing table drops the old table and builds a fresh, empty one. To recover data from an overwritten table, you must first run `DROP TABLE <name>;`, then call `UNDROP TABLE <name>;` to pull the previous instance back out of the Time Travel buffer.
-- **Pipeline Dependencies (Streams):** If a stream is created on a table, the stream becomes stale if its transaction offset extends beyond the table's Time Travel retention window. Ensure your stream ingestion/consumption frequencies are tighter than your `DATA_RETENTION_TIME_IN_DAYS`.
+## 7. Operational Nuances & Syntax Constraints
+
+### Dynamic Stream Retention Lock
+
+Snowflake **automatically extends** a table's effective data retention period to prevent streams from going stale, up to a maximum of 14 days (or the table's maximum retention period, whichever is less). This happens even if the table's `DATA_RETENTION_TIME_IN_DAYS` is set to 1 or 0, which can cause unexpected storage charges if streams are left unconsumed.
+
+### Transient & Temporary Object Constraints
+
+You cannot use Time Travel expressions to clone Transient or Temporary objects past their maximum allowable window (1 day or the current session lifecycle).
+
+```sql
+-- ❌ THIS WILL FAIL if the target offset goes beyond the lifecycle/1-day barrier:
+CREATE TABLE recovered_transient CLONE my_transient_table AT(OFFSET => -172800); 
+
+```
+
+### Sub-Query Limitations
+
+You cannot use dynamic subqueries or variables directly inside the `AT` or `BEFORE` clauses. They must resolve to a constant or session variable string literal.
+
+```sql
+-- ❌ THIS WILL FAIL:
+SELECT * FROM orders AT(TIMESTAMP => (SELECT max(modified_time) FROM log_table));
+
+--  THIS WILL WORK:
+SET target_time = '2026-05-16 14:30:00'::TIMESTAMP_TZ;
+SELECT * FROM orders AT(TIMESTAMP => $target_time);
+
+```
+
+## 8. Critical Operational Guardrails
+
+* **The Fail-Safe Point of No Return:** Once configured `DATA_RETENTION_TIME_IN_DAYS` expires on a permanent table, historical data moves permanently to the **Fail-Safe** phase. Data in Fail-Safe *cannot* be queried via SQL statements or restored via `UNDROP`. Recovery out of Fail-Safe requires contacting Snowflake Support and can take several days.
+* **Overwriting Objects (`CREATE OR REPLACE`):** Running a `CREATE OR REPLACE TABLE` command on an existing table drops the old table and builds a fresh, empty one. To recover data from an overwritten table, you must first run `DROP TABLE <name>;`, then call `UNDROP TABLE <name>;` to pull the previous instance back out of the Time Travel buffer.
+* **Safe Alternative to Re-Writing (Table Swapping):** To completely avoid the risk of the `CREATE OR REPLACE` drop trap, build your modified dataset in a secondary staging table and swap them atomically.
+```sql
+-- Safely swap architectures without losing your fallback table history
+ALTER TABLE orders SWAP WITH orders_new;
+```
+* **Pipeline Dependencies (Streams):** If a stream is created on a table, the stream becomes stale if its transaction offset extends beyond the table's effective Time Travel retention window. Ensure your stream ingestion/consumption frequencies are tighter than your `DATA_RETENTION_TIME_IN_DAYS`.
