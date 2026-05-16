@@ -2895,7 +2895,117 @@ HAVING COUNT(DISTINCT(YEAR - RN)) = 1;
 ```
 
 # [2494. Merge Overlapping Events in the Same Hall](https://leetcode.com/problems/merge-overlapping-events-in-the-same-hall/)
+```
+Table: HallEvents
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| hall_id     | int  |
+| start_day   | date |
+| end_day     | date |
++-------------+------+
+There is no primary key in this table. It may contain duplicates.
+Each row of this table indicates the start day and end day of an event and the hall in which the event is held.
+ 
+Write an SQL query to merge all the overlapping events that are held in the same hall. Two events overlap if they have at least one day in common.Programming
+Return the result table in any order.The query result format is in the following example.
+Example 1:
+
+Input: 
+HallEvents table:
++---------+------------+------------+
+| hall_id | start_day  | end_day    |
++---------+------------+------------+
+| 1       | 2023-01-13 | 2023-01-14 |
+| 1       | 2023-01-14 | 2023-01-17 |
+| 1       | 2023-01-18 | 2023-01-25 |
+| 2       | 2022-12-09 | 2022-12-23 |
+| 2       | 2022-12-13 | 2022-12-17 |
+| 3       | 2022-12-01 | 2023-01-30 |
++---------+------------+------------+
+Output: 
++---------+------------+------------+
+| hall_id | start_day  | end_day    |
++---------+------------+------------+
+| 1       | 2023-01-13 | 2023-01-17 |
+| 1       | 2023-01-18 | 2023-01-25 |
+| 2       | 2022-12-09 | 2022-12-23 |
+| 3       | 2022-12-01 | 2023-01-30 |
++---------+------------+------------+
+Explanation: There are three halls.
+Hall 1:
+- The two events ["2023-01-13", "2023-01-14"] and ["2023-01-14", "2023-01-17"] overlap. We merge them in one event ["2023-01-13", "2023-01-17"].
+- The event ["2023-01-18", "2023-01-25"] does not overlap with any other event, so we leave it as it is.
+Hall 2:
+- The two events ["2022-12-09", "2022-12-23"] and ["2022-12-13", "2022-12-17"] overlap. We merge them in one event ["2022-12-09", "2022-12-23"].
+Hall 3:
+- The hall has only one event, so we return it. Note that we only consider the events of each hall separately.
+```
 ```sql
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLE
+*******************************************************************************/
+DROP TABLE IF EXISTS HALLEVENTS;
+GO
+
+-- CREATE HALLEVENTS TABLE
+CREATE TABLE HALLEVENTS (
+    HALL_ID INT NOT NULL,
+    START_DAY DATE NOT NULL,
+    END_DAY DATE NOT NULL
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO HALLEVENTS (HALL_ID, START_DAY, END_DAY) VALUES
+(1, '2023-01-13', '2023-01-14'),
+(1, '2023-01-14', '2023-01-17'),
+(1, '2023-01-18', '2023-01-25'),
+(2, '2022-12-09', '2022-12-23'),
+(2, '2022-12-13', '2022-12-17'),
+(3, '2022-12-01', '2023-01-30');
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM HALLEVENTS;
+/*******************************************************************************
+4. SOLUTION: Merge overlapping or consecutive hall events
+*******************************************************************************/
+WITH HALLEVENTSWITHISNEWEVENT AS (
+SELECT
+    HALL_ID,
+    START_DAY,
+    END_DAY,
+    ISNULL(
+        CASE 
+            WHEN START_DAY > LAG(END_DAY) OVER (PARTITION BY HALL_ID ORDER BY START_DAY, END_DAY DESC) THEN 1 
+            ELSE 0 
+        END,1) AS IS_NEW_EVENT
+        -- FLAG AS NEW EVENT IF START_DAY IS STRICTLY GREATER THAN THE PREVIOUS END_DAY
+        -- ISNULL ENSURES THE VERY FIRST EVENT PER HALL IS TREATED AS NEW
+    FROM HALLEVENTS
+),
+HALLEVENTSWITHGROUPID AS (
+SELECT
+    HALL_ID,
+    START_DAY,
+    END_DAY,
+    SUM(IS_NEW_EVENT) OVER (PARTITION BY HALL_ID ORDER BY START_DAY,END_DAY DESC) AS GROUP_ID
+        -- ASSIGN GROUP_ID BY CUMULATIVELY SUMMING IS_NEW_EVENT
+        -- ALL OVERLAPPING/CONSECUTIVE EVENTS SHARE THE SAME GROUP_ID
+    FROM HALLEVENTSWITHISNEWEVENT
+)
+SELECT
+    HALL_ID,
+    MIN(START_DAY) AS START_DAY,
+    MAX(END_DAY) AS END_DAY
+FROM HALLEVENTSWITHGROUPID
+GROUP BY HALL_ID, GROUP_ID
+ORDER BY HALL_ID, START_DAY;
 ```
 
 # [262. Trips and Users](https://leetcode.com/problems/trips-and-users/)
