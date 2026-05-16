@@ -21,7 +21,7 @@ Once data is modified or dropped, it moves through a strict chronological lifecy
 | **Transient** | Yes | 1 Day | 1 Day | 0 Days (None) |
 | **Temporary** | Yes | 1 Day | 1 Day | 0 Days (None) |
 
-## 2. Parameter Inheritance Hierarchy (Higher Levels)
+## 2. Parameter Inheritance Hierarchy
 
 Time Travel parameters cascade downward through Snowflake's logical object hierarchy. A parameter set explicitly at a lower level always overrides a setting inherited from a higher level ("lowest level wins").
 
@@ -52,7 +52,7 @@ ALTER TABLE prod_db.sales.financial_audit SET DATA_RETENTION_TIME_IN_DAYS = 90;
 ALTER TABLE prod_db.sales.financial_audit UNSET DATA_RETENTION_TIME_IN_DAYS;
 
 ```
-## 3. Querying Historical Data (The `AT` | `BEFORE` Clauses)
+## 3. Querying Historical Data
 
 You can select historical data from a table, view, or schema using three specific extensions to the `FROM` clause.
 
@@ -195,7 +195,7 @@ Snowflake **automatically extends** a table's effective data retention period to
 You cannot use Time Travel expressions to clone Transient or Temporary objects past their maximum allowable window (1 day or the current session lifecycle).
 
 ```sql
--- ❌ THIS WILL FAIL if the target offset goes beyond the lifecycle/1-day barrier:
+-- THIS WILL FAIL if the target offset goes beyond the lifecycle/1-day barrier:
 CREATE TABLE recovered_transient CLONE my_transient_table AT(OFFSET => -172800); 
 
 ```
@@ -205,7 +205,7 @@ CREATE TABLE recovered_transient CLONE my_transient_table AT(OFFSET => -172800);
 You cannot use dynamic subqueries or variables directly inside the `AT` or `BEFORE` clauses. They must resolve to a constant or session variable string literal.
 
 ```sql
--- ❌ THIS WILL FAIL:
+-- THIS WILL FAIL:
 SELECT * FROM orders AT(TIMESTAMP => (SELECT max(modified_time) FROM log_table));
 
 --  THIS WILL WORK:
@@ -216,11 +216,11 @@ SELECT * FROM orders AT(TIMESTAMP => $target_time);
 
 ## 8. Critical Operational Guardrails
 
-* **The Fail-Safe Point of No Return:** Once configured `DATA_RETENTION_TIME_IN_DAYS` expires on a permanent table, historical data moves permanently to the **Fail-Safe** phase. Data in Fail-Safe *cannot* be queried via SQL statements or restored via `UNDROP`. Recovery out of Fail-Safe requires contacting Snowflake Support and can take several days.
-* **Overwriting Objects (`CREATE OR REPLACE`):** Running a `CREATE OR REPLACE TABLE` command on an existing table drops the old table and builds a fresh, empty one. To recover data from an overwritten table, you must first run `DROP TABLE <name>;`, then call `UNDROP TABLE <name>;` to pull the previous instance back out of the Time Travel buffer.
-* **Safe Alternative to Re-Writing (Table Swapping):** To completely avoid the risk of the `CREATE OR REPLACE` drop trap, build your modified dataset in a secondary staging table and swap them atomically.
+- **The Fail-Safe Point of No Return:** Once configured `DATA_RETENTION_TIME_IN_DAYS` expires on a permanent table, historical data moves permanently to the **Fail-Safe** phase. Data in Fail-Safe *cannot* be queried via SQL statements or restored via `UNDROP`. Recovery out of Fail-Safe requires contacting Snowflake Support and can take several days.
+- **Overwriting Objects (`CREATE OR REPLACE`):** Running a `CREATE OR REPLACE TABLE` command on an existing table drops the old table and builds a fresh, empty one. To recover data from an overwritten table, you must first run `DROP TABLE <name>;`, then call `UNDROP TABLE <name>;` to pull the previous instance back out of the Time Travel buffer.
+- **Safe Alternative to Re-Writing (Table Swapping):** To completely avoid the risk of the `CREATE OR REPLACE` drop trap, build your modified dataset in a secondary staging table and swap them atomically.
 ```sql
 -- Safely swap architectures without losing your fallback table history
 ALTER TABLE orders SWAP WITH orders_new;
 ```
-* **Pipeline Dependencies (Streams):** If a stream is created on a table, the stream becomes stale if its transaction offset extends beyond the table's effective Time Travel retention window. Ensure your stream ingestion/consumption frequencies are tighter than your `DATA_RETENTION_TIME_IN_DAYS`.
+- **Pipeline Dependencies (Streams):** If a stream is created on a table, the stream becomes stale if its transaction offset extends beyond the table's effective Time Travel retention window. Ensure your stream ingestion/consumption frequencies are tighter than your `DATA_RETENTION_TIME_IN_DAYS`.
