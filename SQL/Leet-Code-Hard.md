@@ -695,16 +695,34 @@ ORDER BY P.PRODUCT_ID, C.YEAR;
 ```
 
 # [1412. Find the Quiet Students in All Exams](https://leetcode.com/problems/find-the-quiet-students-in-all-exams/)
-A **"quiet" student** is the one who took **at least one exam** and **didn't score** neither the **high score** nor the **low score**.
-
-Write an SQL query to report the students (`student_id`, `student_name`) being **"quiet" in ALL exams**.
-
-- Don't return the student who has **never taken any exam**.  
-- Return the result table **ordered by student_id**.
-
-#### Student table:
-
 ```
+Table: Student
++---------------------+---------+
+| Column Name         | Type    |
++---------------------+---------+
+| student_id          | int     |
+| student_name        | varchar |
++---------------------+---------+
+student_id is the primary key for this table.
+student_name is the name of the student.
+ 
+Table: Exam
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| exam_id       | int     |
+| student_id    | int     |
+| score         | int     |
++---------------+---------+
+(exam_id, student_id) is the primary key for this table.
+Student with student_id got score points in exam with id exam_id.
+ 
+A "quite" student is the one who took at least one exam and didn't score neither the high score nor the low score.
+Write an SQL query to report the students (student_id, student_name) being "quiet" in ALL exams.Programming
+Don't return the student who has never taken any exam. Return the result table ordered by student_id.
+The query result format is in the following example.
+
+Student table:
 +-------------+---------------+
 | student_id  | student_name  |
 +-------------+---------------+
@@ -714,9 +732,8 @@ Write an SQL query to report the students (`student_id`, `student_name`) being *
 | 4           | Jonathan      |
 | 5           | Will          |
 +-------------+---------------+
-```
-#### Exam table:
-```
+
+Exam table:
 +------------+--------------+-----------+
 | exam_id    | student_id   | score     |
 +------------+--------------+-----------+
@@ -731,55 +748,112 @@ Write an SQL query to report the students (`student_id`, `student_name`) being *
 | 40         |     2        |    70     |
 | 40         |     4        |    80     |
 +------------+--------------+-----------+
-```
-#### Result table:
-```
+
+Result table:
 +-------------+---------------+
 | student_id  | student_name  |
 +-------------+---------------+
 | 2           | Jade          |
 +-------------+---------------+
+
+For exam 1: Student 1 and 3 hold the lowest and high score respectively.
+For exam 2: Student 1 hold both highest and lowest score.
+For exam 3 and 4: Studnet 1 and 4 hold the lowest and high score respectively.
+Student 2 and 5 have never got the highest or lowest in any of the exam.
+Since student 5 is not taking any exam, he is excluded from the result.
+So, we only return the information of Student 2.
 ```
-
-- For exam 1: Student 1 and 3 hold the lowest and high score respectively.  
-- For exam 2: Student 1 holds both highest and lowest score.  
-- For exam 3 and 4: Student 1 and 4 hold the lowest and high score respectively.  
-- Student 2 and 5 have never got the highest or lowest in any of the exams.  
-- Since student 5 has not taken any exam, he is excluded from the result.  
-- So, we only return the information of Student 2.
-
 ```sql
--- Step 1: Create a Common Table Expression (CTE) to rank scores within each exam
-WITH T AS (
-    SELECT
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS STUDENT;
+DROP TABLE IF EXISTS EXAM;
+GO
+
+CREATE TABLE STUDENT (
+    STUDENT_ID INT PRIMARY KEY,
+    STUDENT_NAME VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE EXAM (
+    EXAM_ID INT NOT NULL,
+    STUDENT_ID INT NOT NULL,
+    SCORE INT NOT NULL
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO STUDENT (STUDENT_ID, STUDENT_NAME) VALUES
+(1, 'Daniel'),
+(2, 'Jade'),
+(3, 'Stella'),
+(4, 'Jonathan'),
+(5, 'Will');
+GO
+
+INSERT INTO EXAM (EXAM_ID, STUDENT_ID, SCORE) VALUES
+(10, 1, 70),
+(10, 2, 80),
+(10, 3, 90),
+(20, 1, 80),
+(30, 1, 70),
+(30, 3, 80),
+(30, 4, 90),
+(40, 1, 60),
+(40, 2, 70),
+(40, 4, 80);
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM STUDENT;
+SELECT * FROM EXAM;
+/*******************************************************************************
+4. SOLUTION: Find the Quiet Students in All Exams
+*******************************************************************************/
+-- Step 1: Build a CTE that calculates min and max scores per exam
+WITH MIN_MAX_SCORE_PER_EXAM AS (
+    SELECT 
+        S.STUDENT_ID,
+        S.STUDENT_NAME,
+        EXAM_ID,
+        SCORE,
+        -- Highest score in this exam
+        MAX(SCORE) OVER(PARTITION BY EXAM_ID) AS MAX_PER_SUBJECT,
+        -- Lowest score in this exam
+        MIN(SCORE) OVER(PARTITION BY EXAM_ID) AS MIN_PER_SUBJECT 
+    FROM STUDENT S 
+    INNER JOIN EXAM E ON S.STUDENT_ID = E.STUDENT_ID
+),
+
+-- Step 2: Build another CTE to count exams taken and how many times
+-- the student was "silent" (not min, not max)
+SILENT_STUDENT AS (
+    SELECT 
         STUDENT_ID,
-        
-        -- Rank scores in ascending order to identify lowest scores (rk1 = 1 means lowest)
-        RANK() OVER (
-            PARTITION BY EXAM_ID
-            ORDER BY SCORE ASC
-        ) AS RK1,
-        
-        -- Rank scores in descending order to identify highest scores (rk2 = 1 means highest)
-        RANK() OVER (
-            PARTITION BY EXAM_ID
-            ORDER BY SCORE DESC
-        ) AS RK2
-    FROM EXAM
+        STUDENT_NAME,
+        -- Number of distinct exams this student appeared in
+        COUNT(DISTINCT EXAM_ID) AS EXAM_TAKEN,
+        -- Count how many times their score was strictly between min and max
+        SUM(
+            CASE 
+                WHEN MIN_PER_SUBJECT < SCORE AND SCORE < MAX_PER_SUBJECT 
+                THEN 1 ELSE 0 
+            END
+        ) AS SILENT_STUDENT
+    FROM MIN_MAX_SCORE_PER_EXAM 
+    GROUP BY STUDENT_ID, STUDENT_NAME
 )
 
--- Step 2: Select students who never had the highest or lowest score in any exam
-SELECT S.STUDENT_ID, S.STUDENT_NAME
-FROM T
-JOIN STUDENT S ON T.STUDENT_ID = S.STUDENT_ID
-GROUP BY S.STUDENT_ID, S.STUDENT_NAME
-HAVING 
-    -- Ensure the student never had the lowest score in any exam
-    SUM(CASE WHEN RK1 = 1 THEN 1 ELSE 0 END) = 0
-    AND
-    -- Ensure the student never had the highest score in any exam
-    SUM(CASE WHEN RK2 = 1 THEN 1 ELSE 0 END) = 0
-ORDER BY S.STUDENT_ID;
+-- Step 3: Final selection
+-- Only return students who were "silent" in ALL exams they took
+SELECT STUDENT_ID, STUDENT_NAME 
+FROM SILENT_STUDENT 
+WHERE EXAM_TAKEN = SILENT_STUDENT;
 ```
 
 # [1479. Sales by Day of the Week](https://leetcode.com/problems/sales-by-day-of-the-week/)
