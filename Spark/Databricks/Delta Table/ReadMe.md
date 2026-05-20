@@ -1,135 +1,25 @@
-# What Are Deletion Vectors?
+## 1. Storage Layout & Internal Mechanics
+Delta Lake transforms cloud object storage into an ACID-compliant transactional database by pairing raw data files with an immutable transaction log.
+### The Transaction Log Structure
+Every table operation (write, delete, optimize) writes a single JSON file to the log (`000000.json`, `000001.json`, etc.).
+* **The Checkpoint Mechanism:** To prevent Spark from reading millions of JSON files to construct the current state of a table, Delta creates a compressed **Parquet checkpoint file every 10 commits** (e.g., `000010.checkpoint.parquet`). This checkpoint aggregates all previous metadata state into a single, quickly readable file.
+* **File Statistics Ingestion:** When writing a Parquet file, Delta computes and stores column-level statistics (**minimum, maximum, and null counts**) directly in the JSON log file for the first 32 columns by default.
 
-**Deletion vectors** are a **storage optimization feature** in **Delta Lake** tables on Databricks. They allow Spark to **logically delete or update rows** without rewriting entire Parquet files.
-
-Instead of physically removing rows, deletion vectors **mark rows as deleted or modified**, and these changes are applied during read operations.
-
-### Why Are Deletion Vectors Needed?
-
-#### Without deletion vectors:
-- A **DELETE**, **UPDATE**, or **MERGE** operation requires **rewriting the entire Parquet file** containing the affected row.
-- This is **expensive**, especially for large datasets.
-
-#### With deletion vectors:
-- Spark **marks rows as deleted or changed**.
-- No need to rewrite the whole file.
-- Improves performance and reduces I/O.
-
-### How Deletion Vectors Work
-
-1. **Logical Modification**:
-   - Rows are marked as deleted or updated in a separate metadata structure.
-   - The original Parquet file remains unchanged.
-
-2. **Read-Time Resolution**:
-   - When reading the table, Spark applies the deletion vectors to filter out or modify rows.
-
-3. **Physical Rewrite (Optional)**:
-   - You can run commands like `OPTIMIZE`, `REORG TABLE ... APPLY (PURGE)`, or `VACUUM` to physically rewrite files and apply deletions.
-
-4. **Photon Acceleration**:
-   - Photon engine uses deletion vectors for **predictive I/O**, speeding up `DELETE`, `UPDATE`, and `MERGE` operations.
-
-### Compatibility & Enablement
-
-- Supported in **Databricks Runtime 12.2 LTS and above**.
-- Recommended to use **Databricks Runtime 14.3 LTS or higher** for full optimization.
-- Can be enabled via:
-  ```sql
-  CREATE TABLE ... TBLPROPERTIES ('delta.enableDeletionVectors' = true);
-  ALTER TABLE ... SET TBLPROPERTIES ('delta.enableDeletionVectors' = true);
-  ```
-
-### Limitations & Issues
-
-1. **Protocol Upgrade**:
-   - Enabling deletion vectors upgrades the table protocol.
-   - Older Delta clients may not be able to read the table.
-
-2. **Manifest Generation**:
-   - You cannot generate manifest files unless you purge deletion vectors using `REORG TABLE ... APPLY (PURGE)`.
-
-3. **Streaming & Materialized Views**:
-   - Deletion vectors are **not enabled by default**.
-   - Once enabled, they **cannot be removed**.
-
-4. **UniForm Format**:
-   - Not supported with deletion vectors.
-
-5. **Concurrency**:
-   - Supports **row-level concurrency** in Databricks Runtime 14.2+.
-
-### Use Cases
-
-- Large-scale **DELETE/UPDATE/MERGE** operations.
-- **Time travel** and **audit** scenarios.
-- **Streaming ingestion** with frequent updates.
-
-# Delta Table Optimization Techniques
-
-| Technique / Command        | Purpose                                                                 | Benefits                                                                 | When to Use                                                                 |
-|---------------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| **OPTIMIZE**              | Compacts small files into larger ones                                   | Improves read performance, reduces file overhead                         | After frequent inserts, streaming, or batch loads                           |
-| **OPTIMIZE ZORDER BY**    | Reorders data to cluster by specified columns                           | Speeds up filtering and range queries                                    | When queries frequently filter on specific columns                          |
-| **VACUUM**                | Removes obsolete files no longer referenced                             | Reclaims storage, cleans up stale data                                   | Periodically, especially after deletes/updates                              |
-| **Data Skipping**         | Automatically skips irrelevant files during query execution             | Reduces I/O and speeds up queries                                        | Enabled by default; works best with partitioning and Z-Ordering             |
-| **Partitioning**          | Organizes data into directories based on column values                  | Improves query performance and parallelism                               | When data has natural grouping (e.g., by date, region)                      |
-| **Delta Caching**         | Caches frequently read data in memory                                   | Speeds up repeated queries                                               | On Databricks clusters with caching enabled                                 |
-| **Change Data Feed (CDF)**| Tracks row-level changes in Delta tables                                | Efficient incremental processing                                         | When consuming changes for downstream systems                               |
-| **Auto Compaction**       | Automatically merges small files during write operations                | Reduces file count, improves performance                                 | Enabled via `spark.databricks.delta.autoCompact.enabled`                   |
-| **Optimize Write**        | Writes fewer, larger files during ingestion                             | Reduces small file problem                                               | Enabled via `spark.databricks.delta.optimizeWrite.enabled`                 |
-| **Schema Evolution**      | Automatically updates schema during writes                              | Simplifies ingestion pipeline                                            | When schema changes are expected                                            |
-| **Retention Check Config**| Controls safety check for `VACUUM` retention duration                   | Allows aggressive cleanup                                                | Use with caution: `spark.databricks.delta.retentionDurationCheck.enabled`  |
-| **Concurrency Control**   | Uses optimistic concurrency for transactions                            | Ensures ACID compliance                                                  | Always active in Delta Lake                                                 |
-| **Time Travel**           | Access previous versions of data                                        | Enables debugging, auditing, rollback                                    | Use `VERSION AS OF` or `TIMESTAMP AS OF` in queries                         |
-
-# What is Delta Table Checkpointing?
-
-**Checkpointing** in Delta Lake is a mechanism that improves the **efficiency of reading and reconstructing the state of a Delta table** by summarizing the transaction log.
-
-### Why Is Checkpointing Needed?
-
-Delta Lake maintains a **transaction log** in the `__delta_log` directory. Each change to the table (insert, update, delete) creates a new **JSON log file**. Over time, these files accumulate and can slow down reads because:
-
-- Delta needs to **replay all JSON logs** from the beginning to reconstruct the current state.
-- This becomes inefficient as the number of commits grows.
-
-### How Checkpointing Works
-
-- Every **N commits** (default is **10**), Delta Lake creates a **checkpoint file** in **Parquet format**.
-  `spark.conf.set("spark.databricks.delta.checkpointInterval", "N")`
-- This file contains:
-  - The **state of the table** (active files, metadata, etc.)
-  - **Statistics** for data skipping
-  - **Schema information**
-
-- When reading the table, Delta Lake:
-  1. Loads the **latest checkpoint**.
-  2. Reads only the **JSON logs after the checkpoint**.
-  3. Combines them to reconstruct the current table state.
-
-### Example Structure of `__delta_log`
+```text
+your_table/
+├── _delta_log/
+│   ├── 00000000000000000000.json               <-- Commit 0: Schema, file additions
+│   ├── 00000000000000000001.json               <-- Commit 1: Row mutations
+│   ├── ...
+│   ├── 00000000000000000010.json
+│   └── 00000000000000000010.checkpoint.parquet <-- Aggregated state up to V10 (written every 10 commits)
+├── deletion_vector_abcd-1234.bin               <-- Optional: Auxiliary bitmap row-delete flags
+├── partition_date=2026-05-20/
+│   ├── part-00000-data-block.c000.snappy.parquet
+│   └── part-00001-data-block.c000.snappy.parquet
+└── partition_date=2026-05-21/
 
 ```
-__delta_log/
-├── 00000000000000000001.json
-├── 00000000000000000002.json
-...
-├── 00000000000000000010.checkpoint.parquet
-├── 00000000000000000011.json
-├── 00000000000000000012.json
-```
-
-Here, the checkpoint at version 10 summarizes all changes from version 0 to 10. To read version 12, Delta Lake reads:
-- `10.checkpoint.parquet`
-- `11.json`
-- `12.json`
-
-### Benefits of Checkpointing
-
-| Benefit                  | Description                                                                 |
-|--------------------------|-----------------------------------------------------------------------------|
-| **Faster Reads**         | Reduces the number of JSON files to parse                                  |
-| **Efficient Time Travel**| Quickly reconstructs table state at a specific version                     |
-| **Improved Metadata Ops**| Speeds up schema and file-level metadata access                            |
-| **Scalability**          | Supports large-scale tables with thousands of commits                      |
+### Data Skipping Mechanics
+* **The Routine:** Spark queries the transaction log *first*. If your query filter falls entirely outside a file's min/max range, Spark skips that file entirely without making a storage API call.
+* **Warning Pattern:** Monotonically increasing values (like auto-incrementing IDs or explicit timestamps) get highly optimized data skipping naturally. High-cardinality, randomly distributed string values do not—they require explicit layout optimization.
