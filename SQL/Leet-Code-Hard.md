@@ -3286,6 +3286,74 @@ Explanation:
 In total, the highest number of consecutive transactions is 3, achieved by customer_id 101 and 105. The customer_id are sorted in ascending order.
 ```
 ```sql
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLE
+*******************************************************************************/
+DROP TABLE IF EXISTS TRANSACTIONS;
+GO
+
+CREATE TABLE TRANSACTIONS (
+    TRANSACTION_ID INT PRIMARY KEY,
+    CUSTOMER_ID INT NOT NULL,
+    TRANSACTION_DATE DATE NOT NULL,
+    AMOUNT DECIMAL(10,2) NOT NULL
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT MATCH RESULTS
+*******************************************************************************/
+INSERT INTO TRANSACTIONS (TRANSACTION_ID, CUSTOMER_ID, TRANSACTION_DATE, AMOUNT) VALUES
+(1, 101, '2023-05-01', 100),
+(2, 101, '2023-05-02', 150),
+(3, 101, '2023-05-03', 200),
+(4, 102, '2023-05-01', 50),
+(5, 102, '2023-05-03', 100),
+(6, 102, '2023-05-04', 200),
+(7, 105, '2023-05-01', 100),
+(8, 105, '2023-05-02', 150),
+(9, 105, '2023-05-03', 200);
+
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM TRANSACTIONS;
+
+/*******************************************************************************
+4. SOLUTION
+*******************************************************************************/
+-- Step 1: Identify consecutive groups of transactions per customer
+WITH CONSECUTIVE_GROUP AS (
+    SELECT 
+        *,
+        -- Trick: subtract row_number (per customer, ordered by date) from the transaction_date
+        -- This creates a "group key" (GRP) that stays constant for consecutive dates
+        DATEADD(
+            DAY, 
+            -1 * ROW_NUMBER() OVER (PARTITION BY CUSTOMER_ID ORDER BY TRANSACTION_DATE), 
+            TRANSACTION_DATE
+        ) AS GRP
+    FROM TRANSACTIONS
+),
+
+-- Step 2: Count how many transactions fall into each consecutive group
+MAX_TRAN_COUNT AS (
+    SELECT 
+        CUSTOMER_ID,
+        GRP,
+        COUNT(*) AS CNT
+    FROM CONSECUTIVE_GROUP
+    GROUP BY CUSTOMER_ID, GRP
+)
+
+-- Step 3: Find customers whose longest streak equals the global maximum streak
+SELECT DISTINCT CUSTOMER_ID
+FROM MAX_TRAN_COUNT
+WHERE CNT IN (
+    SELECT MAX(CNT) FROM MAX_TRAN_COUNT
+);
 ```
 
 # [2793. Status of Flight Tickets](https://leetcode.com/problems/status-of-flight-tickets/)
