@@ -2760,85 +2760,131 @@ GROUP BY POST_ID;
 ```
 
 # [2362. Generate the Invoice](https://leetcode.com/problems/generate-the-invoice/)
-### Table: Products
-
+```
+Table: Products
++-------------+------+
 | Column Name | Type |
-|-------------|------|
++-------------+------+
 | product_id  | int  |
 | price       | int  |
-
-`product_id` is the primary key for this table.  
++-------------+------+
+product_id is the primary key for this table.
 Each row in this table shows the ID of a product and the price of one unit.
-
-### Table: Purchases
-
+ 
+Table: Purchases
++-------------+------+
 | Column Name | Type |
-|-------------|------|
++-------------+------+
 | invoice_id  | int  |
 | product_id  | int  |
 | quantity    | int  |
-
-(`invoice_id`, `product_id`) is the primary key for this table.  
-Each row in this table shows the quantity ordered from one product in an invoice.
++-------------+------+
+(invoice_id, product_id) is the primary key for this table.
+Each row in this table shows the quantity ordered from one product in an invoice. 
 
 Write an SQL query to show the details of the invoice with the highest price. If two or more invoices have the same price, return the details of the one with the smallest invoice_id.
-
 Return the result table in any order.
+The query result format is shown in the following example.Programming
 
-The query result format is shown in the following example.
-
-### Example 1:
-
-**Input:**  
-**Products table:**
-
+Example 1:
+Input: 
+Products table:
++------------+-------+
 | product_id | price |
-|------------|-------|
++------------+-------+
 | 1          | 100   |
 | 2          | 200   |
-
-**Purchases table:**
-
++------------+-------+
+Purchases table:
++------------+------------+----------+
 | invoice_id | product_id | quantity |
-|------------|------------|----------|
++------------+------------+----------+
 | 1          | 1          | 2        |
 | 3          | 2          | 1        |
 | 2          | 2          | 3        |
 | 2          | 1          | 4        |
 | 4          | 1          | 10       |
-
-**Output:**
-
++------------+------------+----------+
+Output: 
++------------+----------+-------+
 | product_id | quantity | price |
-|------------|----------|-------|
++------------+----------+-------+
 | 2          | 3        | 600   |
 | 1          | 4        | 400   |
-
-**Explanation:**  
-Invoice 1: price = (2 * 100) = $200  
-Invoice 2: price = (4 * 100) + (3 * 200) = $1000  
-Invoice 3: price = (1 * 200) = $200  
++------------+----------+-------+
+Explanation: 
+Invoice 1: price = (2 * 100) = $200
+Invoice 2: price = (4 * 100) + (3 * 200) = $1000
+Invoice 3: price = (1 * 200) = $200
 Invoice 4: price = (10 * 100) = $1000
 
-The highest price is $1000, and the invoices with the highest prices are 2 and 4. We return the details of the
+The highest price is $1000, and the invoices with the highest prices are 2 and 4. We return the details of the one with the smallest ID, which is invoice 2.
+```
 ```sql
--- CTE to combine purchase and product details
-WITH PURCHASEDETAILS AS (
-    SELECT P.INVOICE_ID, P.PRODUCT_ID, P.QUANTITY, PR.PRICE
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS PRODUCTS;
+DROP TABLE IF EXISTS PURCHASES;
+GO
+
+CREATE TABLE PRODUCTS (
+    PRODUCT_ID INT PRIMARY KEY,
+    PRICE DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE PURCHASES (
+    INVOICE_ID INT NOT NULL,
+    PRODUCT_ID INT NOT NULL,
+    QUANTITY INT NOT NULL,
+);
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO PRODUCTS (PRODUCT_ID, PRICE) VALUES
+(1, 100),
+(2, 200);
+GO
+
+INSERT INTO PURCHASES (INVOICE_ID, PRODUCT_ID, QUANTITY) VALUES
+(1, 1, 2),
+(3, 2, 1),
+(2, 2, 3),
+(2, 1, 4),
+(4, 1, 10);
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM PRODUCTS;
+SELECT * FROM PURCHASES;
+/*******************************************************************************
+4. SOLUTION:
+*******************************************************************************/
+-- Step 1: Find the invoice with the highest total bill
+WITH HIGHEST_INVOICE AS (
+    SELECT P.INVOICE_ID, SUM(P.QUANTITY * PR.PRICE) AS BILL
     FROM PURCHASES P
-    INNER JOIN PRODUCTS PR ON P.PRODUCT_ID = PR.PRODUCT_ID
-),
--- CTE to find the invoice with the highest total amount
-TOPINVOICE AS (
-    SELECT TOP 1 INVOICE_ID, SUM(PRICE * QUANTITY) AS TOTAL_AMOUNT
-    FROM PURCHASEDETAILS
-    GROUP BY INVOICE_ID
-    ORDER BY TOTAL_AMOUNT DESC, INVOICE_ID
+    LEFT JOIN PRODUCTS PR 
+        ON P.PRODUCT_ID = PR.PRODUCT_ID
+    GROUP BY P.INVOICE_ID
+    ORDER BY BILL DESC, P.INVOICE_ID ASC   -- sort by highest bill, then lowest invoice ID
+    OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY   -- pick only the top 1 invoice
 )
--- Final query to list products from the top invoice
-SELECT PD.PRODUCT_ID, PD.QUANTITY, (PD.QUANTITY * PD.PRICE) AS TOTAL_PRICE
-FROM PURCHASEDETAILS PD
-INNER JOIN TOPINVOICE TI ON PD.INVOICE_ID = TI.INVOICE_ID;
+
+-- Step 2: Get all products from that invoice
+SELECT 
+    P.PRODUCT_ID, 
+    P.QUANTITY, 
+    P.QUANTITY * PR.PRICE AS LINE_TOTAL    -- line-item total for each product
+FROM PURCHASES P
+INNER JOIN HIGHEST_INVOICE H 
+    ON H.INVOICE_ID = P.INVOICE_ID         -- filter only rows from the highest invoice
+LEFT JOIN PRODUCTS PR 
+    ON P.PRODUCT_ID = PR.PRODUCT_ID;       -- bring in product price
 ```
 
 # [2474. Customers With Strictly Increasing Purchases](https://leetcode.com/problems/customers-with-strictly-increasing-purchases/)
