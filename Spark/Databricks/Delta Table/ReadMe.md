@@ -81,7 +81,7 @@ OPTIMIZE high_volume_telemetry;
 -- Step 3: Change your clustering keys seamlessly if your business query pattern changes
 ALTER TABLE high_volume_telemetry CLUSTER BY (tenant_id, reading_timestamp);
 ```
-## Technical Layout Strategy Matrix
+### Technical Layout Strategy Matrix
 
 | Optimization Technique | Mechanics Layer | Primary Problem It Solves | Storage Footprint Impact |
 | --- | --- | --- | --- |
@@ -89,3 +89,140 @@ ALTER TABLE high_volume_telemetry CLUSTER BY (tenant_id, reading_timestamp);
 | **Z-Ordering** | In-file Record Placement | Fine-grained data skipping across high-cardinality, unpartitioned filter columns. | None; rearranges existing files into optimized clusters. |
 | **Liquid Clustering** | Dynamic Block Mapping | Replaces partitioning + Z-Ordering; prevents layout locking and handles data skew natively. | Minimizes file count fluctuations and lowers metadata size overhead. |
 | **Deletion Vectors** | Auxiliary Bitmaps (`Merge-on-Read`) | Prevents massive file write amplification during high-frequency row `DELETE`/`UPDATE` operations. | Creates tiny companion files; delays full file rewrites until `OPTIMIZE` runs. |
+
+---
+
+## 2. Delta Lake Time Travel & Recovery
+Delta Lake’s time travel capability is driven entirely by its transaction log (`_delta_log/`). Every transaction creates an immutable JSON commit file, allowing you to query or restore your table exactly as it existed at any historical point.
+### How It Works Under the Hood
+
+When you query an older version of a Delta table, Spark doesn't untangle a complex web of "git-like" deltas. Instead, it reads the transaction log up to your requested version to build a virtual snapshot of valid files at that exact millisecond.
+
+```text
+_delta_log/
+├── 00000000000000000000.json  (Adds File A, File B)
+├── 00000000000000000001.json  (Removes File A, Adds File C)
+└── 00000000000000000002.json  (Adds File D)
+
+```
+
+* **Querying Version 0:** Spark only scans File A and File B.
+* **Querying Version 1:** Spark scans File B and File C. Even though File A still physically sits in your cloud container, the transaction log instructs Spark to skip it.
+
+### Inspecting Table History
+
+Before you travel through time, you need to know your coordinates. Use the history command to retrieve version numbers, timestamps, user IDs, and operational metadata.
+
+#### SQL Syntax
+
+```sql
+DESCRIBE HISTORY silver_users;
+
+```
+
+#### PySpark Syntax
+
+```python
+from delta.tables import DeltaTable
+
+deltaTable = DeltaTable.forPath(spark, "abfss://container@storage.dfs.core.windows.net/silver/users")
+history_df = deltaTable.history() # Returns a DataFrame you can filter or display
+display(history_df.select("version", "timestamp", "operation", "operationParameters"))
+
+```
+###  Querying Historical Snapshots
+
+You can query historical states using either a specific **Version ID** or a **Timestamp**.
+
+#### Using SQL
+
+```sql
+-- Syntax A: Traveling by Version
+SELECT * FROM silver_users VERSION AS OF 14;
+
+-- Syntax B: Traveling by Timestamp
+SELECT * FROM silver_users TIMESTAMP AS OF '2026-05-20 09:30:00';
+
+-- Syntax C: Alternative At-Sign Notation
+SELECT * FROM silver_users@v14;
+SELECT * FROM silver_users@20260520093000000; -- yyyyMMddHHmmssSSS
+
+```
+
+#### Using PySpark DataFrame Reader
+
+```python
+# Traveling by Version
+df_version = spark.read.format("delta").option("versionAsOf", 14).load(path)
+
+# Traveling by Timestamp
+df_time = spark.read.format("delta").option("timestampAsOf", "2026-05-20 09:30:00").load(path)
+
+```
+### Production Recovery Strategies
+
+When a bad deployment, corrupted source, or accidental query mangles a table, you have three primary ways to recover.
+
+#### Strategy A: The Native Rollback (`RESTORE`)
+
+The fastest and cleanest way to revert a table. It preserves the transaction history by writing a brand new commit (e.g., "Rollback to V12") instead of deleting subsequent log files.
+
+```sql
+-- Roll table state back to an exact historical position
+RESTORE TABLE silver_users TO VERSION AS OF 12;
+
+-- Roll table back using a timestamp
+RESTORE TABLE silver_users TO TIMESTAMP AS OF '2026-05-19 23:59:59';
+
+```
+
+#### Strategy B: Selective Data Rescue (Insert Overwrite)
+
+If you only need to rescue a few specific columns or rows corrupted by a bad merge, you can query the historical data and overwrite the current active table inline.
+
+```python
+# 1. Grab the clean data from a known good version
+good_data_df = spark.read.format("delta").option("versionAsOf", 11).load(path)
+
+# 2. Filter down to the impacted segment and re-insert
+good_data_df.filter("region = 'APAC'") \
+    .write.format("delta") \
+    .mode("overwrite") \
+    .option("replaceWhere", "region = 'APAC'") \
+    .save(path)
+
+```
+
+#### Strategy C: Fixing Structural Mistakes via Clones
+
+If you want to run destructive tests or migrations on a historical snapshot before rolling it out to production, create an independent clone.
+
+```sql
+-- Create an isolated production-quality deep clone of how the table looked yesterday
+CREATE TABLE troubleshooting.users_rollback_test
+DEEP CLONE silver_users VERSION AS OF 80;
+
+```
+#### The Fatal Enemy of Time Travel: `VACUUM`
+
+You cannot travel back to a time that has been physically erased. The `VACUUM` command physically deletes Parquet data files that are no longer referenced by the current state of the transaction log.
+
+```sql
+VACUUM silver_users RETAIN 168 HOURS; -- Deletes files unreferenced for more than 7 days
+
+```
+
+- **The Retention Rule:** If you vacuum a table with a retention period of 7 days, any query attempting to use `VERSION AS OF` or `TIMESTAMP AS OF` pointing beyond those 7 days will fail with a `FileNotFoundException`.
+
+#### Tuning History Retention Windows
+
+If your business demands 30 days of historical point-in-time recovery capabilities, adjust your table properties to prevent premature metadata and physical data pruning.
+
+```sql
+ALTER TABLE silver_users SET TBLPROPERTIES (
+    'delta.logRetentionDuration' = 'interval 30 days',    -- Keeps metadata JSON files for 30 days
+    'delta.deletedFileRetentionDuration' = 'interval 30 days' -- Prevents VACUUM from touching files under 30 days old
+);
+
+```
+---
