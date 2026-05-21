@@ -46,9 +46,9 @@ An **Event** occurs (e.g., a code `push`). This triggers a **Workflow** (defined
 
 # GitHub Actions Artifacts Guide
 **Artifacts** are the files generated during a workflow run (e.g., binaries, test reports) that allow you to **persist data** after a run finishes or **bridge the gap** between isolated jobs.
-## 1. Uploading Artifacts
+### 1. Uploading Artifacts
 Use `actions/upload-artifact@v4` to move data from the runner to GitHub’s cloud storage.
-### Implementation
+#### Implementation
 ```yaml
 - name: Upload Build Output
   uses: actions/upload-artifact@v4
@@ -57,9 +57,9 @@ Use `actions/upload-artifact@v4` to move data from the runner to GitHub’s clou
     path: dist/           # Directory or specific file
     retention-days: 30    # Optional: How long to keep it (Default 90)
 ```
-## 2. Downloading Artifacts
+### 2. Downloading Artifacts
 Use `actions/download-artifact@v4` to retrieve files in a later job or for manual inspection after the workflow completes.
-### Implementation
+#### Implementation
 ```yaml
 - name: Download Assets
   uses: actions/download-artifact@v4
@@ -67,18 +67,18 @@ Use `actions/download-artifact@v4` to retrieve files in a later job or for manua
     name: release-assets
     path: ./target-dir    # Local path to place files
 ```
-## 3. Deleting Artifacts
+### 3. Deleting Artifacts
 Use `actions/delete-artifact@v5` to manually remove artifacts. This is perfect for cleaning up temporary "bridge" files to save storage space and keep your UI clean.
-### Implementation
+#### Implementation
 ```yaml
 - name: Remove Temporary Logs
   uses: actions/delete-artifact@v5
   with:
     name: temp-build-logs
 ```
-## 4. Sharing Between Jobs (The Workflow)
+### 4. Sharing Between Jobs (The Workflow)
 Since jobs run on **isolated runners**, they do not share a filesystem. You must upload in Job A and download in Job B.
-### Example: Build, Test, and Cleanup
+#### Example: Build, Test, and Cleanup
 ```yaml
 jobs:
   build:
@@ -107,15 +107,15 @@ jobs:
         with:
           name: bridge-data
 ```
-## Limits & Best Practices
-### Storage & Retention
+### Limits & Best Practices
+#### Storage & Retention
 | Feature | Limit / Default |
 | :--- | :--- |
 | **Default Retention** | 90 Days |
 | **Max File Size** | 5 GB per artifact |
 | **Total Run Limit** | 20 GB per workflow |
 | **Performance** | v4 is up to 10x faster than v3 |
-### Pro-Tips
+#### Pro-Tips
 * **Security:** Never upload `.env` files, SSH keys, or secrets. Artifacts are accessible to anyone with "Read" access to the repository.
 * **Wildcards:** You can use patterns like `path: dist/**/*.js` to upload specific file types.
 * **Storage Management:** If an artifact is only needed for the workflow duration, use `retention-days: 1` or the `delete-artifact` action in your final job.
@@ -124,7 +124,7 @@ jobs:
 # Job/Step Outputs
 Outputs are essentially the return values of your GitHub Actions. They allow you to capture data generated in one step or job and pass it along to subsequent steps or jobs in your workflow. 
 If you have stumbled upon older tutorials referencing `::set-output`, just know that it is heavily deprecated. Today, we use the `$GITHUB_OUTPUT` environment file. Let's break down how this works!
-## 1. Step Outputs (Sharing Data Within the Same Job)
+### 1. Step Outputs (Sharing Data Within the Same Job)
 To pass information between steps in the **same job**, you save a key-value pair to the `$GITHUB_OUTPUT` file.
 ### How to set it:
 Give your step a unique `id` and append your custom variable to `$GITHUB_OUTPUT`.
@@ -141,7 +141,7 @@ Access it in a later step within the same job using the `steps` context: `${{ st
   run: |
     echo "The value generated was ${{ steps.generator.outputs.MY_VALUE }}"
 ```
-## 2. Job Outputs (Sharing Data Between Different Jobs)
+### 2. Job Outputs (Sharing Data Between Different Jobs)
 By default, jobs run in entirely separate isolated environments on different runners. This means steps in `job2` cannot natively see what happened in `job1`. To solve this, you can expose that data as a **job output**.
 To pass information between jobs, you must follow this sequence:
 1. Set the output at the **step** level in the first job.
@@ -171,7 +171,7 @@ jobs:
         run: |
           echo "Deploying artifact with ID: ${{ needs.build.outputs.artifact_id }}"
 ```
-## 3. Handling Multi-line Outputs
+### 3. Handling Multi-line Outputs
 If you've ever tried to shove multi-line text (like the contents of a file or a JSON payload) into `$GITHUB_OUTPUT` using standard `echo`, you probably received an error or truncated data. 
 To resolve this, you must use a unique delimiter (like `EOF`).
 ### Example:
