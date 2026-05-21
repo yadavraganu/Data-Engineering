@@ -242,6 +242,3 @@ CREATE RESOURCE MONITOR reader_guard_rails WITH CREDIT_QUOTA = 50
 ALTER ACCOUNT client_abc_reader SET RESOURCE_MONITOR = reader_guard_rails;
 
 ```
-```
-
-```
