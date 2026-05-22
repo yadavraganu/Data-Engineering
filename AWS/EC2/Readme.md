@@ -101,3 +101,51 @@ Here are comprehensive reference notes and comparison tables covering all standa
 | **Capacity Guaranteed?** | **Yes** (In chosen AZ) | **Yes** (For specified dates) | **Yes** (You own the blade) | Yes (While running) |
 | **Hardware Tenancy** | Shared or Dedicated | Shared (Dedicated Cluster) | **Physical Single-Tenant** | Host-level Isolation |
 | **Term Commitment** | None (Cancel anytime) | Fixed future window (1-14 days) | None, 1 Year, or 3 Years | Hourly |
+
+Here is a complete, production-grade set of technical notes for AWS EC2 Placement Groups. This version corrects the multi-AZ nuances, adds strict AWS constraints, and includes best practices to avoid common deployment failures.
+
+## AWS EC2 Placement Groups
+
+### 1. Cluster Placement Group
+
+* **Core Concept:** Packs instances close together inside a single network segment to achieve ultra-low latency and high network throughput ($10\text{ Gbps}$ to $100\text{ Gbps}+$ depending on instance type).
+* **Scope:** Restricted to a **single Availability Zone (AZ)** within the same VPC. It cannot span multiple AZs.
+* **Best Used For:** * Tightly-coupled High-Performance Computing (HPC) applications.
+* Big data clusters requiring low-latency node communication (e.g., specialized MPI jobs).
+* High-throughput database replications.
+
+* **Downside/Risks:** * **Single Point of Failure:** Shares underlying hardware racks; a rack failure impacts multiple instances.
+* **Capacity Restrictions:** Higher likelihood of encountering `InsufficientInstanceCapacity` errors during launch or restarts if the specific network segment runs out of hardware.
+
+### 2. Spread Placement Group
+
+* **Core Concept:** Maximizes physical isolation by placing each individual instance on a distinct, separate hardware rack (each with its own independent power and network source).
+* **Scope:** **Can span multiple Availability Zones** within the same Region.
+* **Hard Constraints:** Limited to a maximum of **7 running instances per Availability Zone** per placement group.
+* **Best Used For:** * Critical, small-scale workloads where instances must not fail simultaneously.
+* Primary and secondary database instances.
+* Core application nodes handling high-availability routing.
+* **Downside:** Highly limited in scale; attempting to launch an 8th instance in the same AZ within that group will fail.
+
+### 3. Partition Placement Group
+
+* **Core Concept:** Divides the placement group into logical segments called "partitions." AWS ensures that no two partitions share the same hardware racks, power, or network sources.
+* **Scope:** **Can span multiple Availability Zones** within the same Region.
+* **Hard Constraints:** Limited to a maximum of **7 partitions per Availability Zone**. There is no hard limit on the number of instances *inside* a partition (subject only to your account limits).
+* **Best Used For:** Large, distributed, and replicated data workloads that need to be topology-aware:
+* **Apache Kafka:** Splitting brokers across different partitions.
+* **Hadoop / HDFS:** Ensuring NameNodes and DataNodes don't share underlying hardware.
+* **Cassandra / NoSQL:** Mapping database rings across separate infrastructure partitions.
+
+
+* **Downside:** Instances are isolated at the partition level, not the individual instance level. A failure on a specific rack impacts only the instances assigned to that single partition.
+
+### Key Rules & Constraints
+
+* **Cost:** Creation and usage are completely **free**; you only pay standard rates for the EC2 instances launched inside them.
+* **Naming:** Names must be unique within your AWS account for the specific Region.
+* **Instance Type Restrictions:** * Not all instance types support placement groups. Burstable performance instances (e.g., `t2`, `t3`) are **explicitly blocked** from Cluster placement groups.
+* Mixing different instance types in a Cluster group is strongly discouraged. It increases the probability of launch failures due to capacity fragmentation.
+* **Immutability:** You **cannot merge** placement groups. However, you can move an existing instance into a placement group, or move it out, provided the instance is in a `stopped` state.
+* **The "All-at-Once" Rule:** When launching instances into a Cluster placement group, **launch them all in a single CLI/API request** or CloudFormation stack. If you try to launch them incrementally over time, AWS may run out of capacity on that specific network segment, leading to failures.
+* **Handling Capacity Blocks:** If you stop an instance inside a Cluster group and later try to restart it, it might fail if the host rack has filled up in the interim. You will either have to wait for capacity to free up or move the instance out of the group.
