@@ -1127,40 +1127,126 @@ By the end of November --> six active drivers (10, 8, 5, 7, 4, 1) and two accept
 By the end of December --> six active drivers (10, 8, 5, 7, 4, 1) and one accepted ride (2).
 ```
 ```sql
--- GENERATE MONTHS 1 TO 12
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS DRIVERS;
+DROP TABLE IF EXISTS RIDES;
+DROP TABLE IF EXISTS ACCEPTEDRIDES;
+GO
+
+CREATE TABLE DRIVERS (
+    DRIVER_ID INT PRIMARY KEY,
+    JOIN_DATE DATE
+);
+
+CREATE TABLE RIDES (
+    RIDE_ID INT PRIMARY KEY,
+    USER_ID INT,
+    REQUESTED_AT DATE
+);
+
+CREATE TABLE ACCEPTEDRIDES (
+    RIDE_ID INT,
+    DRIVER_ID INT,
+    RIDE_DISTANCE INT,
+    RIDE_DURATION INT
+);
+
+GO
+
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO RIDES (RIDE_ID, USER_ID, REQUESTED_AT) VALUES
+(6, 75, '2019-12-09'),
+(1, 54, '2020-02-09'),
+(10, 63, '2020-03-04'),
+(19, 39, '2020-04-06'),
+(3, 41, '2020-06-03'),
+(13, 52, '2020-06-22'),
+(7, 69, '2020-07-16'),
+(17, 70, '2020-08-25'),
+(20, 81, '2020-11-02'),
+(5, 57, '2020-11-09'),
+(2, 42, '2020-12-09'),
+(11, 68, '2021-01-11'),
+(15, 32, '2021-01-17'),
+(12, 11, '2021-01-19'),
+(14, 18, '2021-01-27');
+GO
+
+INSERT INTO DRIVERS (DRIVER_ID, JOIN_DATE) VALUES
+(10, '2019-12-10'),
+(8, '2020-01-13'),
+(5, '2020-02-16'),
+(7, '2020-03-08'),
+(4, '2020-05-17'),
+(1, '2020-10-24'),
+(6, '2021-01-05');
+GO
+
+INSERT INTO ACCEPTEDRIDES (RIDE_ID, DRIVER_ID, RIDE_DISTANCE, RIDE_DURATION) VALUES
+(10, 10, 63, 38),
+(13, 10, 73, 96),
+(7, 8, 100, 28),
+(17, 7, 119, 68),
+(20, 1, 121, 92),
+(5, 7, 42, 101),
+(2, 4, 6, 38),
+(11, 8, 37, 43),
+(15, 8, 108, 82),
+(12, 8, 38, 34),
+(14, 1, 90, 74);
+GO
+
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM ACCEPTEDRIDES;
+SELECT * FROM DRIVERS;
+SELECT * FROM RIDES;
+/*******************************************************************************
+4. SOLUTION:
+*******************************************************************************/
+-- MONTHLY REPORT FOR 2020 USING CTES
 WITH CALENDAR AS (
   SELECT 1 AS MONTH
   UNION ALL
   SELECT MONTH + 1
   FROM CALENDAR
   WHERE MONTH < 12
+),
+ACTIVEDRIVERS AS (
+  SELECT 
+    M.MONTH,
+    COUNT(*) AS ACTIVE_DRIVERS
+  FROM CALENDAR M
+  LEFT JOIN DRIVERS D
+    ON YEAR(D.JOIN_DATE) < 2020
+    OR (YEAR(D.JOIN_DATE) = 2020 AND MONTH(D.JOIN_DATE) <= M.MONTH)
+  GROUP BY M.MONTH
+),
+ACCEPTEDPERMONTH AS (
+  SELECT 
+    M.MONTH,
+    COUNT(*) AS ACCEPTED_RIDES
+  FROM CALENDAR M
+  INNER JOIN RIDES R
+    ON YEAR(R.REQUESTED_AT) = 2020
+   AND MONTH(R.REQUESTED_AT) = M.MONTH
+  INNER JOIN ACCEPTEDRIDES AR
+    ON R.RIDE_ID = AR.RIDE_ID
+  GROUP BY M.MONTH
 )
-
--- MONTHLY REPORT FOR 2020
-SELECT
-  CALENDAR.MONTH,
-
-  -- COUNT OF DRIVERS ACTIVE BY EACH MONTH
-  (
-    SELECT COUNT(*)
-    FROM DRIVERS
-    WHERE
-      YEAR(JOIN_DATE) < 2020
-      OR (YEAR(JOIN_DATE) = 2020 AND MONTH(JOIN_DATE) <= CALENDAR.MONTH)
-  ) AS ACTIVE_DRIVERS,
-
-  -- COUNT OF ACCEPTED RIDES PER MONTH
-  (
-    SELECT COUNT(*)
-    FROM ACCEPTEDRIDES AR
-    INNER JOIN RIDES R ON AR.RIDE_ID = R.RIDE_ID
-    WHERE
-      YEAR(R.REQUESTED_AT) = 2020
-      AND MONTH(R.REQUESTED_AT) = CALENDAR.MONTH
-  ) AS ACCEPTED_RIDES
-
-FROM CALENDAR
-OPTION (MAXRECURSION 12); -- LIMIT RECURSION TO 12 MONTHS
+SELECT 
+  C.MONTH,
+  COALESCE(AD.ACTIVE_DRIVERS,0) AS ACTIVE_DRIVERS,
+  COALESCE(APM.ACCEPTED_RIDES,0) AS ACCEPTED_RIDES
+FROM CALENDAR C
+LEFT JOIN ACTIVEDRIVERS AD ON C.MONTH = AD.MONTH
+LEFT JOIN ACCEPTEDPERMONTH APM ON C.MONTH = APM.MONTH
+ORDER BY C.MONTH;
 ```
 
 # [1645. Hopper Company Queries II](https://leetcode.com/problems/hopper-company-queries-ii/)
