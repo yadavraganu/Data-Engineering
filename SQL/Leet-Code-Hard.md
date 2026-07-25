@@ -3722,7 +3722,7 @@ The result format is in the following example.
 
 Example 1:
 Input: 
-Sessions table:
+Wineries table:
 +-----+-----------+--------+-----------------+
 | id  | country   | points | winery          | 
 +-----+-----------+--------+-----------------+
@@ -3763,6 +3763,40 @@ For the USA
 Output table is ordered by country in ascending order.
 ```
 ```sql
+/*******************************************************************************
+1. SETUP: CLEAN UP AND RECREATE TABLES
+*******************************************************************************/
+DROP TABLE IF EXISTS WINERIES;
+GO
+CREATE TABLE WINERIES (
+  ID INT,
+  COUNTRY VARCHAR(50),
+  POINTS INT,
+  WINERY VARCHAR(100)
+);
+GO
+/*******************************************************************************
+2. DATA ENTRY: INSERT SAMPLE DATA
+*******************************************************************************/
+INSERT INTO WINERIES VALUES
+(103,'Australia',84,'WhisperingPines'),
+(737,'Australia',85,'GrapesGalore'),
+(848,'Australia',100,'HarmonyHill'),
+(222,'Hungary',60,'MoonlitCellars'),
+(116,'USA',47,'RoyalVines'),
+(124,'USA',45,'Eagle''sNest'),
+(648,'India',69,'SunsetVines'),
+(894,'USA',39,'RoyalVines'),
+(677,'USA',9,'PacificCrest');
+GO
+/*******************************************************************************
+3. DISPLAY INPUT DATA
+*******************************************************************************/
+SELECT * FROM WINERIES;
+GO
+/*******************************************************************************
+4. SOLUTION
+*******************************************************************************/
 -- STEP 1: AGGREGATE AND RANK WINERIES BY COUNTRY
 WITH RANKEDWINERIES AS (
     SELECT 
